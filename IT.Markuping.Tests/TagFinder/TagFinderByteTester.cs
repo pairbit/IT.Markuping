@@ -66,6 +66,29 @@ internal class TagFinderByteTester
         LastClosingTest(tagData);
 
         FirstLastTest(tagData);
+
+        Pairs(tagData);
+    }
+
+    public void Pairs(TagData tagData)
+    {
+        var tagFullName = tagData.FullName;
+        var hasNamespace = tagData.NameSpace.Length > 0;
+        var name = tagData.NameBytes;
+        
+        var data = _encoding.GetBytes($"<{tagFullName}></{tagFullName}>").AsSpan();
+        var last = _finder.LastPair(data, name, out var ns);
+        Assert.That(last.HasNamespace, Is.EqualTo(hasNamespace));
+        Assert.That(data[ns].SequenceEqual(tagData.NameSpaceBytes), Is.True);
+        Assert.That(data[last.Outer].SequenceEqual(data), Is.True);
+        Assert.That(data[last.Inner].IsEmpty, Is.True);
+
+        data = _encoding.GetBytes($"<{tagFullName}>first</{tagFullName}><{tagFullName}>last</{tagFullName}>").AsSpan();
+        last = _finder.LastPair(data, name, out ns);
+        Assert.That(last.HasNamespace, Is.EqualTo(hasNamespace));
+        Assert.That(data[ns].SequenceEqual(tagData.NameSpaceBytes), Is.True);
+        Assert.That(data[last.Outer].SequenceEqual(_encoding.GetBytes($"<{tagFullName}>last</{tagFullName}>")), Is.True);
+        Assert.That(data[last.Inner].SequenceEqual(_encoding.GetBytes("last")), Is.True);
     }
 
     public void FirstLastTest(TagData tagData)
