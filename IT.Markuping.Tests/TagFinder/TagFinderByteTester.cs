@@ -17,34 +17,69 @@ internal class TagFinderByteTester
         _encoding = encoding;
     }
 
+    public class TagData
+    {
+        public string Name { get; }
+
+        public string NameSpace { get; }
+
+        public string FullName { get; }
+
+        public byte[] NameBytes { get; }
+
+        public byte[] NameSpaceBytes { get; }
+
+        public byte[] FullNameBytes { get; }
+
+        public TagData(Encoding encoding, string name)
+        {
+            FullName = Name = name;
+            FullNameBytes = NameBytes = encoding.GetBytes(name);
+            NameSpace = string.Empty;
+            NameSpaceBytes = [];
+        }
+
+        public TagData(Encoding encoding, string name, string nameSpace)
+        {
+            Name = name;
+            NameSpace = nameSpace;
+            FullName = nameSpace + ":" + name;
+            NameBytes = encoding.GetBytes(name);
+            NameSpaceBytes = encoding.GetBytes(nameSpace);
+            FullNameBytes = encoding.GetBytes(FullName);
+        }
+
+        public override string ToString() => FullName;
+    }
+
     public void Test()
     {
-        LastClosingTest("a", string.Empty);
-        LastClosingTest("a", "n");
-
-        FirstLastTest("a", string.Empty);
-        FirstLastTest("a", "n");
-
-        FirstTest("a", string.Empty);
-        FirstTest("a", "n");
+        Test(new(_encoding, "a"));
+        Test(new(_encoding, "a", "n"));
 
         OldLastPairTest(false);
         OldLastPairTest(true);
     }
 
-    public void FirstLastTest(string tagName, string tagNamespace)
+    public void Test(TagData tagData)
     {
-        var encoding = _encoding;
+        LastClosingTest(tagData);
 
-        var hasNamespace = tagNamespace.Length > 0;
-        var tagFullName = hasNamespace ? tagNamespace + ":" + tagName : tagName;
-        var fullName = encoding.GetBytes(tagFullName);
-        var name = hasNamespace ? encoding.GetBytes(tagName) : fullName;
-        var ns = encoding.GetBytes(tagNamespace);
+        FirstLastTest(tagData);
 
-        var endingName = encoding.GetBytes($"<{tagFullName} ");
-        var endingName2 = encoding.GetBytes($"<{tagFullName}\r");
-        var attributeStart = encoding.GetBytes($"<{tagFullName}\r\n\t");
+        FirstTest(tagData);
+    }
+
+    public void FirstLastTest(TagData tagData)
+    {
+        var tagFullName = tagData.FullName;
+        var fullName = tagData.FullNameBytes;
+        var name = tagData.NameBytes;
+        var ns = tagData.NameSpaceBytes;
+
+        var endingName = _encoding.GetBytes($"<{tagFullName} ");
+        var endingName2 = _encoding.GetBytes($"<{tagFullName}\r");
+        var attributeStart = _encoding.GetBytes($"<{tagFullName}\r\n\t");
 
         FirstLastTest($"<{tagFullName}>", fullName, name, ns, TagEnding.Closing);
         FirstLastTest($"<{tagFullName} \r\n\t>", fullName, name, ns, TagEnding.Closing,
@@ -87,16 +122,15 @@ internal class TagFinderByteTester
         FailFirstLastTest($"<{tagFullName} \">", fullName, name, ns);
     }
 
-    public void FirstTest(string tagName, string tagNamespace)
+    public void FirstTest(TagData tagData)
     {
         var encoding = _encoding;
         var finder = _finder;
 
-        var hasNamespace = tagNamespace.Length > 0;
-        var tagFullName = hasNamespace ? tagNamespace + ":" + tagName : tagName;
-        var fullName = encoding.GetBytes(tagFullName);
-        var name = hasNamespace ? encoding.GetBytes(tagName) : fullName;
-        var ns = encoding.GetBytes(tagNamespace);
+        var tagFullName = tagData.FullName;
+        var fullName = tagData.FullNameBytes;
+        var name = tagData.NameBytes;
+        var ns = tagData.NameSpaceBytes;
 
         var data = encoding.GetBytes($"<{tagFullName}><{tagFullName}/></{tagFullName}><{tagFullName} b=3 /><{tagFullName}\rc=4></{tagFullName}>");
         var tag = finder.First(data, fullName);
@@ -121,15 +155,16 @@ internal class TagFinderByteTester
         Assert.That(data[tag.Range].SequenceEqual(data), Is.True);
     }
 
-    public void LastClosingTest(string tagName, string tagNamespace)
+    public void LastClosingTest(TagData tagData)
     {
         var encoding = _encoding;
         var finder = _finder;
 
-        var hasNamespace = tagNamespace.Length > 0;
-        var tagNS = encoding.GetBytes(tagNamespace);
-        var name = encoding.GetBytes(tagName);
-        var tagFullName = hasNamespace ? tagNamespace + ":" + tagName : tagName;
+        var hasNamespace = tagData.NameSpace.Length > 0;
+        var tagNS = tagData.NameSpaceBytes;
+        var name = tagData.NameBytes;
+        var tagFullName = tagData.FullName;
+        var fullName = tagData.FullNameBytes;
 
         var data = encoding.GetBytes($"</{tagFullName}>").AsSpan();
         var closing = finder.LastClosing(data, name, out var ns);
@@ -155,7 +190,7 @@ internal class TagFinderByteTester
         if (hasNamespace)
         {
             data = encoding.GetBytes($"</{tagFullName}>");
-            closing = finder.LastClosing(data, encoding.GetBytes(tagFullName), out ns);
+            closing = finder.LastClosing(data, fullName, out ns);
             Assert.That(data[ns].IsEmpty, Is.True);
             Assert.That(closing.HasNamespace, Is.False);
             Assert.That(closing.HasSpace, Is.False);
