@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IT.Markuping;
+namespace IT.Markuping.Interfaces;
 
 public interface ITagFinder<T> where T : unmanaged
 {
