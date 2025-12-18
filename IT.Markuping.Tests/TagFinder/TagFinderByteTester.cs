@@ -21,97 +21,99 @@ internal class TagFinderByteTester
         LastClosingTest("a", string.Empty);
         LastClosingTest("a", "n");
 
-        FirstTest("a");
-        FirstTest("n:a");
+        FirstTest("a", string.Empty);
+        FirstTest("a", "n");
 
         OldLastPairTest(false);
         OldLastPairTest(true);
     }
 
-    public void FirstTest(string tagName)
+    public void FirstTest(string tagName, string tagNamespace)
     {
         var encoding = _encoding;
         var finder = _finder;
 
-        var name = encoding.GetBytes("a");
+        var hasNamespace = tagNamespace.Length > 0;
+        var tag = hasNamespace ? tagNamespace + ":" + tagName : tagName;
+        var name = encoding.GetBytes(tag);
 
-        var bytes = encoding.GetBytes("<a/>").AsSpan();
+        var bytes = encoding.GetBytes($"<{tag}/>").AsSpan();
         var opening = finder.First(bytes, name);
         Assert.That(opening.Ending, Is.EqualTo(TagEnding.SelfClosing));
         Assert.That(bytes[opening.Range].SequenceEqual(bytes), Is.True);
 
-        bytes = encoding.GetBytes("<a \r\n\t/>");
+        bytes = encoding.GetBytes($"<{tag} \r\n\t/>");
         opening = finder.First(bytes, name);
         Assert.That(opening.Ending, Is.EqualTo(TagEnding.SelfClosing));
         Assert.That(bytes[opening.Range].SequenceEqual(bytes), Is.True);
 
         opening = finder.First(bytes, name, TagEndings.HasNoAttributes);
         Assert.That(opening.Unended, Is.EqualTo(TagEnding.Name));
-        Assert.That(bytes[opening.Range].SequenceEqual(encoding.GetBytes("<a ")), Is.True);
+        Assert.That(bytes[opening.Range].SequenceEqual(encoding.GetBytes($"<{tag} ")), Is.True);
 
-        bytes = encoding.GetBytes("<a\r\n\tb />");
+        bytes = encoding.GetBytes($"<{tag}\r\n\tb />");
         opening = finder.First(bytes, name, TagEndings.HasAttributes);
         Assert.That(opening.Unended, Is.EqualTo(TagEnding.AttributeStart));
-        Assert.That(bytes[opening.Range].SequenceEqual(encoding.GetBytes("<a\r\n\t")), Is.True);
+        Assert.That(bytes[opening.Range].SequenceEqual(encoding.GetBytes($"<{tag}\r\n\t")), Is.True);
 
-        bytes = encoding.GetBytes("<a>");
+        bytes = encoding.GetBytes($"<{tag}>");
         opening = finder.First(bytes, name);
         Assert.That(opening.Ending, Is.EqualTo(TagEnding.Closing));
         Assert.That(bytes[opening.Range].SequenceEqual(bytes), Is.True);
 
-        bytes = encoding.GetBytes("<a \r\n\t>");
+        bytes = encoding.GetBytes($"<{tag} \r\n\t>");
         opening = finder.First(bytes, name);
         Assert.That(opening.Ending, Is.EqualTo(TagEnding.Closing));
         Assert.That(bytes[opening.Range].SequenceEqual(bytes), Is.True);
 
-        bytes = encoding.GetBytes("<a><a/></a><a b=3 /><a\rc=4></a>");
+        bytes = encoding.GetBytes($"<{tag}><{tag}/></{tag}><{tag} b=3 /><{tag}\rc=4></{tag}>");
         opening = finder.First(bytes, name);
         Assert.That(opening.Ending, Is.EqualTo(TagEnding.Closing));
-        Assert.That(bytes[opening.Range].SequenceEqual(encoding.GetBytes("<a>")), Is.True);
+        Assert.That(bytes[opening.Range].SequenceEqual(encoding.GetBytes($"<{tag}>")), Is.True);
 
         opening = finder.First(bytes, name, TagEndings.SelfClosing);
         Assert.That(opening.Ending, Is.EqualTo(TagEnding.SelfClosing));
-        Assert.That(bytes[opening.Range].SequenceEqual(encoding.GetBytes("<a/>")), Is.True);
+        Assert.That(bytes[opening.Range].SequenceEqual(encoding.GetBytes($"<{tag}/>")), Is.True);
 
         opening = finder.First(bytes, name, TagEndings.SelfClosingHasAttributes);
         Assert.That(opening.Ended, Is.EqualTo(TagEnding.SelfClosingHasAttributes));
-        Assert.That(bytes[opening.Range].SequenceEqual(encoding.GetBytes("<a b=3 />")), Is.True);
+        Assert.That(bytes[opening.Range].SequenceEqual(encoding.GetBytes($"<{tag} b=3 />")), Is.True);
 
         opening = finder.First(bytes, name, TagEndings.ClosingHasAttributes);
         Assert.That(opening.Ended, Is.EqualTo(TagEnding.ClosingHasAttributes));
-        Assert.That(bytes[opening.Range].SequenceEqual(encoding.GetBytes("<a\rc=4>")), Is.True);
+        Assert.That(bytes[opening.Range].SequenceEqual(encoding.GetBytes($"<{tag}\rc=4>")), Is.True);
 
-        bytes = encoding.GetBytes("<a b=\"'>\" c='\"/>'>");
+        bytes = encoding.GetBytes($"<{tag} b=\"'>\" c='\"/>'>");
         opening = finder.First(bytes, name);
         Assert.That(opening.Ended, Is.EqualTo(TagEnding.ClosingHasAttributes));
         Assert.That(bytes[opening.Range].SequenceEqual(bytes), Is.True);
 
-        bytes = encoding.GetBytes("<a b/>");
+        bytes = encoding.GetBytes($"<{tag} b/>");
         opening = finder.First(bytes, name);
         Assert.That(opening.Ended, Is.EqualTo(TagEnding.SelfClosingHasAttributes));
         Assert.That(bytes[opening.Range].SequenceEqual(bytes), Is.True);
 
-        bytes = encoding.GetBytes("<a =b>");
+        bytes = encoding.GetBytes($"<{tag} =b>");
         opening = finder.First(bytes, name);
         Assert.That(opening.Ended, Is.EqualTo(TagEnding.ClosingHasAttributes));
         Assert.That(bytes[opening.Range].SequenceEqual(bytes), Is.True);
 
         //Fail
-        Assert.That(finder.First(encoding.GetBytes("<a/"), name).IsEmpty, Is.True);
-        Assert.That(finder.First(encoding.GetBytes("<a "), name).IsEmpty, Is.True);
-        Assert.That(finder.First(encoding.GetBytes("<a /"), name).IsEmpty, Is.True);
-        Assert.That(finder.First(encoding.GetBytes("<a b='"), name).IsEmpty, Is.True);
-        Assert.That(finder.First(encoding.GetBytes("<a b=''"), name).IsEmpty, Is.True);
-        Assert.That(finder.First(encoding.GetBytes("<a b='>"), name).IsEmpty, Is.True);
-        Assert.That(finder.First(encoding.GetBytes("<a b='>'"), name).IsEmpty, Is.True);
-        Assert.That(finder.First(encoding.GetBytes("<a b=\""), name).IsEmpty, Is.True);
-        Assert.That(finder.First(encoding.GetBytes("<a b=\"\""), name).IsEmpty, Is.True);
-        Assert.That(finder.First(encoding.GetBytes("<a b=\">"), name).IsEmpty, Is.True);
-        Assert.That(finder.First(encoding.GetBytes("<a b=\">\""), name).IsEmpty, Is.True);
-        Assert.That(finder.First(encoding.GetBytes("<a b=\"/>"), name).IsEmpty, Is.True);
-        Assert.That(finder.First(encoding.GetBytes("<a b=\"/>\""), name).IsEmpty, Is.True);
-        Assert.That(finder.First(encoding.GetBytes("<a '>"), name).IsEmpty, Is.True);
-        Assert.That(finder.First(encoding.GetBytes("<a \">"), name).IsEmpty, Is.True);
+        Assert.That(finder.First(encoding.GetBytes($"<{tag}/"), name).IsEmpty, Is.True);
+        Assert.That(finder.First(encoding.GetBytes($"<{tag} "), name).IsEmpty, Is.True);
+        Assert.That(finder.First(encoding.GetBytes($"<{tag} /"), name).IsEmpty, Is.True);
+        Assert.That(finder.First(encoding.GetBytes($"<{tag} b='"), name).IsEmpty, Is.True);
+        Assert.That(finder.First(encoding.GetBytes($"<{tag} b=''"), name).IsEmpty, Is.True);
+        Assert.That(finder.First(encoding.GetBytes($"<{tag} b='>"), name).IsEmpty, Is.True);
+        Assert.That(finder.First(encoding.GetBytes($"<{tag} b='>'"), name).IsEmpty, Is.True);
+        Assert.That(finder.First(encoding.GetBytes($"<{tag} b=\""), name).IsEmpty, Is.True);
+        Assert.That(finder.First(encoding.GetBytes($"<{tag} b=\"\""), name).IsEmpty, Is.True);
+        Assert.That(finder.First(encoding.GetBytes($"<{tag} b=\">"), name).IsEmpty, Is.True);
+        Assert.That(finder.First(encoding.GetBytes($"<{tag} b=\">\""), name).IsEmpty, Is.True);
+        Assert.That(finder.First(encoding.GetBytes($"<{tag} b=\"/>"), name).IsEmpty, Is.True);
+        Assert.That(finder.First(encoding.GetBytes($"<{tag} b=\"/>\""), name).IsEmpty, Is.True);
+        Assert.That(finder.First(encoding.GetBytes($"<{tag} '>"), name).IsEmpty, Is.True);
+        Assert.That(finder.First(encoding.GetBytes($"<{tag} \">"), name).IsEmpty, Is.True);
     }
 
     public void LastClosingTest(string tagName, string tagNamespace)
@@ -120,70 +122,69 @@ internal class TagFinderByteTester
         var finder = _finder;
 
         var hasNamespace = tagNamespace.Length > 0;
-        var n = encoding.GetBytes(tagNamespace);
+        var tagNS = encoding.GetBytes(tagNamespace);
         var name = encoding.GetBytes(tagName);
-        if (hasNamespace)
-            tagName = tagNamespace + ":" + tagName;
+        var tag = hasNamespace ? tagNamespace + ":" + tagName : tagName;
 
-        var bytes = encoding.GetBytes($"</{tagName}>").AsSpan();
-        var closing = finder.LastClosing(bytes, name, out var ns);
-        Assert.That(bytes[ns].SequenceEqual(n), Is.True);
+        var data = encoding.GetBytes($"</{tag}>").AsSpan();
+        var closing = finder.LastClosing(data, name, out var ns);
+        Assert.That(data[ns].SequenceEqual(tagNS), Is.True);
         Assert.That(closing.HasNamespace, Is.EqualTo(hasNamespace));
         Assert.That(closing.HasSpace, Is.False);
-        Assert.That(bytes[closing.Range].SequenceEqual(bytes), Is.True);
+        Assert.That(data[closing.Range].SequenceEqual(data), Is.True);
 
-        bytes = encoding.GetBytes($"</{tagName} >");
-        closing = finder.LastClosing(bytes, name, out ns);
-        Assert.That(bytes[ns].SequenceEqual(n), Is.True);
+        data = encoding.GetBytes($"</{tag} >");
+        closing = finder.LastClosing(data, name, out ns);
+        Assert.That(data[ns].SequenceEqual(tagNS), Is.True);
         Assert.That(closing.HasNamespace, Is.EqualTo(hasNamespace));
         Assert.That(closing.HasSpace, Is.True);
-        Assert.That(bytes[closing.Range].SequenceEqual(bytes), Is.True);
+        Assert.That(data[closing.Range].SequenceEqual(data), Is.True);
 
-        bytes = encoding.GetBytes($"</{tagName}\n\r\t >");
-        closing = finder.LastClosing(bytes, name, out ns);
-        Assert.That(bytes[ns].SequenceEqual(n), Is.True);
+        data = encoding.GetBytes($"</{tag}\n\r\t >");
+        closing = finder.LastClosing(data, name, out ns);
+        Assert.That(data[ns].SequenceEqual(tagNS), Is.True);
         Assert.That(closing.HasNamespace, Is.EqualTo(hasNamespace));
         Assert.That(closing.HasSpace, Is.True);
-        Assert.That(bytes[closing.Range].SequenceEqual(bytes), Is.True);
+        Assert.That(data[closing.Range].SequenceEqual(data), Is.True);
 
         if (hasNamespace)
         {
-            bytes = encoding.GetBytes($"</{tagName}>");
-            closing = finder.LastClosing(bytes, encoding.GetBytes(tagName), out ns);
-            Assert.That(bytes[ns].IsEmpty, Is.True);
+            data = encoding.GetBytes($"</{tag}>");
+            closing = finder.LastClosing(data, encoding.GetBytes(tag), out ns);
+            Assert.That(data[ns].IsEmpty, Is.True);
             Assert.That(closing.HasNamespace, Is.False);
             Assert.That(closing.HasSpace, Is.False);
-            Assert.That(bytes[closing.Range].SequenceEqual(bytes), Is.True);
+            Assert.That(data[closing.Range].SequenceEqual(data), Is.True);
         }
 
         //Fail
-        bytes = encoding.GetBytes($"</{tagName}\n\r\t b>");
-        closing = finder.LastClosing(bytes, name, out ns);
+        data = encoding.GetBytes($"</{tag}\n\r\t b>");
+        closing = finder.LastClosing(data, name, out ns);
         Assert.That(closing.IsEmpty, Is.True);
         Assert.That(ns.Start.Value, Is.EqualTo(ns.End.Value));
 
-        bytes = encoding.GetBytes($"</{tagName}\n\r\t ");
-        closing = finder.LastClosing(bytes, name, out ns);
+        data = encoding.GetBytes($"</{tag}\n\r\t ");
+        closing = finder.LastClosing(data, name, out ns);
         Assert.That(closing.IsEmpty, Is.True);
         Assert.That(ns.Start.Value, Is.EqualTo(ns.End.Value));
 
-        bytes = encoding.GetBytes($"/{tagName}>");
-        closing = finder.LastClosing(bytes, name, out ns);
+        data = encoding.GetBytes($"/{tag}>");
+        closing = finder.LastClosing(data, name, out ns);
         Assert.That(closing.IsEmpty, Is.True);
         Assert.That(ns.Start.Value, Is.EqualTo(ns.End.Value));
 
-        bytes = encoding.GetBytes($"<{tagName}>");
-        closing = finder.LastClosing(bytes, name, out ns);
+        data = encoding.GetBytes($"<{tag}>");
+        closing = finder.LastClosing(data, name, out ns);
         Assert.That(closing.IsEmpty, Is.True);
         Assert.That(ns.Start.Value, Is.EqualTo(ns.End.Value));
 
-        bytes = encoding.GetBytes($"{tagName}>");
-        closing = finder.LastClosing(bytes, name, out ns);
+        data = encoding.GetBytes($"{tag}>");
+        closing = finder.LastClosing(data, name, out ns);
         Assert.That(closing.IsEmpty, Is.True);
         Assert.That(ns.Start.Value, Is.EqualTo(ns.End.Value));
 
-        bytes = encoding.GetBytes(tagName);
-        closing = finder.LastClosing(bytes, name, out ns);
+        data = encoding.GetBytes(tag);
+        closing = finder.LastClosing(data, name, out ns);
         Assert.That(closing.IsEmpty, Is.True);
         Assert.That(ns.Start.Value, Is.EqualTo(ns.End.Value));
     }
