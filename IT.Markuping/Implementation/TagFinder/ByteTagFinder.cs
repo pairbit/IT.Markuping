@@ -3,6 +3,7 @@ using IT.Markuping.Extensions;
 using IT.Markuping.Interfaces;
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace IT.Markuping.Implementation;
 
@@ -11,6 +12,12 @@ public class ByteTagFinder : ITagFinder<byte>
     private readonly byte[] _startClosing;
     private readonly bool[]? _otherSpaces;
     private readonly ByteEncoding.Tokens _tokens;
+
+    public static readonly ByteTagFinder Utf8 = new(ByteEncoding.Utf8);
+    public static readonly ByteTagFinder Europa = new(ByteEncoding.Europa);
+    public static readonly ByteTagFinder EBCDIC = new(ByteEncoding.EBCDIC);
+    public static readonly ByteTagFinder EBCDIC_Turkish = new(ByteEncoding.EBCDIC_Turkish);
+    public static readonly ByteTagFinder IBM_Latin1 = new(ByteEncoding.IBM_Latin1);
 
     public ByteTagFinder(ByteEncoding byteEncoding)
     {
@@ -500,4 +507,35 @@ public class ByteTagFinder : ITagFinder<byte>
     }
 
     #endregion Private Methods
+
+    public static bool TryGet(int codePage, [MaybeNullWhen(false)] out ByteTagFinder byteTagFinder)
+    {
+        if (Array.IndexOf(ByteEncoding.Utf8_CodePages, codePage) > -1)
+        {
+            byteTagFinder = Utf8;
+            return true;
+        }
+        if (codePage == 29001)
+        {
+            byteTagFinder = Europa;
+            return true;
+        }
+        if (Array.IndexOf(ByteEncoding.EBCDIC_CodePages, codePage) > -1)
+        {
+            byteTagFinder = EBCDIC;
+            return true;
+        }
+        if (codePage == 1026 || codePage == 20905)
+        {
+            byteTagFinder = EBCDIC_Turkish;
+            return true;
+        }
+        if (codePage == 1047 || codePage == 20924)
+        {
+            byteTagFinder = IBM_Latin1;
+            return true;
+        }
+        byteTagFinder = null;
+        return false;
+    }
 }

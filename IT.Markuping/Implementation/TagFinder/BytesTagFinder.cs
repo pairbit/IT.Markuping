@@ -3,6 +3,7 @@ using IT.Markuping.Extensions;
 using IT.Markuping.Interfaces;
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace IT.Markuping.Implementation;
 
@@ -20,6 +21,11 @@ public class BytesTagFinder : ITagFinder<byte>
     private readonly byte[] _startClosing;
     private readonly byte[] _selfClosing;
     private readonly int _minLength;
+
+    public static readonly BytesTagFinder Utf16 = new(BytesEncoding.Utf16);
+    public static readonly BytesTagFinder Utf16BE = new(BytesEncoding.Utf16BE);
+    public static readonly BytesTagFinder Utf32 = new(BytesEncoding.Utf32);
+    public static readonly BytesTagFinder Utf32BE = new(BytesEncoding.Utf32BE);
 
     public BytesTagFinder(BytesEncoding bytesEncoding)
     {
@@ -512,4 +518,30 @@ public class BytesTagFinder : ITagFinder<byte>
     }
 
     #endregion Private Methods
+
+    public static bool TryGet(int codePage, [MaybeNullWhen(false)] out BytesTagFinder bytesTagFinder)
+    {
+        if (codePage == 1200)
+        {
+            bytesTagFinder = Utf16;
+            return true;
+        }
+        if (codePage == 1201)
+        {
+            bytesTagFinder = Utf16BE;
+            return true;
+        }
+        if (codePage == 12000)
+        {
+            bytesTagFinder = Utf32;
+            return true;
+        }
+        if (codePage == 12001)
+        {
+            bytesTagFinder = Utf32BE;
+            return true;
+        }
+        bytesTagFinder = null;
+        return false;
+    }
 }
