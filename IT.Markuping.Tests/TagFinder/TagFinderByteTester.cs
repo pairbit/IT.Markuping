@@ -56,9 +56,6 @@ internal class TagFinderByteTester
     {
         Test(new(_encoding, "a"));
         Test(new(_encoding, "a", "n"));
-
-        OldLastPairTest(false);
-        OldLastPairTest(true);
     }
 
     public void Test(TagData tagData)
@@ -75,7 +72,7 @@ internal class TagFinderByteTester
         var tagFullName = tagData.FullName;
         var hasNamespace = tagData.NameSpace.Length > 0;
         var name = tagData.NameBytes;
-        
+
         var data = _encoding.GetBytes($"<{tagFullName}></{tagFullName}>").AsSpan();
         var last = _finder.LastPair(data, name, out var ns);
         Assert.That(last.HasNamespace, Is.EqualTo(hasNamespace));
@@ -466,51 +463,6 @@ internal class TagFinderByteTester
         }
 
         return tag;
-    }
-
-    private void OldLastPairTest(bool hasNamespace)
-    {
-        var encoding = _encoding;
-        var finder = _finder;
-
-        var nameBytes = encoding.GetBytes("Signature");
-
-        foreach (var space in "\0\t\n\r ")
-        {
-            try
-            {
-                var str = GetSignature2(space, hasNamespace);
-                var bytes = encoding.GetBytes("Signature" + str + "Signature");
-                var lastInner = "last";
-
-                var last = finder.LastPair(bytes, nameBytes, out _);
-                Assert.That(last.HasNamespace, Is.EqualTo(hasNamespace));
-                Assert.That(bytes[last.Outer].SequenceEqual(encoding.GetBytes(GetSignature(space, hasNamespace, lastInner))), Is.True);
-                Assert.That(bytes[last.Inner].SequenceEqual(encoding.GetBytes(lastInner)), Is.True);
-            }
-            catch
-            {
-                Console.WriteLine($"CodePage: {encoding.CodePage}");
-                Console.WriteLine($"space: '{space}'");
-                Console.WriteLine($"hasNamespace: {hasNamespace}");
-                throw;
-            }
-        }
-    }
-
-    private static string GetSignature2(char space, bool hasNamespace) =>
-        GetSignature(space, hasNamespace, "first") +
-        GetSignature(space, hasNamespace, "last");
-
-    private static string GetSignature(char space, bool hasNamespace, string inner)
-    {
-        if (space == '\0') return hasNamespace
-                ? $"<ds:Signature>{inner}</ds:Signature>"
-                : $"<Signature>{inner}</Signature>";
-
-        return hasNamespace
-            ? $"<ds:Signature{space}a='\"/>' b=\"'>1\" c=3>{inner}</ds:Signature{space}>"
-            : $"<Signature{space}a='\"/>' b=\"'>1\" c=3>{inner}</Signature{space}>";
     }
 
     private static TagEndings[] GetAvailableEndings(TagEnding ending)
