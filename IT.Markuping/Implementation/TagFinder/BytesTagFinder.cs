@@ -356,7 +356,7 @@ public class BytesTagFinder : ITagFinder<byte>
         {
             ending = GetEndingAttributeStart(data, ref end);
             if (endings == TagEndings.HasAttributes)
-                return ending;
+                return ending == TagEnding.AttributeStart ? TagEnding.AttributeStart : TagEnding.None;
 
             if (ending == TagEnding.AttributeStart && (hasAttributes || !hasNoAttributes))
             {

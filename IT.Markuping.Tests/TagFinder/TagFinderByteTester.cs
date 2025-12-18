@@ -121,9 +121,9 @@ internal class TagFinderByteTester
 
         var encoding = _encoding;
         var closing = encoding.GetBytes($"<{tagFullName}>");
-        var selfClosing = encoding.GetBytes($"<{tagFullName}/>");
+        var selfClosing = encoding.GetBytes($"<{tagFullName} />");
 
-        var data = encoding.GetBytes($"<{tagFullName}><{tagFullName}/></{tagFullName}><{tagFullName} b=3 /><{tagFullName}\rc=4></{tagFullName}>");
+        var data = encoding.GetBytes($"<{tagFullName}><{tagFullName} /></{tagFullName}><{tagFullName} b=3 /><{tagFullName}\rc=4></{tagFullName}>");
 
         var tag = FirstTest(data, fullName, name, ns, TagEnding.Closing, TagEndings.AnyClosing);
         Assert.That(data[tag.Range].SequenceEqual(closing), Is.True);
@@ -293,17 +293,8 @@ internal class TagFinderByteTester
         //Без атрибутов
         if (attributeStart.IsEmpty)
         {
-            //Без пробелов
-            if (endingName.IsEmpty)
-            {
-                Assert.That(_finder.First(data, fullName, TagEndings.HasAttributes).IsEmpty, Is.True);
-                Assert.That(_finder.First(data, name, ns, TagEndings.HasAttributes).IsEmpty, Is.True);
-            }
-            else
-            {
-                Assert.That(_finder.First(data, fullName, TagEndings.HasAttributes), Is.EqualTo(tag));
-                Assert.That(_finder.First(data, name, ns, TagEndings.HasAttributes), Is.EqualTo(tag));
-            }
+            Assert.That(_finder.First(data, fullName, TagEndings.HasAttributes).IsEmpty, Is.True);
+            Assert.That(_finder.First(data, name, ns, TagEndings.HasAttributes).IsEmpty, Is.True);
         }
         else
         {
@@ -374,17 +365,8 @@ internal class TagFinderByteTester
         //Без атрибутов
         if (attributeStart.IsEmpty)
         {
-            //Без пробелов
-            if (endingName.IsEmpty)
-            {
-                Assert.That(_finder.Last(data, fullName, TagEndings.HasAttributes).IsEmpty, Is.True);
-                Assert.That(_finder.Last(data, name, ns, TagEndings.HasAttributes).IsEmpty, Is.True);
-            }
-            else
-            {
-                Assert.That(_finder.Last(data, fullName, TagEndings.HasAttributes), Is.EqualTo(tag));
-                Assert.That(_finder.Last(data, name, ns, TagEndings.HasAttributes), Is.EqualTo(tag));
-            }
+            Assert.That(_finder.Last(data, fullName, TagEndings.HasAttributes).IsEmpty, Is.True);
+            Assert.That(_finder.Last(data, name, ns, TagEndings.HasAttributes).IsEmpty, Is.True);
         }
         else
         {
