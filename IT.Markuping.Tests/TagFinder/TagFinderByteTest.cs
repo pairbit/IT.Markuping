@@ -6,7 +6,7 @@ using System.Text;
 
 namespace IT.Markuping.Tests;
 
-internal class TagFinderTest
+internal class TagFinderByteTest
 {
     [Test]
     public void FailTest()
@@ -89,7 +89,11 @@ internal class TagFinderTest
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-        foreach (var encodingInfo in Encoding.GetEncodings())
+        var encodingInfos = Encoding.GetEncodings();
+
+        Console.WriteLine($"encodingInfos count: {encodingInfos.Length}");
+
+        foreach (var encodingInfo in encodingInfos)
         {
             var codePage = encodingInfo.CodePage;
             var encoding = encodingInfo.GetEncoding();
