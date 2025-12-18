@@ -200,11 +200,11 @@ internal class TagFinderByteTester
 
         Assert.That(data[tag.Range].SequenceEqual(data), Is.True);
 
-        if (ending.IsAnyClosingHasNoAttributes())
+        if (ending.HasNoAttributes())
         {
             Assert.That(tag.Ending, Is.EqualTo(ending));
         }
-        else if (ending.IsAnyClosingHasAttributes())
+        else if (ending.HasAttributes())
         {
             Assert.That(tag.Ended, Is.EqualTo(ending));
         }

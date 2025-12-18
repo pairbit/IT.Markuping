@@ -10,11 +10,11 @@ public static class xTagEnding
         ending == TagEnding.SelfClosing ||
         ending == TagEnding.SelfClosingHasAttributes;
 
-    public static bool IsAnyClosingHasAttributes(this TagEnding ending) =>
+    public static bool HasAttributes(this TagEnding ending) =>
         ending == TagEnding.ClosingHasAttributes ||
         ending == TagEnding.SelfClosingHasAttributes;
 
-    public static bool IsAnyClosingHasNoAttributes(this TagEnding ending) =>
+    public static bool HasNoAttributes(this TagEnding ending) =>
         ending == TagEnding.Closing ||
         ending == TagEnding.SelfClosing;
 
