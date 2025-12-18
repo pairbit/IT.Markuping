@@ -140,6 +140,12 @@ internal class TagFinderByteTester
         tag = FirstTest(data, fullName, name, ns, TagEnding.ClosingHasAttributes, TagEndings.ClosingHasAttributes);
         Assert.That(data[tag.Range].SequenceEqual(encoding.GetBytes($"<{tagFullName}\rc=4>")), Is.True);
         Assert.That(LastTest(data, fullName, name, ns, TagEnding.ClosingHasAttributes, TagEndings.AnyClosing), Is.EqualTo(tag));
+
+        tag = FirstTest(data, fullName, name, ns, TagEnding.AttributeStart, TagEndings.HasAttributes);
+        Assert.That(data[tag.Range].SequenceEqual(encoding.GetBytes($"<{tagFullName} ")), Is.True);
+
+        tag = LastTest(data, fullName, name, ns, TagEnding.AttributeStart, TagEndings.HasAttributes);
+        Assert.That(data[tag.Range].SequenceEqual(encoding.GetBytes($"<{tagFullName}\r")), Is.True);
     }
 
     public void LastClosingTest(TagData tagData)
