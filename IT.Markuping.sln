@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IT.Markuping", "IT.Markuping\IT.Markuping.csproj", "{B5F4F099-5E30-4B1C-BF7B-C398A58255CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IT.Markuping.Tests", "IT.Markuping.Tests\IT.Markuping.Tests.csproj", "{2CD9CC65-316F-40AB-BA9E-936D1FE928A1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B5F4F099-5E30-4B1C-BF7B-C398A58255CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5F4F099-5E30-4B1C-BF7B-C398A58255CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5F4F099-5E30-4B1C-BF7B-C398A58255CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5F4F099-5E30-4B1C-BF7B-C398A58255CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CD9CC65-316F-40AB-BA9E-936D1FE928A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CD9CC65-316F-40AB-BA9E-936D1FE928A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CD9CC65-316F-40AB-BA9E-936D1FE928A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CD9CC65-316F-40AB-BA9E-936D1FE928A1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E61A39C8-7FE8-4292-A237-B5DBE7E0E57C}
+	EndGlobalSection
+EndGlobal
