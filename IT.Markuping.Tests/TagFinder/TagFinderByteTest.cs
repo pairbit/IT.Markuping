@@ -41,18 +41,12 @@ internal class TagFinderByteTest
         var bytes = "------</Sig>98989<Sig>-----"u8;
         var name = "Sig"u8;
 
-        var wrap = TagFinderByte.Utf8.WrapPair(bytes, name, out _);
-        Assert.That(wrap.IsEmpty, Is.True);
-
         bytes = "----<Sig/"u8;
         var opening = TagFinderByte.Utf8.Last(bytes, name);
         Assert.That(opening.IsEmpty, Is.True);
 
         bytes = Encoding.Unicode.GetBytes("------</Sig>98989<Sig>-----");
         name = Encoding.Unicode.GetBytes("Sig");
-
-        wrap = TagFinderByte.Utf16.WrapPair(bytes, name, out _);
-        Assert.That(wrap.IsEmpty, Is.True);
     }
 
     [Test]
@@ -89,13 +83,8 @@ internal class TagFinderByteTest
         var outer = Encoding.UTF8.GetBytes(outerStr);
         var inner = Encoding.UTF8.GetBytes(innerStr);
 
-        var wrap = TagFinderByte.Utf8.WrapPair(bytes, name, out _);
-        Assert.That(wrap.HasAttributes, Is.True);
-        Assert.That(bytes[wrap.Outer].SequenceEqual(outer), Is.True);
-        Assert.That(bytes[wrap.Inner].SequenceEqual(inner), Is.True);
-
         var last = TagFinderByte.Utf8.LastPair(bytes, name, out _);
-        Assert.That(wrap.HasAttributes, Is.True);
+        Assert.That(last.HasAttributes, Is.True);
         Assert.That(bytes[last.Outer].SequenceEqual(outer), Is.True);
         Assert.That(bytes[last.Inner].SequenceEqual(inner), Is.True);
 
@@ -163,10 +152,6 @@ internal class TagFinderByteTest
                 Assert.That(last.HasNamespace, Is.EqualTo(hasNamespace));
                 Assert.That(bytes[last.Outer].SequenceEqual(encoding.GetBytes(GetSignature(space, hasNamespace, lastInner))), Is.True);
                 Assert.That(bytes[last.Inner].SequenceEqual(encoding.GetBytes(lastInner)), Is.True);
-
-                var wrap = tagFinder.WrapPair(bytes, nameBytes, out _);
-                Assert.That(bytes[wrap.Outer].SequenceEqual(encoding.GetBytes(str)), Is.True);
-                Assert.That(bytes[wrap.Inner].SequenceEqual(encoding.GetBytes(GetSignatureInner(space, hasNamespace))), Is.True);
             }
             catch
             {
@@ -181,17 +166,6 @@ internal class TagFinderByteTest
     private static string GetSignature2(char space, bool hasNamespace) =>
         GetSignature(space, hasNamespace, "first") +
         GetSignature(space, hasNamespace, "last");
-
-    private static string GetSignatureInner(char space, bool hasNamespace)
-    {
-        if (space == '\0') return hasNamespace
-                ? "first</ds:Signature><ds:Signature>last"
-                : "first</Signature><Signature>last";
-
-        return hasNamespace
-            ? $"first</ds:Signature{space}><ds:Signature{space}a='\"/>' b=\"'>1\" c=3>last"
-            : $"first</Signature{space}><Signature{space}a='\"/>' b=\"'>1\" c=3>last";
-    }
 
     private static string GetSignature(char space, bool hasNamespace, string inner)
     {

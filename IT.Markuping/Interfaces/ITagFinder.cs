@@ -4,8 +4,6 @@ namespace IT.Markuping.Interfaces;
 
 public interface ITagFinder<T> where T : unmanaged
 {
-    Tags WrapPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out Range ns);
-
     //Tag FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out Range ns);
 
     Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out Range ns);

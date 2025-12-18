@@ -30,25 +30,6 @@ public class ByteTagFinder : ITagFinder<byte>
 
     #region ITagFinder
 
-    public Tags WrapPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out Range ns)
-    {
-        var namelen = name.Length;
-        if (data.Length >= (namelen * 2) + 5)
-        {
-            var closing = LastClosing(data, name, out ns);
-            if (closing.Start >= namelen + 2)
-            {
-                var opening = First(data.Slice(0, closing.Start), name, data[ns], TagEndings.Closing);
-                if (!opening.IsEmpty)
-                {
-                    return new((TagOpening)opening, closing);
-                }
-            }
-        }
-        ns = default;
-        return default;
-    }
-
     public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out Range ns)
     {
         var namelen = name.Length;
