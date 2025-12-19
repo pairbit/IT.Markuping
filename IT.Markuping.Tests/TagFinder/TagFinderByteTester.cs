@@ -249,6 +249,20 @@ internal class TagFinderByteTester
         closing = finder.LastClosing(data, name, out ns);
         Assert.That(closing.IsEmpty, Is.True);
         Assert.That(ns.Start.Value, Is.EqualTo(ns.End.Value));
+
+        //TODO: not work! BUG
+        if (!hasNamespace)
+        {
+            data = _encoding.GetBytes($"<{tagFullName}></{tagFullName}><b c=\":{tagFullName}>\" />");
+            closing = _finder.LastClosing(data, name, out ns);
+            //Assert.That(closing.IsEmpty, Is.True);
+            //Assert.That(ns.Start.Value, Is.EqualTo(ns.End.Value));
+
+            Assert.That(data[ns].SequenceEqual(_encoding.GetBytes($"{tagFullName}><b c=\"")), Is.True);
+            Assert.That(closing.HasNamespace, Is.True);
+            Assert.That(closing.HasSpace, Is.False);
+            Assert.That(data[closing.Range].SequenceEqual(_encoding.GetBytes($"</{tagFullName}><b c=\":{tagFullName}>")), Is.True);
+        }
     }
 
     private Tag FirstLastTest(string str, ReadOnlySpan<byte> fullName,
