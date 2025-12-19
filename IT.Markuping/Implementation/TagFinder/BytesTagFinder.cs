@@ -326,23 +326,15 @@ public class BytesTagFinder : ITagFinder<byte>
 
         hasSpace = false;
 
-        if (_otherSpaces == null)
+        while (end < data.Length)
         {
-            while (end < data.Length)
+            if (IsSeq(data, _gt, ref end)) return true;
+            if (IsSeq(data, _space, ref end) || IsOtherSpace(data, ref end))
             {
-                if (IsSeq(data, _gt, ref end)) return true;
-                if (!IsSeq(data, _space, ref end)) break;
                 hasSpace = true;
+                continue;
             }
-        }
-        else
-        {
-            while (end < data.Length)
-            {
-                if (IsSeq(data, _gt, ref end)) return true;
-                if (!IsSeq(data, _space, ref end) && !IsOtherSpace(data, ref end)) break;
-                hasSpace = true;
-            }
+            break;
         }
         return false;
     }
