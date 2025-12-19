@@ -524,15 +524,15 @@ internal class TagFinderByteTester
         TagEndings.Closing, TagEndings.ClosingHasNoAttributes];
 
     private static readonly TagEndings[] ClosingHasAttributes_Available_Endings = [
-        TagEndings.AnyClosing, TagEndings.AnyClosingHasAttributes,
+        TagEndings.AnyClosing, TagEndings.AnyClosingHasAttributes, (TagEndings)15,
         TagEndings.Closing, TagEndings.ClosingHasAttributes];
 
     private static readonly TagEndings[] SelfClosing_Available_Endings = [
-        TagEndings.AnyClosing, TagEndings.AnyClosingHasNoAttributes,
+        TagEndings.AnyClosing, TagEndings.AnyClosingHasNoAttributes, (TagEndings)15,
         TagEndings.SelfClosing, TagEndings.SelfClosingHasNoAttributes];
 
     private static readonly TagEndings[] SelfClosingHasAttributes_Available_Endings = [
-        TagEndings.AnyClosing, TagEndings.AnyClosingHasAttributes,
+        TagEndings.AnyClosing, TagEndings.AnyClosingHasAttributes, (TagEndings)15,
         TagEndings.SelfClosing, TagEndings.SelfClosingHasAttributes];
 
     private static readonly TagEndings[] Closing_NotAvailable_Endings = [
