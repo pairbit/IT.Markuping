@@ -455,7 +455,7 @@ public class BytesTagFinder : ITagFinder<byte>
         Debug.Assert(!IsSeq(data, _gt, end));
         Debug.Assert(!IsSeq(data, _selfClosing, end));
 
-        while (end < data.Length)
+        do
         {
             if (IsSeq(data, _gt, ref end))
             {
@@ -486,7 +486,7 @@ public class BytesTagFinder : ITagFinder<byte>
                 //TODO: спорное решение для байтов переменной длины
                 end += _minLength;
             }
-        }
+        } while (end < data.Length);
 
         return TagEnding.None;
     }

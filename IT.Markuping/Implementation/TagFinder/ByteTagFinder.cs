@@ -465,7 +465,7 @@ public class ByteTagFinder : ITagFinder<byte>
         Debug.Assert(data[end] != _tokens._gt);
         Debug.Assert(data[end] != _tokens._slash);
 
-        while (end < data.Length)
+        do
         {
             var token = data[end++];
             if (token == _tokens._gt)
@@ -497,7 +497,7 @@ public class ByteTagFinder : ITagFinder<byte>
                 if (index < 0) break;
                 end += index + 1;
             }
-        }
+        } while (end < data.Length);
 
         return TagEnding.None;
     }
