@@ -32,6 +32,7 @@ internal class TagEndingsTest
 
         endings = (TagEndings)15;
         Assert.That(endings.IsValid(), Is.True);
+        Assert.That(endings.IsAnyClosing(), Is.False);
         Assert.That(endings.HasNoAttributes(), Is.True);
         Assert.That(endings.HasAttributes(), Is.True);
         Assert.That(endings.HasClosing(), Is.True);
