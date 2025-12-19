@@ -36,17 +36,13 @@ public class ByteTagFinder : ITagFinder<byte>
 
     public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out Range ns)
     {
-        var namelen = name.Length;
-        if (data.Length >= (namelen * 2) + 5)
+        var closing = LastClosing(data, name, out ns);
+        if (!closing.IsEmpty)
         {
-            var closing = LastClosing(data, name, out ns);
-            if (closing.Start >= namelen + 2)
+            var opening = Last(data.Slice(0, closing.Start), name, data[ns], TagEndings.Closing);
+            if (!opening.IsEmpty)
             {
-                var opening = Last(data.Slice(0, closing.Start), name, data[ns], TagEndings.Closing);
-                if (!opening.IsEmpty)
-                {
-                    return new((TagOpening)opening, closing);
-                }
+                return new((TagOpening)opening, closing);
             }
         }
         ns = default;
@@ -64,26 +60,23 @@ public class ByteTagFinder : ITagFinder<byte>
         var namelen = name.Length;
         Debug.Assert(namelen > 0);
 
-        if (len >= namelen + 2)
+        do
         {
-            do
+            var index = data.IndexOf(name);
+            if (index < 0) break;
+
+            var end = index + namelen;
+            if (index > 0)
             {
-                var index = data.IndexOf(name);
-                if (index < 0) break;
-
-                var end = index + namelen;
-                if (index > 0)
+                var tag = GetTag(data, index - 1, end, endings);
+                if (!tag.IsEmpty)
                 {
-                    var tag = GetTag(data, index - 1, end, endings);
-                    if (!tag.IsEmpty)
-                    {
-                        return tag.AddOffset(len - data.Length);
-                    }
+                    return tag.AddOffset(len - data.Length);
                 }
+            }
 
-                data = data.Slice(end);
-            } while (true);
-        }
+            data = data.Slice(end);
+        } while (true);
 
         return default;
     }
@@ -98,24 +91,20 @@ public class ByteTagFinder : ITagFinder<byte>
         var namelen = name.Length;
         Debug.Assert(namelen > 0);
 
-        //"<Tag>"
-        //"<Tag "
-        if (data.Length >= namelen + 2)
+        do
         {
-            do
+            var index = data.LastIndexOf(name);
+            if (index < 1) break;
+
+            var tag = GetTag(data, index - 1, index + namelen, endings);
+            if (!tag.IsEmpty)
             {
-                var index = data.LastIndexOf(name);
-                if (index < 1) break;
+                return tag;
+            }
 
-                var tag = GetTag(data, index - 1, index + namelen, endings);
-                if (!tag.IsEmpty)
-                {
-                    return tag;
-                }
+            data = data.Slice(0, index);
+        } while (true);
 
-                data = data.Slice(0, index);
-            } while (true);
-        }
         return default;
     }
 
@@ -124,23 +113,20 @@ public class ByteTagFinder : ITagFinder<byte>
         var namelen = name.Length;
         Debug.Assert(namelen > 0);
 
-        if (data.Length >= namelen + 3)
+        do
         {
-            do
+            var index = data.LastIndexOf(name);
+            if (index < 2) break;
+
+            var closing = GetClosing(data, index - 1, index + namelen, out ns);
+            if (!closing.IsEmpty)
             {
-                //"Tag"
-                var index = data.LastIndexOf(name);
-                if (index < 2) break;
+                return closing;
+            }
 
-                var closing = GetClosing(data, index - 1, index + namelen, out ns);
-                if (!closing.IsEmpty)
-                {
-                    return closing;
-                }
+            data = data.Slice(0, index);
+        } while (true);
 
-                data = data.Slice(0, index);
-            } while (true);
-        }
         ns = default;
         return default;
     }
@@ -160,28 +146,25 @@ public class ByteTagFinder : ITagFinder<byte>
         Debug.Assert(nslen > 0);
 
         var len = data.Length;
-        if (len >= namelen + nslen + 3)
+        //"<ns:"
+        var min = nslen + 2;
+        do
         {
-            //"<ns:"
-            var min = nslen + 2;
-            do
+            var index = data.IndexOf(name);
+            if (index < 0) break;
+
+            var end = index + namelen;
+            if (index >= min)
             {
-                var index = data.IndexOf(name);
-                if (index < 0) break;
-
-                var end = index + namelen;
-                if (index >= min)
+                var tag = GetTag(data, ns, index - min, end, endings);
+                if (!tag.IsEmpty)
                 {
-                    var tag = GetTag(data, ns, index - min, end, endings);
-                    if (!tag.IsEmpty)
-                    {
-                        return tag.AddOffset(len - data.Length);
-                    }
+                    return tag.AddOffset(len - data.Length);
                 }
+            }
 
-                data = data.Slice(end);
-            } while (true);
-        }
+            data = data.Slice(end);
+        } while (true);
 
         return default;
     }
@@ -196,26 +179,20 @@ public class ByteTagFinder : ITagFinder<byte>
         Debug.Assert(namelen > 0);
         Debug.Assert(nslen > 0);
 
-        //Example1: "<ns:Tag "
-        //Example3: "<ns:Tag>"
-        if (data.Length >= namelen + nslen + 3)
+        var min = nslen + 2;
+        do
         {
-            //"<ns:"
-            var min = nslen + 2;
-            do
+            var index = data.LastIndexOf(name);
+            if (index < min) break;
+
+            var tag = GetTag(data, ns, index - min, index + namelen, endings);
+            if (!tag.IsEmpty)
             {
-                var index = data.LastIndexOf(name);
-                if (index < min) break;
+                return tag;
+            }
 
-                var tag = GetTag(data, ns, index - min, index + namelen, endings);
-                if (!tag.IsEmpty)
-                {
-                    return tag;
-                }
-
-                data = data.Slice(0, index);
-            } while (true);
-        }
+            data = data.Slice(0, index);
+        } while (true);
 
         return default;
     }
