@@ -84,6 +84,8 @@ public class SystemXmlTest
             Is.EqualTo("<a a=\"b\"></a>"));
 
         Assert.That(ToStrict("<a b='/ns:c>' />"), Is.EqualTo("<a b=\"/ns:c&gt;\" />"));
+
+        Assert.That(ToStrict("<b c=\":a>\" />"), Is.EqualTo("<b c=\":a&gt;\" />"));
     }
 
     [Test]
@@ -105,6 +107,11 @@ public class SystemXmlTest
         Assert.That(xml.SelectSingleNode("//b")!.OuterXml, Is.EqualTo("<b><inner>inner text</inner></b>"));
 
         Assert.That(xml.SelectSingleNode("//b/node()")!.OuterXml, Is.EqualTo("<inner>inner text</inner>"));
+    }
+
+    private static void StrictTest(string xml, bool preserveWhitespace = true)
+    {
+        Assert.That(ToStrict(xml, preserveWhitespace), Is.EqualTo(xml));
     }
 
     private static string ToStrict(string xml, bool preserveWhitespace = true)

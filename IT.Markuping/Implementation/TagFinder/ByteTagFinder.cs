@@ -457,7 +457,13 @@ public class ByteTagFinder : ITagFinder<byte>
 
     private TagEnding GetEndingHasAttributes(ReadOnlySpan<byte> data, ref int end)
     {
+        Debug.Assert(end < data.Length);
         Debug.Assert(end >= 0);
+
+        //TODO: _gt, _selfClosing и space был проверен ранее
+        //стоит пропустить этот символ?
+        Debug.Assert(data[end] != _tokens._gt);
+        Debug.Assert(data[end] != _tokens._slash);
 
         while (end < data.Length)
         {

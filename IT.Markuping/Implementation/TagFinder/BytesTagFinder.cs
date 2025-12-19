@@ -447,7 +447,13 @@ public class BytesTagFinder : ITagFinder<byte>
 
     private TagEnding GetEndingHasAttributes(ReadOnlySpan<byte> data, ref int end)
     {
+        Debug.Assert(end < data.Length);
         Debug.Assert(end >= 0);
+
+        //TODO: _gt, _selfClosing и space был проверен ранее
+        //стоит пропустить этот символ?
+        Debug.Assert(!IsSeq(data, _gt, end));
+        Debug.Assert(!IsSeq(data, _selfClosing, end));
 
         while (end < data.Length)
         {
@@ -496,6 +502,14 @@ public class BytesTagFinder : ITagFinder<byte>
             return true;
         }
         return false;
+    }
+
+    private static bool IsSeq(ReadOnlySpan<byte> data, ReadOnlySpan<byte> value, int start)
+    {
+        Debug.Assert(start >= 0);
+        Debug.Assert(value.Length > 0);
+
+        return start + value.Length <= data.Length && data.Slice(start, value.Length).SequenceEqual(value);
     }
 
     private bool IsOtherSpace(ReadOnlySpan<byte> span, ref int end)
