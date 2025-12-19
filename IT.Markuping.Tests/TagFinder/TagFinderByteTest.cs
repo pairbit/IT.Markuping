@@ -6,6 +6,18 @@ namespace IT.Markuping.Tests;
 
 internal class TagFinderByteTest
 {
+    //[Test]
+    public void Tester_Utf()
+    {
+        var tester = new TagFinderByteTester(TagFinderByte.Utf8, Encoding.UTF8);
+
+        tester.Test();
+
+        tester = new TagFinderByteTester(TagFinderByte.Utf16, Encoding.Unicode);
+
+        tester.Test();
+    }
+
     [Test]
     public void Tester()
     {

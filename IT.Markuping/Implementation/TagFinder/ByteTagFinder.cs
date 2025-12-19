@@ -9,7 +9,6 @@ namespace IT.Markuping.Implementation;
 
 public class ByteTagFinder : ITagFinder<byte>
 {
-    private readonly byte[] _startClosing;
     private readonly bool[]? _otherSpaces;
     private readonly ByteEncoding.Tokens _tokens;
 
@@ -19,11 +18,16 @@ public class ByteTagFinder : ITagFinder<byte>
     public static readonly ByteTagFinder EBCDIC_Turkish = new(ByteEncoding.EBCDIC_Turkish);
     public static readonly ByteTagFinder IBM_Latin1 = new(ByteEncoding.IBM_Latin1);
 
+    public ByteTagFinder(ByteEncoding.Tokens tokens, bool[]? otherSpaces)
+    {
+        _otherSpaces = otherSpaces;
+        _tokens = tokens;
+    }
+
     public ByteTagFinder(ByteEncoding byteEncoding)
     {
         if (byteEncoding == null) throw new ArgumentNullException(nameof(byteEncoding));
 
-        _startClosing = byteEncoding._startClosing;
         _otherSpaces = byteEncoding._otherSpaces;
         _tokens = byteEncoding._tokens;
     }
@@ -279,6 +283,7 @@ public class ByteTagFinder : ITagFinder<byte>
 
     private bool IsStartClosing(ReadOnlySpan<byte> data, ref int start, out Range ns)
     {
+        Debug.Assert(start < data.Length);
         Debug.Assert(start > 0);
 
         var token = data[start];
@@ -293,12 +298,24 @@ public class ByteTagFinder : ITagFinder<byte>
         else if (token == _tokens._colon && start > 2)
         {
             var endNS = start;
-            start = data.Slice(0, endNS).LastIndexOf(_startClosing);
-            if (start > -1)
+            //</
+            do
             {
-                ns = (start + 2)..endNS;
-                return true;
-            }
+                token = data[--start];
+                if (token == _tokens._slash)
+                {
+                    if (data[--start] == _tokens._lt)
+                    {
+                        ns = (start + 2)..endNS;
+                        return true;
+                    }
+                    break;
+                }
+                else if (token == _tokens._quot || token == _tokens._apos)
+                {
+                    break;
+                }
+            } while (start > 1);
         }
         ns = default;
         return false;

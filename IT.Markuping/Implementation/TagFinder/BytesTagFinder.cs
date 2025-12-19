@@ -279,6 +279,7 @@ public class BytesTagFinder : ITagFinder<byte>
 
     private bool IsStartClosing(ReadOnlySpan<byte> data, ref int start, out Range ns)
     {
+        Debug.Assert(start < data.Length);
         Debug.Assert(start >= _startClosing.Length);
 
         if (data.Slice(start - _startClosing.Length, _startClosing.Length).SequenceEqual(_startClosing))
@@ -289,15 +290,31 @@ public class BytesTagFinder : ITagFinder<byte>
         }
 
         start -= _colon.Length;
-        if (start >= 0 && data.Slice(start, _colon.Length).SequenceEqual(_colon))
+        if (start >= _startClosing.Length && data.Slice(start, _colon.Length).SequenceEqual(_colon))
         {
             var endNS = start;
-            start = data.Slice(0, endNS).LastIndexOf(_startClosing);
-            if (start > -1)
+            do
             {
-                ns = (start + _startClosing.Length)..endNS;
-                return true;
-            }
+                if (data.Slice(start - _startClosing.Length, _startClosing.Length).SequenceEqual(_startClosing))
+                {
+                    ns = start..endNS;
+                    start -= _startClosing.Length;
+                    return true;
+                }
+                else if (start >= _quot.Length && data.Slice(start - _quot.Length, _quot.Length).SequenceEqual(_quot))
+                {
+                    break;
+                }
+                else if (start >= _apos.Length && data.Slice(start - _apos.Length, _apos.Length).SequenceEqual(_apos))
+                {
+                    break;
+                }
+                else
+                {
+                    //TODO: спорное решение для байтов переменной длины
+                    start -= _minLength;
+                }
+            } while (start >= _startClosing.Length);
         }
         ns = default;
         return false;
@@ -468,6 +485,7 @@ public class BytesTagFinder : ITagFinder<byte>
             }
             else
             {
+                //TODO: спорное решение для байтов переменной длины
                 end += _minLength;
             }
         }
