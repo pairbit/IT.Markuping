@@ -8,6 +8,10 @@ public interface ITagFinder<T> where T : unmanaged
 
     Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out Range ns);
 
+    //Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns);
+
+    //Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name);
+
     //Tag First(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out Range ns, TagEndings endings = default);
 
     Tag First(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, TagEndings endings = default);
