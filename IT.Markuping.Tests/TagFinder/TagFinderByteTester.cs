@@ -256,6 +256,11 @@ internal class TagFinderByteTester
             closing = _finder.LastClosing(data, name, out ns);
             Assert.That(closing.IsEmpty, Is.True);
             Assert.That(ns.Start.Value, Is.EqualTo(ns.End.Value));
+
+            data = _encoding.GetBytes($"<tag></tag><b c=':{tagFullName} \r\n\t>' />");
+            closing = _finder.LastClosing(data, name, out ns);
+            Assert.That(closing.IsEmpty, Is.True);
+            Assert.That(ns.Start.Value, Is.EqualTo(ns.End.Value));
         }
     }
 
