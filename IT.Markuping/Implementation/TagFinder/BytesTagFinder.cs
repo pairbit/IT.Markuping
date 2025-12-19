@@ -19,7 +19,6 @@ public class BytesTagFinder : ITagFinder<byte>
     private readonly byte[] _eq;
     private readonly byte[][] _otherSpaces;
     private readonly byte[] _startClosing;
-    private readonly byte[] _selfClosing;
     private readonly int _minLength;
 
     public static readonly BytesTagFinder Utf16 = new(BytesEncoding.Utf16);
@@ -41,7 +40,6 @@ public class BytesTagFinder : ITagFinder<byte>
         _eq = bytesEncoding._eq;
         _otherSpaces = bytesEncoding._otherSpaces;
         _startClosing = bytesEncoding._startClosing;
-        _selfClosing = bytesEncoding._selfClosing;
         _minLength = bytesEncoding._minLength;
     }
 
@@ -409,8 +407,8 @@ public class BytesTagFinder : ITagFinder<byte>
         if (IsSeq(data, _gt, ref end))
             return TagEnding.Closing;
 
-        if (IsSeq(data, _selfClosing, ref end))
-            return TagEnding.SelfClosing;
+        if (IsSeq(data, _slash, ref end))
+            return IsSeq(data, _gt, ref end) ? TagEnding.SelfClosing : TagEnding.None;
 
         if (IsSeq(data, _space, ref end) || IsOtherSpace(data, ref end))
             return TagEnding.Name;
@@ -428,9 +426,9 @@ public class BytesTagFinder : ITagFinder<byte>
             {
                 return TagEnding.Closing;
             }
-            else if (IsSeq(data, _selfClosing, ref end))
+            else if (IsSeq(data, _slash, ref end))
             {
-                return TagEnding.SelfClosing;
+                return IsSeq(data, _gt, ref end) ? TagEnding.SelfClosing : TagEnding.None;
             }
             else if (IsSeq(data, _space, ref end) || IsOtherSpace(data, ref end))
             {
@@ -450,10 +448,10 @@ public class BytesTagFinder : ITagFinder<byte>
         Debug.Assert(end < data.Length);
         Debug.Assert(end >= 0);
 
-        //TODO: _gt, _selfClosing и space был проверен ранее
+        //TODO: _gt, _slash и space был проверен ранее
         //стоит пропустить этот символ?
         Debug.Assert(!IsSeq(data, _gt, end));
-        Debug.Assert(!IsSeq(data, _selfClosing, end));
+        Debug.Assert(!IsSeq(data, _slash, end));
 
         do
         {
@@ -461,9 +459,9 @@ public class BytesTagFinder : ITagFinder<byte>
             {
                 return TagEnding.ClosingHasAttributes;
             }
-            else if (IsSeq(data, _selfClosing, ref end))
+            else if (IsSeq(data, _slash, ref end))
             {
-                return TagEnding.SelfClosingHasAttributes;
+                return IsSeq(data, _gt, ref end) ? TagEnding.SelfClosingHasAttributes : TagEnding.None;
             }
             else if (IsSeq(data, _quot, ref end))
             {

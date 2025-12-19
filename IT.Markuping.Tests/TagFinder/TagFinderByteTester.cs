@@ -148,6 +148,8 @@ internal class TagFinderByteTester
         FailFirstLastTest($"<{tagFullName} '>", fullName, name, ns);
         FailFirstLastTest($"<{tagFullName} \">", fullName, name, ns);
 
+        FailFirstLastTest($"<{tagFullName} /", fullName, name, ns, TagEndings.HasAttributes);
+
         var encoding = _encoding;
         var closing = encoding.GetBytes($"<{tagFullName}>");
         var selfClosing = encoding.GetBytes($"<{tagFullName} />");
@@ -423,14 +425,14 @@ internal class TagFinderByteTester
     }
 
     private void FailFirstLastTest(string str, ReadOnlySpan<byte> fullName,
-        ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
+        ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, TagEndings endings = default)
     {
         var data = _encoding.GetBytes(str);
-        Assert.That(_finder.First(data, fullName).IsEmpty, Is.True);
-        Assert.That(_finder.First(data, name, ns).IsEmpty, Is.True);
+        Assert.That(_finder.First(data, fullName, endings).IsEmpty, Is.True);
+        Assert.That(_finder.First(data, name, ns, endings).IsEmpty, Is.True);
 
-        Assert.That(_finder.Last(data, fullName).IsEmpty, Is.True);
-        Assert.That(_finder.Last(data, name, ns).IsEmpty, Is.True);
+        Assert.That(_finder.Last(data, fullName, endings).IsEmpty, Is.True);
+        Assert.That(_finder.Last(data, name, ns, endings).IsEmpty, Is.True);
     }
 
     private Tag FirstTest(ReadOnlySpan<byte> data, ReadOnlySpan<byte> fullName,
