@@ -460,7 +460,7 @@ public class ByteTagFinder : ITagFinder<byte>
         Debug.Assert(end < data.Length);
         Debug.Assert(end >= 0);
 
-        //TODO: _gt, _selfClosing и space был проверен ранее
+        //TODO: _gt, _slash и space был проверен ранее
         //стоит пропустить этот символ?
         Debug.Assert(data[end] != _tokens._gt);
         Debug.Assert(data[end] != _tokens._slash);
