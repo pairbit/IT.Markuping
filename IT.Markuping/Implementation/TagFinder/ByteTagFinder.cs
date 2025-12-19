@@ -474,10 +474,7 @@ public class ByteTagFinder : ITagFinder<byte>
             }
             else if (token == _tokens._slash)
             {
-                if (end >= data.Length) break;
-
-                if (data[end++] == _tokens._gt)
-                    return TagEnding.SelfClosingHasAttributes;
+                return end < data.Length && data[end++] == _tokens._gt ? TagEnding.SelfClosingHasAttributes : TagEnding.None;
             }
             else if (token == _tokens._quot)
             {

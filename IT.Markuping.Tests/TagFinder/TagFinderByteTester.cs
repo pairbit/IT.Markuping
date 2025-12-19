@@ -145,6 +145,7 @@ internal class TagFinderByteTester
         FailFirstLastTest($"<{tagFullName} b=\">\"", fullName, name, ns);
         FailFirstLastTest($"<{tagFullName} b=\"/>", fullName, name, ns);
         FailFirstLastTest($"<{tagFullName} b=\"/>\"", fullName, name, ns);
+        FailFirstLastTest($"<{tagFullName} b=\"\"/ >", fullName, name, ns);
         FailFirstLastTest($"<{tagFullName} '>", fullName, name, ns);
         FailFirstLastTest($"<{tagFullName} \">", fullName, name, ns);
 
