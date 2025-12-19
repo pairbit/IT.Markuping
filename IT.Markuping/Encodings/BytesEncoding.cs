@@ -1,9 +1,10 @@
-﻿using System;
+﻿using IT.Markuping.Interfaces;
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace IT.Markuping.Encodings;
 
-public class BytesEncoding
+public class BytesEncoding : IMarkupEncoding<byte>
 {
     private readonly struct Tokens
     {
@@ -153,6 +154,26 @@ public class BytesEncoding
     public static readonly BytesEncoding Utf16BE = new(Tokens.Utf16BE, [[0, 10], [0, 13], [0, 9]]);
     public static readonly BytesEncoding Utf32 = new(Tokens.Utf32, [[10, 0, 0, 0], [13, 0, 0, 0], [9, 0, 0, 0]]);
     public static readonly BytesEncoding Utf32BE = new(Tokens.Utf32BE, [[0, 0, 0, 10], [0, 0, 0, 13], [0, 0, 0, 9]]);
+
+    #region IMarkupEncoding
+
+    public ReadOnlySpan<byte> Lt => _lt;
+
+    public ReadOnlySpan<byte> Gt => _gt;
+
+    public ReadOnlySpan<byte> Slash => _slash;
+
+    public ReadOnlySpan<byte> Colon => _colon;
+
+    public ReadOnlySpan<byte> Space => _space;
+
+    public ReadOnlySpan<byte> Quot => _quot;
+
+    public ReadOnlySpan<byte> Apos => _apos;
+
+    public ReadOnlySpan<byte> Eq => _eq;
+
+    #endregion IMarkupEncoding
 
     public static bool TryGet(int codePage, [MaybeNullWhen(false)] out BytesEncoding bytesEncoding)
     {
