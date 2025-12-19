@@ -327,26 +327,18 @@ public class ByteTagFinder : ITagFinder<byte>
 
         hasSpace = false;
 
-        if (_otherSpaces == null)
+        while (end < data.Length)
         {
-            while (end < data.Length)
+            var token = data[end++];
+            if (token == _tokens._gt) return true;
+            if (token == _tokens._space || _otherSpaces != null && _otherSpaces[token])
             {
-                var token = data[end++];
-                if (token == _tokens._gt) return true;
-                if (token != _tokens._space) break;
                 hasSpace = true;
+                continue;
             }
+            break;
         }
-        else
-        {
-            while (end < data.Length)
-            {
-                var token = data[end++];
-                if (token == _tokens._gt) return true;
-                if (token != _tokens._space && !_otherSpaces[token]) break;
-                hasSpace = true;
-            }
-        }
+
         return false;
     }
 
@@ -450,13 +442,13 @@ public class ByteTagFinder : ITagFinder<byte>
                 return end < data.Length && data[end++] == _tokens._gt
                     ? TagEnding.SelfClosing : TagEnding.None;
             }
-            else if (token != _tokens._space && (_otherSpaces == null || !_otherSpaces[token]))
+            else if (token == _tokens._space || _otherSpaces != null && _otherSpaces[token])
             {
-                return TagEnding.AttributeStart;
+                end++;
             }
             else
             {
-                end++;
+                return TagEnding.AttributeStart;
             }
         }
 
