@@ -31,6 +31,8 @@ internal class TagFinderByteTester
 
         public byte[] FullNameBytes { get; }
 
+        public bool HasNamespace => NameSpace.Length > 0;
+
         public TagData(Encoding encoding, string name)
         {
             FullName = Name = name;
@@ -70,7 +72,7 @@ internal class TagFinderByteTester
     public void Pairs(TagData tagData)
     {
         var tagFullName = tagData.FullName;
-        var hasNamespace = tagData.NameSpace.Length > 0;
+        var hasNamespace = tagData.HasNamespace;
         var name = tagData.NameBytes;
 
         var data = _encoding.GetBytes($"<{tagFullName}></{tagFullName}>").AsSpan();
@@ -86,6 +88,13 @@ internal class TagFinderByteTester
         Assert.That(data[ns].SequenceEqual(tagData.NameSpaceBytes), Is.True);
         Assert.That(data[last.Outer].SequenceEqual(_encoding.GetBytes($"<{tagFullName}>last</{tagFullName}>")), Is.True);
         Assert.That(data[last.Inner].SequenceEqual(_encoding.GetBytes("last")), Is.True);
+
+        //data = _encoding.GetBytes($"<{tagFullName}><{tagFullName}>1</{tagFullName}></{tagFullName}>").AsSpan();
+        //last = _finder.LastPair(data, name, out ns);
+        //Assert.That(last.HasNamespace, Is.EqualTo(hasNamespace));
+        //Assert.That(data[ns].SequenceEqual(tagData.NameSpaceBytes), Is.True);
+        //Assert.That(data[last.Outer].SequenceEqual(data), Is.True);
+        //Assert.That(data[last.Inner].SequenceEqual(_encoding.GetBytes($"<{tagFullName}>1</{tagFullName}>")), Is.True);
     }
 
     public void FirstLastTest(TagData tagData)
@@ -173,7 +182,7 @@ internal class TagFinderByteTester
         var encoding = _encoding;
         var finder = _finder;
 
-        var hasNamespace = tagData.NameSpace.Length > 0;
+        var hasNamespace = tagData.HasNamespace;
         var tagNS = tagData.NameSpaceBytes;
         var name = tagData.NameBytes;
         var tagFullName = tagData.FullName;
