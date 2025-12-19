@@ -18,7 +18,6 @@ public class BytesTagFinder : ITagFinder<byte>
     private readonly byte[] _apos;
     private readonly byte[] _eq;
     private readonly byte[][] _otherSpaces;
-    private readonly byte[] _startClosing;
     private readonly int _minLength;
 
     public static readonly BytesTagFinder Utf16 = new(BytesEncoding.Utf16);
@@ -39,7 +38,6 @@ public class BytesTagFinder : ITagFinder<byte>
         _apos = bytesEncoding._apos;
         _eq = bytesEncoding._eq;
         _otherSpaces = bytesEncoding._otherSpaces;
-        _startClosing = bytesEncoding._startClosing;
         _minLength = bytesEncoding._minLength;
     }
 
@@ -123,11 +121,12 @@ public class BytesTagFinder : ITagFinder<byte>
     {
         var namelen = name.Length;
         Debug.Assert(namelen > 0);
-
+        //</
+        var min = _lt.Length + _slash.Length;
         do
         {
             var index = data.LastIndexOf(name);
-            if (index < _startClosing.Length) break;
+            if (index < min) break;
 
             var closing = GetClosing(data, index, index + namelen, out ns);
             if (!closing.IsEmpty)
@@ -277,27 +276,33 @@ public class BytesTagFinder : ITagFinder<byte>
 
     private bool IsStartClosing(ReadOnlySpan<byte> data, ref int start, out Range ns)
     {
-        Debug.Assert(start < data.Length);
-        Debug.Assert(start >= _startClosing.Length);
+        var startClosingLength = _lt.Length + _slash.Length;
 
-        if (data.Slice(start - _startClosing.Length, _startClosing.Length).SequenceEqual(_startClosing))
+        Debug.Assert(start < data.Length);
+        Debug.Assert(start >= startClosingLength);
+
+        if (data.Slice(start - _slash.Length, _slash.Length).SequenceEqual(_slash))
         {
-            start -= _startClosing.Length;
+            start -= startClosingLength;
             ns = default;
-            return true;
+            return data.Slice(start, _lt.Length).SequenceEqual(_lt);
         }
 
         start -= _colon.Length;
-        if (start >= _startClosing.Length && data.Slice(start, _colon.Length).SequenceEqual(_colon))
+        if (start >= startClosingLength && data.Slice(start, _colon.Length).SequenceEqual(_colon))
         {
             var endNS = start;
             do
             {
-                if (data.Slice(start - _startClosing.Length, _startClosing.Length).SequenceEqual(_startClosing))
+                if (data.Slice(start - _slash.Length, _slash.Length).SequenceEqual(_slash))
                 {
-                    ns = start..endNS;
-                    start -= _startClosing.Length;
-                    return true;
+                    if (data.Slice(start - startClosingLength, _lt.Length).SequenceEqual(_lt))
+                    {
+                        ns = start..endNS;
+                        start -= startClosingLength;
+                        return true;
+                    }
+                    break;
                 }
                 else if (start >= _quot.Length && data.Slice(start - _quot.Length, _quot.Length).SequenceEqual(_quot))
                 {
@@ -312,7 +317,7 @@ public class BytesTagFinder : ITagFinder<byte>
                     //TODO: спорное решение для байтов переменной длины
                     start -= _minLength;
                 }
-            } while (start >= _startClosing.Length);
+            } while (start >= startClosingLength);
         }
         ns = default;
         return false;

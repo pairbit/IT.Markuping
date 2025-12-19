@@ -50,13 +50,11 @@ public class ByteEncoding
     }
 
     internal readonly bool[]? _otherSpaces;
-    internal readonly byte[] _startClosing;
     internal readonly Tokens _tokens;
 
     public ByteEncoding(Tokens tokens)
     {
         _tokens = tokens;
-        _startClosing = [tokens._lt, tokens._slash];//</
     }
 
     public ByteEncoding(Tokens tokens, bool[] otherSpaces)
@@ -65,7 +63,6 @@ public class ByteEncoding
         if (otherSpaces.Length != 256) throw new ArgumentOutOfRangeException(nameof(otherSpaces));
 
         _tokens = tokens;
-        _startClosing = [tokens._lt, tokens._slash];//</
         _otherSpaces = otherSpaces;
     }
 

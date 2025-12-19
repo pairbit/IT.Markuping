@@ -98,11 +98,6 @@ public class BytesEncoding
 
     internal readonly byte[][] _otherSpaces;
 
-    /// <summary>
-    /// &lt;/
-    /// </summary>
-    internal readonly byte[] _startClosing;
-
     internal readonly int _minLength;
 
     #endregion Private Fields
@@ -147,10 +142,6 @@ public class BytesEncoding
         {
             _otherSpaces = [];
         }
-
-        _startClosing = new byte[lt.Length + slash.Length];
-        lt.AsSpan().CopyTo(_startClosing);
-        slash.AsSpan().CopyTo(_startClosing.AsSpan(lt.Length));
     }
 
     public static readonly BytesEncoding Utf16_Strict = new(Tokens.Utf16);
