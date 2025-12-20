@@ -404,6 +404,9 @@ public class ByteTagFinder : ITagFinder<byte>
         if (IsStartClosing(data, start) &&
             IsEndClosing(data, ref end, out var hasSpace))
         {
+            //TODO: hasNamespace - по факту
+            //можно проверить наличие colon в названии
+            //нужно делать? или убрать?
             return new(start, end, hasNamespace: false, hasSpace: hasSpace);
         }
         return default;

@@ -58,6 +58,34 @@ public class BytesTagFinder : ITagFinder<byte>
         return default;
     }
 
+    public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
+    {
+        var closing = LastClosing(data, name, ns);
+        if (!closing.IsEmpty)
+        {
+            var opening = Last(data.Slice(0, closing.Start), name, ns, TagEndings.Closing);
+            if (!opening.IsEmpty)
+            {
+                return new((TagOpening)opening, closing);
+            }
+        }
+        return default;
+    }
+
+    public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name)
+    {
+        var closing = LastClosing(data, name);
+        if (!closing.IsEmpty)
+        {
+            var opening = Last(data.Slice(0, closing.Start), name, TagEndings.Closing);
+            if (!opening.IsEmpty)
+            {
+                return new((TagOpening)opening, closing);
+            }
+        }
+        return default;
+    }
+
     public Tag First(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, TagEndings endings = default)
         => ns.IsEmpty ? First(data, name, endings) : FirstNS(data, name, ns, endings);
 
@@ -117,6 +145,36 @@ public class BytesTagFinder : ITagFinder<byte>
         return default;
     }
 
+    public TagClosing FirstClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
+        => ns.IsEmpty ? FirstClosing(data, name) : FirstClosingNS(data, name, ns);
+
+    public TagClosing FirstClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name)
+    {
+        var namelen = name.Length;
+        Debug.Assert(namelen > 0);
+
+        var len = data.Length;
+        var min = _lt.Length + _slash.Length;
+        do
+        {
+            var index = data.IndexOf(name);
+            if (index < 0) break;
+
+            var end = index + namelen;
+            if (index >= min)
+            {
+                var closing = GetClosing(data, index - min, end);
+                if (!closing.IsEmpty)
+                {
+                    return closing.AddOffset(len - data.Length);
+                }
+            }
+            data = data.Slice(end);
+        } while (true);
+
+        return default;
+    }
+
     public TagClosing LastClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out Range ns)
     {
         var namelen = name.Length;
@@ -138,6 +196,32 @@ public class BytesTagFinder : ITagFinder<byte>
         } while (true);
 
         ns = default;
+        return default;
+    }
+
+    public TagClosing LastClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
+        => ns.IsEmpty ? LastClosing(data, name) : LastClosingNS(data, name, ns);
+
+    public TagClosing LastClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name)
+    {
+        var namelen = name.Length;
+        Debug.Assert(namelen > 0);
+
+        var min = _lt.Length + _slash.Length;
+        do
+        {
+            var index = data.LastIndexOf(name);
+            if (index < min) break;
+
+            var closing = GetClosing(data, index - min, index + namelen);
+            if (!closing.IsEmpty)
+            {
+                return closing;
+            }
+
+            data = data.Slice(0, index);
+        } while (true);
+
         return default;
     }
 
@@ -199,6 +283,62 @@ public class BytesTagFinder : ITagFinder<byte>
             if (!tag.IsEmpty)
             {
                 return tag;
+            }
+
+            data = data.Slice(0, index);
+        } while (true);
+
+        return default;
+    }
+
+    private TagClosing FirstClosingNS(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
+    {
+        var namelen = name.Length;
+        var nslen = ns.Length;
+
+        Debug.Assert(namelen > 0);
+        Debug.Assert(nslen > 0);
+
+        var len = data.Length;
+        var min = nslen + _lt.Length + _slash.Length + _colon.Length;//</ns:
+        do
+        {
+            var index = data.IndexOf(name);
+            if (index < 0) break;
+
+            var end = index + namelen;
+            if (index >= min)
+            {
+                var closing = GetClosing(data, index - min, end, ns);
+                if (!closing.IsEmpty)
+                {
+                    return closing.AddOffset(len - data.Length);
+                }
+            }
+            data = data.Slice(end);
+        } while (true);
+
+        return default;
+    }
+
+    private TagClosing LastClosingNS(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
+    {
+        var namelen = name.Length;
+        var nslen = ns.Length;
+
+        Debug.Assert(namelen > 0);
+        Debug.Assert(nslen > 0);
+
+        var min = nslen + _lt.Length + _slash.Length + _colon.Length;//</ns:
+        do
+        {
+            var index = data.LastIndexOf(name);
+            if (index < min) break;
+
+            var closing = GetClosing(data, index - min, index + namelen, ns);
+            if (!closing.IsEmpty)
+            {
+                return closing;
             }
 
             data = data.Slice(0, index);
@@ -272,6 +412,64 @@ public class BytesTagFinder : ITagFinder<byte>
         }
         ns = default;
         return default;
+    }
+
+    private TagClosing GetClosing(ReadOnlySpan<byte> data, int start, int end)
+    {
+        Debug.Assert(start >= 0 && start + 1 < data.Length);
+        Debug.Assert(end > 0 && start < end);
+
+        if (IsStartClosing(data, start) &&
+            IsEndClosing(data, ref end, out var hasSpace))
+        {
+            //TODO: hasNamespace - по факту
+            //можно проверить наличие colon в названии
+            //нужно делать? или убрать?
+            return new(start, end, hasNamespace: false, hasSpace: hasSpace);
+        }
+        return default;
+    }
+
+    private TagClosing GetClosing(ReadOnlySpan<byte> data, int start, int end, ReadOnlySpan<byte> ns)
+    {
+        Debug.Assert(start > 0 && end > 0);
+        Debug.Assert(start < end);
+
+        if (IsStartClosing(data, start, ns) &&
+            IsEndClosing(data, ref end, out var hasSpace))
+        {
+            return new(start, end, hasNamespace: !ns.IsEmpty, hasSpace: hasSpace);
+        }
+        return default;
+    }
+
+    private bool IsStartClosing(ReadOnlySpan<byte> data, int start)
+    {
+        Debug.Assert(start >= 0);
+        Debug.Assert(start + _lt.Length + _slash.Length < data.Length);
+
+        return data.Slice(start, _lt.Length).SequenceEqual(_lt) &&
+               data.Slice(start + _lt.Length, _slash.Length).SequenceEqual(_slash);
+    }
+
+    private bool IsStartClosing(ReadOnlySpan<byte> data, int start, ReadOnlySpan<byte> ns)
+    {
+        Debug.Assert(start >= 0);
+        Debug.Assert(start + _lt.Length + _slash.Length + ns.Length + _colon.Length < data.Length);
+
+        if (!data.Slice(start, _lt.Length).SequenceEqual(_lt)) return false;
+
+        start += _lt.Length;
+
+        if (!data.Slice(start, _slash.Length).SequenceEqual(_slash)) return false;
+
+        start += _slash.Length;
+
+        if (!data.Slice(start, ns.Length).SequenceEqual(ns)) return false;
+
+        start += ns.Length;
+
+        return data.Slice(start, _colon.Length).SequenceEqual(_colon);
     }
 
     private bool IsStartClosing(ReadOnlySpan<byte> data, ref int start, out Range ns)
