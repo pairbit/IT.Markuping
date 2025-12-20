@@ -100,12 +100,21 @@ internal class TagFinderByteTester
     public void PairsTest(TagData tagData)
     {
         var data = _encoding.GetBytes($"<{tagData}></{tagData}>").AsSpan();
+        var first = _finder.FirstPair(data, tagData.Name, tagData.Namespace);
+        Assert.That(data[first.Outer].SequenceEqual(data), Is.True);
+        Assert.That(data[first.Inner].IsEmpty, Is.True);
+
         var last = _finder.LastPair(data, tagData.Name, out var ns);
         Assert.That(data[ns].SequenceEqual(tagData.Namespace), Is.True);
         Assert.That(data[last.Outer].SequenceEqual(data), Is.True);
         Assert.That(data[last.Inner].IsEmpty, Is.True);
 
         data = _encoding.GetBytes($"<{tagData}>first</{tagData}><{tagData}>last</{tagData}>").AsSpan();
+
+        first = _finder.FirstPair(data, tagData.Name, tagData.Namespace);
+        Assert.That(data[first.Outer].SequenceEqual(_encoding.GetBytes($"<{tagData}>first</{tagData}>")), Is.True);
+        Assert.That(data[first.Inner].SequenceEqual(_encoding.GetBytes("first")), Is.True);
+
         last = _finder.LastPair(data, tagData.Name, out ns);
         Assert.That(data[ns].SequenceEqual(tagData.Namespace), Is.True);
         Assert.That(data[last.Outer].SequenceEqual(_encoding.GetBytes($"<{tagData}>last</{tagData}>")), Is.True);

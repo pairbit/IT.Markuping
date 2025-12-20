@@ -42,7 +42,7 @@ public class ByteTagFinder : ITagFinder<byte>
             var closing = FirstClosing(data.Slice(opening.End), name, ns);
             if (!closing.IsEmpty)
             {
-                return new((TagOpening)opening, closing);
+                return new((TagOpening)opening, closing.AddOffset(opening.End));
             }
         }
         return default;
@@ -56,7 +56,7 @@ public class ByteTagFinder : ITagFinder<byte>
             var closing = FirstClosing(data.Slice(opening.End), name);
             if (!closing.IsEmpty)
             {
-                return new((TagOpening)opening, closing);
+                return new((TagOpening)opening, closing.AddOffset(opening.End));
             }
         }
         return default;
