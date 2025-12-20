@@ -442,7 +442,7 @@ public class ByteTagFinder : ITagFinder<byte>
 
     private TagClosing GetClosing(ReadOnlySpan<byte> data, int start, int end, ReadOnlySpan<byte> ns)
     {
-        Debug.Assert(start > 0 && end > 0);
+        Debug.Assert(start >= 0 && end > 0);
         Debug.Assert(start < end);
 
         if (IsStartClosing(data, start, ns) &&

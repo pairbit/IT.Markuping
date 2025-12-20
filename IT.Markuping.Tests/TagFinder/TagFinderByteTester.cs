@@ -213,6 +213,8 @@ internal class TagFinderByteTester
         var tagFullName = tagData.FullName;
         var fullName = tagData.FullNameBytes;
 
+        //LastClosing($"</{tagFullName}>", fullName, name, tagNS);
+
         var data = encoding.GetBytes($"</{tagFullName}>").AsSpan();
         var closing = finder.LastClosing(data, name, out var ns);
         Assert.That(data[ns].SequenceEqual(tagNS), Is.True);
@@ -292,6 +294,28 @@ internal class TagFinderByteTester
             Assert.That(closing.IsEmpty, Is.True);
             Assert.That(ns.Start.Value, Is.EqualTo(ns.End.Value));
         }
+    }
+
+    private TagClosing LastClosing(string data, ReadOnlySpan<byte> fullName,
+        ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, bool hasSpace = false)
+    {
+        return LastClosing(_encoding.GetBytes(data), fullName, name, ns, hasSpace);
+    }
+
+    private TagClosing LastClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> fullName,
+        ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, bool hasSpace)
+    {
+        var tag = _finder.LastClosing(data, fullName);
+
+        Assert.That(_finder.LastClosing(data, name, ns), Is.EqualTo(tag));
+
+        tag = _finder.LastClosing(data, fullName, out var nsRange);
+
+        Assert.That(data[nsRange].SequenceEqual(ns), Is.True);
+        Assert.That(tag.HasSpace, Is.EqualTo(hasSpace));
+        Assert.That(tag.HasSpace, Is.EqualTo(hasSpace));
+
+        return tag;
     }
 
     private Tag FirstLastTest(string str, ReadOnlySpan<byte> fullName,
