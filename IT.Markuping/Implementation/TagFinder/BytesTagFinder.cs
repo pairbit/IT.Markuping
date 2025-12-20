@@ -278,7 +278,7 @@ public class BytesTagFinder : ITagFinder<byte>
             var end = index + namelen;
             if (index >= min)
             {
-                var tag = GetTag(data, ns, index - min, end, endings);
+                var tag = GetTag(data, index - min, end, endings, ns);
                 if (!tag.IsEmpty)
                 {
                     return tag.AddOffset(len - data.Length);
@@ -307,7 +307,7 @@ public class BytesTagFinder : ITagFinder<byte>
             var index = data.LastIndexOf(name);
             if (index < min) break;
 
-            var tag = GetTag(data, ns, index - min, index + namelen, endings);
+            var tag = GetTag(data, index - min, index + namelen, endings, ns);
             if (!tag.IsEmpty)
             {
                 return tag;
@@ -393,11 +393,11 @@ public class BytesTagFinder : ITagFinder<byte>
         return default;
     }
 
-    private Tag GetTag(ReadOnlySpan<byte> data, ReadOnlySpan<byte> ns, int start, int end, TagEndings endings)
+    private Tag GetTag(ReadOnlySpan<byte> data, int start, int end, TagEndings endings, ReadOnlySpan<byte> ns)
     {
         Debug.Assert(end > 0 && start < end);
 
-        if (end < data.Length && IsStartOpening(data, ns, start))
+        if (end < data.Length && IsStartOpening(data, start, ns))
         {
             var ending = endings.IsAnyClosing() ?
                 GetEndingAnyClosing(data, ref end) :
@@ -410,10 +410,10 @@ public class BytesTagFinder : ITagFinder<byte>
         return default;
     }
 
-    private bool IsStartOpening(ReadOnlySpan<byte> data, ReadOnlySpan<byte> ns, int start)
+    internal bool IsStartOpening(ReadOnlySpan<byte> data, int start, ReadOnlySpan<byte> ns)
     {
         Debug.Assert(start >= 0);
-        Debug.Assert(start + _lt.Length + ns.Length + _colon.Length < data.Length);
+        Debug.Assert(start + _lt.Length + ns.Length + _colon.Length <= data.Length);
 
         if (!data.Slice(start, _lt.Length).SequenceEqual(_lt)) return false;
 
@@ -471,19 +471,19 @@ public class BytesTagFinder : ITagFinder<byte>
         return default;
     }
 
-    private bool IsStartClosing(ReadOnlySpan<byte> data, int start)
+    internal bool IsStartClosing(ReadOnlySpan<byte> data, int start)
     {
         Debug.Assert(start >= 0);
-        Debug.Assert(start + _lt.Length + _slash.Length < data.Length);
+        Debug.Assert(start + _lt.Length + _slash.Length <= data.Length);
 
         return data.Slice(start, _lt.Length).SequenceEqual(_lt) &&
                data.Slice(start + _lt.Length, _slash.Length).SequenceEqual(_slash);
     }
 
-    private bool IsStartClosing(ReadOnlySpan<byte> data, int start, ReadOnlySpan<byte> ns)
+    internal bool IsStartClosing(ReadOnlySpan<byte> data, int start, ReadOnlySpan<byte> ns)
     {
         Debug.Assert(start >= 0);
-        Debug.Assert(start + _lt.Length + _slash.Length + ns.Length + _colon.Length < data.Length);
+        Debug.Assert(start + _lt.Length + _slash.Length + ns.Length + _colon.Length <= data.Length);
 
         if (!data.Slice(start, _lt.Length).SequenceEqual(_lt)) return false;
 

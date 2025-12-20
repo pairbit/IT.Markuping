@@ -1,4 +1,5 @@
 ﻿using IT.Markuping.Extensions;
+using IT.Markuping.Implementation;
 using IT.Markuping.Interfaces;
 using System;
 using System.Linq;
@@ -56,8 +57,29 @@ internal class TagFinderByteTester
 
     public void Test()
     {
+        InternalTest();
         Test(new(_encoding, "a"));
         Test(new(_encoding, "a", "n"));
+    }
+
+    private void InternalTest()
+    {
+        var startOpeningNS = _encoding.GetBytes("<ns:");
+        var startClosing = _encoding.GetBytes("</");
+        var startClosingNS = _encoding.GetBytes("</ns:");
+        var ns = _encoding.GetBytes("ns");
+        if (_finder is ByteTagFinder byteFinder)
+        {
+            Assert.That(byteFinder.IsStartClosing(startClosing, 0), Is.True);
+            Assert.That(byteFinder.IsStartClosing(startClosingNS, 0, ns), Is.True);
+            Assert.That(byteFinder.IsStartOpening(startOpeningNS, 0, ns), Is.True);
+        }
+        else if (_finder is BytesTagFinder bytesFinder)
+        {
+            Assert.That(bytesFinder.IsStartClosing(startClosing, 0), Is.True);
+            Assert.That(bytesFinder.IsStartClosing(startClosingNS, 0, ns), Is.True);
+            Assert.That(bytesFinder.IsStartOpening(startOpeningNS, 0, ns), Is.True);
+        }
     }
 
     public void Test(TagData tagData)
