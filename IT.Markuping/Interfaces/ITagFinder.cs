@@ -6,9 +6,9 @@ public interface ITagFinder<T> where T : unmanaged
 {
     //Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out Range ns);
 
-    //Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns);
+    Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns);
 
-    //Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name);
+    Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name);
 
     Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out Range ns);
 

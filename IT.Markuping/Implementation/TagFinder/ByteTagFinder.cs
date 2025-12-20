@@ -34,6 +34,34 @@ public class ByteTagFinder : ITagFinder<byte>
 
     #region ITagFinder
 
+    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
+    {
+        var opening = First(data, name, ns, TagEndings.Closing);
+        if (!opening.IsEmpty)
+        {
+            var closing = FirstClosing(data.Slice(opening.End), name, ns);
+            if (!closing.IsEmpty)
+            {
+                return new((TagOpening)opening, closing);
+            }
+        }
+        return default;
+    }
+
+    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name)
+    {
+        var opening = First(data, name, TagEndings.Closing);
+        if (!opening.IsEmpty)
+        {
+            var closing = FirstClosing(data.Slice(opening.End), name);
+            if (!closing.IsEmpty)
+            {
+                return new((TagOpening)opening, closing);
+            }
+        }
+        return default;
+    }
+
     public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out Range ns)
     {
         var closing = LastClosing(data, name, out ns);
