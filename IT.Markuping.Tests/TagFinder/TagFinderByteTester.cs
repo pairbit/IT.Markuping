@@ -121,85 +121,80 @@ internal class TagFinderByteTester
 
     public void FirstLastTest(TagData tagData)
     {
-        var tagFullName = tagData.FullNameString;
-        var fullName = tagData.FullName;
-        var name = tagData.Name;
-        var ns = tagData.Namespace;
+        var endingName = _encoding.GetBytes($"<{tagData} ");
+        var endingName2 = _encoding.GetBytes($"<{tagData}\r");
+        var attributeStart = _encoding.GetBytes($"<{tagData}\r\n\t");
 
-        var endingName = _encoding.GetBytes($"<{tagFullName} ");
-        var endingName2 = _encoding.GetBytes($"<{tagFullName}\r");
-        var attributeStart = _encoding.GetBytes($"<{tagFullName}\r\n\t");
-
-        FirstLastTest($"<{tagFullName}>", tagData, TagEnding.Closing);
-        FirstLastTest($"<{tagFullName} \r\n\t>", tagData, TagEnding.Closing,
+        FirstLastTest($"<{tagData}>", tagData, TagEnding.Closing);
+        FirstLastTest($"<{tagData} \r\n\t>", tagData, TagEnding.Closing,
             endingName);
-        FirstLastTest($"<{tagFullName} b>", tagData, TagEnding.ClosingHasAttributes,
+        FirstLastTest($"<{tagData} b>", tagData, TagEnding.ClosingHasAttributes,
             endingName, endingName);
-        FirstLastTest($"<{tagFullName} b=\"'>\" c='\"/>'>", tagData, TagEnding.ClosingHasAttributes,
+        FirstLastTest($"<{tagData} b=\"'>\" c='\"/>'>", tagData, TagEnding.ClosingHasAttributes,
             endingName, endingName);
-        FirstLastTest($"<{tagFullName}\rb>", tagData, TagEnding.ClosingHasAttributes,
+        FirstLastTest($"<{tagData}\rb>", tagData, TagEnding.ClosingHasAttributes,
             endingName2, endingName2);
-        FirstLastTest($"<{tagFullName}\r\n\tb >", tagData, TagEnding.ClosingHasAttributes,
+        FirstLastTest($"<{tagData}\r\n\tb >", tagData, TagEnding.ClosingHasAttributes,
             endingName2, attributeStart);
 
-        FirstLastTest($"<{tagFullName}/>", tagData, TagEnding.SelfClosing);
-        FirstLastTest($"<{tagFullName} \r\n\t/>", tagData, TagEnding.SelfClosing,
+        FirstLastTest($"<{tagData}/>", tagData, TagEnding.SelfClosing);
+        FirstLastTest($"<{tagData} \r\n\t/>", tagData, TagEnding.SelfClosing,
             endingName);
-        FirstLastTest($"<{tagFullName} b />", tagData, TagEnding.SelfClosingHasAttributes,
+        FirstLastTest($"<{tagData} b />", tagData, TagEnding.SelfClosingHasAttributes,
             endingName, endingName);
-        FirstLastTest($"<{tagFullName} b=\"'>\" c='\">'/>", tagData, TagEnding.SelfClosingHasAttributes,
+        FirstLastTest($"<{tagData} b=\"'>\" c='\">'/>", tagData, TagEnding.SelfClosingHasAttributes,
             endingName, endingName);
-        FirstLastTest($"<{tagFullName}\rb />", tagData, TagEnding.SelfClosingHasAttributes,
+        FirstLastTest($"<{tagData}\rb />", tagData, TagEnding.SelfClosingHasAttributes,
             endingName2, endingName2);
-        FirstLastTest($"<{tagFullName}\r\n\tb />", tagData, TagEnding.SelfClosingHasAttributes,
+        FirstLastTest($"<{tagData}\r\n\tb />", tagData, TagEnding.SelfClosingHasAttributes,
             endingName2, attributeStart);
 
-        FailFirstLastTest($"<{tagFullName}/", tagData);
-        FailFirstLastTest($"<{tagFullName} ", tagData);
-        FailFirstLastTest($"<{tagFullName} /", tagData);
-        FailFirstLastTest($"<{tagFullName} b='", tagData);
-        FailFirstLastTest($"<{tagFullName} b=''", tagData);
-        FailFirstLastTest($"<{tagFullName} b='>", tagData);
-        FailFirstLastTest($"<{tagFullName} b='>'", tagData);
-        FailFirstLastTest($"<{tagFullName} b=\"", tagData);
-        FailFirstLastTest($"<{tagFullName} b=\"\"", tagData);
-        FailFirstLastTest($"<{tagFullName} b=\">", tagData);
-        FailFirstLastTest($"<{tagFullName} b=\">\"", tagData);
-        FailFirstLastTest($"<{tagFullName} b=\"/>", tagData);
-        FailFirstLastTest($"<{tagFullName} b=\"/>\"", tagData);
-        FailFirstLastTest($"<{tagFullName} b=\"\"/ >", tagData);
-        FailFirstLastTest($"<{tagFullName} '>", tagData);
-        FailFirstLastTest($"<{tagFullName} \">", tagData);
+        FailFirstLastTest($"<{tagData}/", tagData);
+        FailFirstLastTest($"<{tagData} ", tagData);
+        FailFirstLastTest($"<{tagData} /", tagData);
+        FailFirstLastTest($"<{tagData} b='", tagData);
+        FailFirstLastTest($"<{tagData} b=''", tagData);
+        FailFirstLastTest($"<{tagData} b='>", tagData);
+        FailFirstLastTest($"<{tagData} b='>'", tagData);
+        FailFirstLastTest($"<{tagData} b=\"", tagData);
+        FailFirstLastTest($"<{tagData} b=\"\"", tagData);
+        FailFirstLastTest($"<{tagData} b=\">", tagData);
+        FailFirstLastTest($"<{tagData} b=\">\"", tagData);
+        FailFirstLastTest($"<{tagData} b=\"/>", tagData);
+        FailFirstLastTest($"<{tagData} b=\"/>\"", tagData);
+        FailFirstLastTest($"<{tagData} b=\"\"/ >", tagData);
+        FailFirstLastTest($"<{tagData} '>", tagData);
+        FailFirstLastTest($"<{tagData} \">", tagData);
 
-        FailFirstLastTest($"<{tagFullName} /", tagData, TagEndings.HasAttributes);
+        FailFirstLastTest($"<{tagData} /", tagData, TagEndings.HasAttributes);
 
         var encoding = _encoding;
-        var closing = encoding.GetBytes($"<{tagFullName}>");
-        var selfClosing = encoding.GetBytes($"<{tagFullName} />");
+        var closing = encoding.GetBytes($"<{tagData}>");
+        var selfClosing = encoding.GetBytes($"<{tagData} />");
 
-        var data = encoding.GetBytes($"<{tagFullName}><{tagFullName} /></{tagFullName}><{tagFullName} b=3 /><{tagFullName}\rc=4></{tagFullName}>");
+        var data = encoding.GetBytes($"<{tagData}><{tagData} /></{tagData}><{tagData} b=3 /><{tagData}\rc=4></{tagData}>");
 
-        var tag = FirstTest(data, fullName, name, ns, TagEnding.Closing, TagEndings.AnyClosing);
+        var tag = FirstTest(data, tagData, TagEnding.Closing, TagEndings.AnyClosing);
         Assert.That(data[tag.Range].SequenceEqual(closing), Is.True);
-        Assert.That(LastTest(data, fullName, name, ns, TagEnding.Closing, TagEndings.ClosingHasNoAttributes), Is.EqualTo(tag));
+        Assert.That(LastTest(data, tagData, TagEnding.Closing, TagEndings.ClosingHasNoAttributes), Is.EqualTo(tag));
 
-        tag = FirstTest(data, fullName, name, ns, TagEnding.SelfClosing, TagEndings.SelfClosing);
+        tag = FirstTest(data, tagData, TagEnding.SelfClosing, TagEndings.SelfClosing);
         Assert.That(data[tag.Range].SequenceEqual(selfClosing), Is.True);
-        Assert.That(LastTest(data, fullName, name, ns, TagEnding.SelfClosing, TagEndings.SelfClosingHasNoAttributes), Is.EqualTo(tag));
+        Assert.That(LastTest(data, tagData, TagEnding.SelfClosing, TagEndings.SelfClosingHasNoAttributes), Is.EqualTo(tag));
 
-        tag = FirstTest(data, fullName, name, ns, TagEnding.SelfClosingHasAttributes, TagEndings.SelfClosingHasAttributes);
-        Assert.That(data[tag.Range].SequenceEqual(encoding.GetBytes($"<{tagFullName} b=3 />")), Is.True);
-        Assert.That(LastTest(data, fullName, name, ns, TagEnding.SelfClosingHasAttributes, TagEndings.SelfClosing), Is.EqualTo(tag));
+        tag = FirstTest(data, tagData, TagEnding.SelfClosingHasAttributes, TagEndings.SelfClosingHasAttributes);
+        Assert.That(data[tag.Range].SequenceEqual(encoding.GetBytes($"<{tagData} b=3 />")), Is.True);
+        Assert.That(LastTest(data, tagData, TagEnding.SelfClosingHasAttributes, TagEndings.SelfClosing), Is.EqualTo(tag));
 
-        tag = FirstTest(data, fullName, name, ns, TagEnding.ClosingHasAttributes, TagEndings.ClosingHasAttributes);
-        Assert.That(data[tag.Range].SequenceEqual(encoding.GetBytes($"<{tagFullName}\rc=4>")), Is.True);
-        Assert.That(LastTest(data, fullName, name, ns, TagEnding.ClosingHasAttributes, TagEndings.AnyClosing), Is.EqualTo(tag));
+        tag = FirstTest(data, tagData, TagEnding.ClosingHasAttributes, TagEndings.ClosingHasAttributes);
+        Assert.That(data[tag.Range].SequenceEqual(encoding.GetBytes($"<{tagData}\rc=4>")), Is.True);
+        Assert.That(LastTest(data, tagData, TagEnding.ClosingHasAttributes, TagEndings.AnyClosing), Is.EqualTo(tag));
 
-        tag = FirstTest(data, fullName, name, ns, TagEnding.AttributeStart, TagEndings.HasAttributes);
-        Assert.That(data[tag.Range].SequenceEqual(encoding.GetBytes($"<{tagFullName} ")), Is.True);
+        tag = FirstTest(data, tagData, TagEnding.AttributeStart, TagEndings.HasAttributes);
+        Assert.That(data[tag.Range].SequenceEqual(encoding.GetBytes($"<{tagData} ")), Is.True);
 
-        tag = LastTest(data, fullName, name, ns, TagEnding.AttributeStart, TagEndings.HasAttributes);
-        Assert.That(data[tag.Range].SequenceEqual(encoding.GetBytes($"<{tagFullName}\r")), Is.True);
+        tag = LastTest(data, tagData, TagEnding.AttributeStart, TagEndings.HasAttributes);
+        Assert.That(data[tag.Range].SequenceEqual(encoding.GetBytes($"<{tagData}\r")), Is.True);
     }
 
     #region LastClosing
@@ -287,6 +282,8 @@ internal class TagFinderByteTester
     }
 
     #endregion LastClosing
+
+    #region FirstLast
 
     private Tag FirstLastTest(string str, TagData tagData, TagEnding ending,
         ReadOnlySpan<byte> endingName = default,
@@ -453,12 +450,11 @@ internal class TagFinderByteTester
         Assert.That(_finder.Last(data, tagData.Name, tagData.Namespace, endings).IsEmpty, Is.True);
     }
 
-    private Tag FirstTest(ReadOnlySpan<byte> data, ReadOnlySpan<byte> fullName,
-        ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, TagEnding ending, TagEndings endings)
+    private Tag FirstTest(ReadOnlySpan<byte> data, TagData tagData, TagEnding ending, TagEndings endings)
     {
-        var tag = _finder.First(data, fullName, endings);
+        var tag = _finder.First(data, tagData.FullName, endings);
 
-        Assert.That(_finder.First(data, name, ns, endings), Is.EqualTo(tag));
+        Assert.That(_finder.First(data, tagData.Name, tagData.Namespace, endings), Is.EqualTo(tag));
 
         if (ending.HasNoAttributes())
         {
@@ -480,12 +476,11 @@ internal class TagFinderByteTester
         return tag;
     }
 
-    private Tag LastTest(ReadOnlySpan<byte> data, ReadOnlySpan<byte> fullName,
-        ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, TagEnding ending, TagEndings endings)
+    private Tag LastTest(ReadOnlySpan<byte> data, TagData tagData, TagEnding ending, TagEndings endings)
     {
-        var tag = _finder.Last(data, fullName, endings);
+        var tag = _finder.Last(data, tagData.FullName, endings);
 
-        Assert.That(_finder.Last(data, name, ns, endings), Is.EqualTo(tag));
+        Assert.That(_finder.Last(data, tagData.Name, tagData.Namespace, endings), Is.EqualTo(tag));
 
         if (ending.HasNoAttributes())
         {
@@ -506,6 +501,10 @@ internal class TagFinderByteTester
 
         return tag;
     }
+
+    #endregion FirstLast
+
+    #region Static
 
     private static TagEndings[] GetAvailableEndings(TagEnding ending)
     {
@@ -570,4 +569,6 @@ internal class TagFinderByteTester
         TagEndings.Closing, TagEndings.ClosingHasAttributes,
         TagEndings.ClosingHasNoAttributes
     ];
+
+    #endregion Static
 }
