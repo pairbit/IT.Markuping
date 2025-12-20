@@ -21,7 +21,7 @@ public readonly struct Tags
 
     public int InnerLength => _closing.Start - _opening.End;
 
-    public bool HasNamespace => _closing.HasNamespace;
+    //public bool HasNamespace => _closing.HasNamespace;
 
     public bool HasAttributes => _opening.HasAttributes;
 

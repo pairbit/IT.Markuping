@@ -17,7 +17,7 @@ public readonly struct TagClosing : IEquatable<TagClosing>
 
     public Range Range => new(Start, End);
 
-    public bool HasNamespace => _start < 0;
+    //public bool HasNamespace => _start < 0;
 
     public bool HasSpace => _end < 0;
 
@@ -46,12 +46,13 @@ public readonly struct TagClosing : IEquatable<TagClosing>
         }
     }
 
-    public TagClosing(int start, int end, bool hasNamespace, bool hasSpace = false)
+    public TagClosing(int start, int end, bool hasSpace = false)
     {
         if (start < 0) throw new ArgumentOutOfRangeException(nameof(start));
         if (end <= start) throw new ArgumentOutOfRangeException(nameof(end));
 
-        _start = hasNamespace ? ~start : start;
+        //_start = hasNamespace ? ~start : start;
+        _start = start;
         _end = hasSpace ? ~end : end;
     }
 

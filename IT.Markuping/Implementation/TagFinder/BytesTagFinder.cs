@@ -434,9 +434,7 @@ public class BytesTagFinder : ITagFinder<byte>
         if (IsEndClosing(data, ref end, out var hasSpace) &&
             IsStartClosing(data, ref start, out ns))
         {
-            return new(start, end,
-                hasNamespace: ns.Start.Value != ns.End.Value,
-                hasSpace: hasSpace);
+            return new(start, end, hasSpace: hasSpace);
         }
         ns = default;
         return default;
@@ -450,23 +448,20 @@ public class BytesTagFinder : ITagFinder<byte>
         if (IsStartClosing(data, start) &&
             IsEndClosing(data, ref end, out var hasSpace))
         {
-            //TODO: hasNamespace - по факту
-            //можно проверить наличие colon в названии
-            //нужно делать? или убрать?
-            return new(start, end, hasNamespace: false, hasSpace: hasSpace);
+            return new(start, end, hasSpace: hasSpace);
         }
         return default;
     }
 
     private TagClosing GetClosing(ReadOnlySpan<byte> data, int start, int end, ReadOnlySpan<byte> ns)
     {
-        Debug.Assert(start > 0 && end > 0);
+        Debug.Assert(start >= 0 && end > 0);
         Debug.Assert(start < end);
 
         if (IsStartClosing(data, start, ns) &&
             IsEndClosing(data, ref end, out var hasSpace))
         {
-            return new(start, end, hasNamespace: !ns.IsEmpty, hasSpace: hasSpace);
+            return new(start, end, hasSpace: hasSpace);
         }
         return default;
     }
