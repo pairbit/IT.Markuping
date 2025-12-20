@@ -299,18 +299,7 @@ internal class TagFinderByteTester
 
         Assert.That(data[tag.Range].SequenceEqual(data), Is.True);
 
-        if (ending.HasNoAttributes())
-        {
-            Assert.That(tag.Ending, Is.EqualTo(ending));
-        }
-        else if (ending.HasAttributes())
-        {
-            Assert.That(tag.Ended, Is.EqualTo(ending));
-        }
-        else
-        {
-            Assert.Fail($"{ending} not support");
-        }
+        EndingTest(tag, ending);
 
         Assert.That(_finder.First(data, tagData.Name, tagData.Namespace, endings), Is.EqualTo(tag));
 
@@ -370,18 +359,7 @@ internal class TagFinderByteTester
 
         Assert.That(data[tag.Range].SequenceEqual(data), Is.True);
 
-        if (ending.HasNoAttributes())
-        {
-            Assert.That(tag.Ending, Is.EqualTo(ending));
-        }
-        else if (ending.HasAttributes())
-        {
-            Assert.That(tag.Ended, Is.EqualTo(ending));
-        }
-        else
-        {
-            Assert.Fail($"{ending} not support");
-        }
+        EndingTest(tag, ending);
 
         Assert.That(_finder.Last(data, tagData.Name, tagData.Namespace, endings), Is.EqualTo(tag));
 
@@ -446,22 +424,7 @@ internal class TagFinderByteTester
 
         Assert.That(_finder.First(data, tagData.Name, tagData.Namespace, endings), Is.EqualTo(tag));
 
-        if (ending.HasNoAttributes())
-        {
-            Assert.That(tag.Ending, Is.EqualTo(ending));
-        }
-        else if (ending.HasAttributes())
-        {
-            Assert.That(tag.Ended, Is.EqualTo(ending));
-        }
-        else if (ending.IsNoClosing())
-        {
-            Assert.That(tag.Unended, Is.EqualTo(ending));
-        }
-        else
-        {
-            Assert.Fail($"{ending} not support");
-        }
+        EndingTest(tag, ending);
 
         return tag;
     }
@@ -472,6 +435,17 @@ internal class TagFinderByteTester
 
         Assert.That(_finder.Last(data, tagData.Name, tagData.Namespace, endings), Is.EqualTo(tag));
 
+        EndingTest(tag, ending);
+
+        return tag;
+    }
+
+    #endregion FirstLast
+
+    #region Static
+
+    private static void EndingTest(Tag tag, TagEnding ending)
+    {
         if (ending.HasNoAttributes())
         {
             Assert.That(tag.Ending, Is.EqualTo(ending));
@@ -488,13 +462,7 @@ internal class TagFinderByteTester
         {
             Assert.Fail($"{ending} not support");
         }
-
-        return tag;
     }
-
-    #endregion FirstLast
-
-    #region Static
 
     private static TagEndings[] GetAvailableEndings(TagEnding ending)
     {
