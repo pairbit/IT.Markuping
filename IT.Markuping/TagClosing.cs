@@ -3,7 +3,6 @@ using System.Diagnostics;
 
 namespace IT.Markuping;
 
-//</10..13>
 [DebuggerDisplay("{ToString(),nq}")]
 public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosing>, IFormattable
 #if NET6_0_OR_GREATER
@@ -12,6 +11,8 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
 {
     private readonly int _start;
     private readonly int _end;
+
+    #region Props
 
     public int Start => _start < 0 ? ~_start : _start;
 
@@ -26,6 +27,10 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
     //public bool HasNamespace => _start < 0;
 
     public bool HasSpace => _end < 0;
+
+    #endregion Props
+
+    #region Ctors
 
     private TagClosing(int start, int end, int offset)
     {
@@ -62,7 +67,11 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
         _end = hasSpace ? ~end : end;
     }
 
+    #endregion Ctors
+
     public TagClosing AddOffset(int offset) => new(_start, _end, offset);
+
+    #region Comparison
 
     public int CompareTo(TagClosing other)
     {
@@ -78,6 +87,8 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
     public override bool Equals(object? obj) => obj is TagClosing tag && Equals(tag);
 
     public override int GetHashCode() => HashCode.Combine(_start, _end);
+
+    #endregion Comparison
 
     #region ToString
 
