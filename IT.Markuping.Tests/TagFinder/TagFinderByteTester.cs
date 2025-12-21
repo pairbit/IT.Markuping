@@ -100,7 +100,13 @@ internal class TagFinderByteTester
     {
         var tags = _finder.FirstPair(data, tagData.FullName);
         Assert.That(_finder.FirstPair(data, tagData.Name, tagData.Namespace), Is.EqualTo(tags));
-
+        Assert.That(_finder.FirstPair(data, tagData.Name, out var ns), Is.EqualTo(tags));
+        Assert.That(data[ns].SequenceEqual(tagData.Namespace), Is.True);
+        if (tagData.HasNamespace)
+        {
+            Assert.That(_finder.FirstPair(data, tagData.FullName, out ns), Is.EqualTo(tags));
+            Assert.That(ns.IsZero(), Is.True);
+        }
         return tags;
     }
 
@@ -110,7 +116,6 @@ internal class TagFinderByteTester
         Assert.That(_finder.LastPair(data, tagData.Name, tagData.Namespace), Is.EqualTo(tags));
         Assert.That(_finder.LastPair(data, tagData.Name, out var ns), Is.EqualTo(tags));
         Assert.That(data[ns].SequenceEqual(tagData.Namespace), Is.True);
-
         if (tagData.HasNamespace)
         {
             Assert.That(_finder.LastPair(data, tagData.FullName, out ns), Is.EqualTo(tags));
