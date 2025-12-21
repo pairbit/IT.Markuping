@@ -5,7 +5,7 @@ namespace IT.Markuping;
 
 //</10..13>
 [DebuggerDisplay("{ToString(),nq}")]
-public readonly struct TagClosing : IEquatable<TagClosing>, IFormattable
+public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosing>, IFormattable
 #if NET6_0_OR_GREATER
 , ISpanFormattable
 #endif
@@ -62,6 +62,25 @@ public readonly struct TagClosing : IEquatable<TagClosing>, IFormattable
         _end = hasSpace ? ~end : end;
     }
 
+    public TagClosing AddOffset(int offset) => new(_start, _end, offset);
+
+    public int CompareTo(TagClosing other)
+    {
+        var compared = _start.CompareTo(other._start);
+
+        Debug.Assert(_end.CompareTo(other._end) == compared);
+
+        return compared;
+    }
+
+    public bool Equals(TagClosing other) => _start == other._start && _end == other._end;
+
+    public override bool Equals(object? obj) => obj is TagClosing tag && Equals(tag);
+
+    public override int GetHashCode() => HashCode.Combine(_start, _end);
+
+    #region ToString
+
     public override string ToString()
     {
         Span<char> span = stackalloc char[5 + (2 * 10)];
@@ -72,10 +91,6 @@ public readonly struct TagClosing : IEquatable<TagClosing>, IFormattable
 
         return new(span.Slice(0, written));
     }
-
-    public override int GetHashCode() => HashCode.Combine(_start, _end);
-
-    public override bool Equals(object? obj) => obj is TagClosing tag && Equals(tag);
 
     public bool TryFormat(Span<char> chars, out int written)
     {
@@ -102,9 +117,7 @@ public readonly struct TagClosing : IEquatable<TagClosing>, IFormattable
         return false;
     }
 
-    public TagClosing AddOffset(int offset) => new(_start, _end, offset);
-
-    public bool Equals(TagClosing other) => _start == other._start && _end == other._end;
+    #endregion ToString
 
     #region Formattable
 
@@ -122,7 +135,11 @@ public readonly struct TagClosing : IEquatable<TagClosing>, IFormattable
 
     #endregion Formattable
 
+    #region Operators
+
     public static bool operator ==(TagClosing left, TagClosing right) => left.Equals(right);
 
     public static bool operator !=(TagClosing left, TagClosing right) => !left.Equals(right);
+
+    #endregion Operators
 }
