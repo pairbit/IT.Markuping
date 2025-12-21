@@ -80,9 +80,9 @@ public readonly struct TagOpening : IComparable<TagOpening>, IEquatable<TagOpeni
 
     public int CompareTo(TagOpening other)
     {
-        var compared = _start.CompareTo(other._start);
+        var compared = Start.CompareTo(other.Start);
 
-        Debug.Assert(_end.CompareTo(other._end) == compared);
+        Debug.Assert(End.CompareTo(other.End) == compared);
 
         return compared;
     }
@@ -158,6 +158,14 @@ public readonly struct TagOpening : IComparable<TagOpening>, IEquatable<TagOpeni
     public static bool operator ==(TagOpening left, TagOpening right) => left.Equals(right);
 
     public static bool operator !=(TagOpening left, TagOpening right) => !left.Equals(right);
+
+    public static bool operator <(TagOpening left, TagOpening right) => left.CompareTo(right) < 0;
+
+    public static bool operator <=(TagOpening left, TagOpening right) => left.CompareTo(right) <= 0;
+
+    public static bool operator >(TagOpening left, TagOpening right) => left.CompareTo(right) > 0;
+
+    public static bool operator >=(TagOpening left, TagOpening right) => left.CompareTo(right) >= 0;
 
     public static implicit operator Tag(TagOpening opening) => new(opening._start, opening._end);
 

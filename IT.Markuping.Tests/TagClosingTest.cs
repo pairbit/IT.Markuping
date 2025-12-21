@@ -53,7 +53,6 @@ internal class TagClosingTest
     {
         var closing = new TagClosing(10, 11);
 
-        //Fail
         Assert.That(closing.TryFormat(stackalloc char[6], out var written), Is.False);
         Assert.That(written == 0, Is.True);
 
@@ -73,6 +72,20 @@ internal class TagClosingTest
         Assert.That(closing.TryFormat(span, out written), Is.True);
         Assert.That(written == 16, Is.True);
         Assert.That(span.ToString(), Is.EqualTo($"</12345..123456>"));
+    }
+
+    [Test]
+    public void CompareToTest()
+    {
+        var tag1 = new TagClosing(100, 101);
+        var tag2 = new TagClosing(101, 102, true);
+
+        Assert.That(tag1 < tag2, Is.True);
+        Assert.That(tag2 > tag1, Is.True);
+
+        tag2 = tag1;
+        Assert.That(tag1 <= tag2, Is.True);
+        Assert.That(tag1 >= tag2, Is.True);
     }
 
     [Test]

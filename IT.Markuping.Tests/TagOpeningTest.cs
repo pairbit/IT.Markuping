@@ -104,6 +104,20 @@ internal class TagOpeningTest
     }
 
     [Test]
+    public void CompareToTest()
+    {
+        var tag1 = new TagOpening(100, 101, false, false);
+        var tag2 = new TagOpening(101, 102, false, false);
+
+        Assert.That(tag1 < tag2, Is.True);
+        Assert.That(tag2 > tag1, Is.True);
+
+        tag2 = tag1;
+        Assert.That(tag1 <= tag2, Is.True);
+        Assert.That(tag1 >= tag2, Is.True);
+    }
+
+    [Test]
     public void InvalidTest()
     {
         var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new TagOpening(-1, 0, default, default));
