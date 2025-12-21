@@ -43,6 +43,20 @@ public class BytesTagFinder : ITagFinder<byte>
 
     #region ITagFinder
 
+    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out Range ns)
+    {
+        var opening = First(data, name, out ns, TagEndings.Closing);
+        if (!opening.IsEmpty)
+        {
+            var closing = FirstClosing(data.Slice(opening.End), name, data[ns]);
+            if (!closing.IsEmpty)
+            {
+                return new((TagOpening)opening, closing.AddOffset(opening.End));
+            }
+        }
+        return default;
+    }
+
     public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
     {
         var opening = First(data, name, ns, TagEndings.Closing);
@@ -114,6 +128,37 @@ public class BytesTagFinder : ITagFinder<byte>
         return default;
     }
 
+    public Tag First(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out Range ns, TagEndings endings = default)
+    {
+        if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
+
+        var namelen = name.Length;
+        Debug.Assert(namelen > 0);
+
+        var len = data.Length;
+        var min = _lt.Length;
+        do
+        {
+            var index = data.IndexOf(name);
+            if (index < 0) break;
+
+            var end = index + namelen;
+            if (index >= min)
+            {
+                var tag = GetTag(data, index - min, end, endings, out ns);
+                if (!tag.IsEmpty)
+                {
+                    return tag.AddOffset(len - data.Length);
+                }
+            }
+
+            data = data.Slice(end);
+        } while (true);
+
+        ns = default;
+        return default;
+    }
+
     public Tag First(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, TagEndings endings = default)
         => ns.IsEmpty ? First(data, name, endings) : FirstNS(data, name, ns, endings);
 
@@ -121,19 +166,20 @@ public class BytesTagFinder : ITagFinder<byte>
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
 
-        var len = data.Length;
         var namelen = name.Length;
         Debug.Assert(namelen > 0);
 
+        var len = data.Length;
+        var min = _lt.Length;
         do
         {
             var index = data.IndexOf(name);
             if (index < 0) break;
 
             var end = index + namelen;
-            if (index >= _lt.Length)
+            if (index >= min)
             {
-                var tag = GetTag(data, index - _lt.Length, end, endings);
+                var tag = GetTag(data, index - min, end, endings);
                 if (!tag.IsEmpty)
                 {
                     return tag.AddOffset(len - data.Length);
@@ -410,6 +456,24 @@ public class BytesTagFinder : ITagFinder<byte>
         return default;
     }
 
+    private Tag GetTag(ReadOnlySpan<byte> data, int start, int end, TagEndings endings, out Range ns)
+    {
+        Debug.Assert(end > 0 && start < end);
+
+        if (end < data.Length && IsStartOpening(data, ref start, out ns))
+        {
+            var ending = endings.IsAnyClosing() ?
+                GetEndingAnyClosing(data, ref end) :
+                GetEnding(data, ref end, endings);
+            if (ending != TagEnding.None)
+            {
+                return new(start, end, ending);
+            }
+        }
+        ns = default;
+        return default;
+    }
+
     internal bool IsStartOpening(ReadOnlySpan<byte> data, int start, ReadOnlySpan<byte> ns)
     {
         Debug.Assert(start >= 0);
@@ -424,6 +488,49 @@ public class BytesTagFinder : ITagFinder<byte>
         start += ns.Length;
 
         return data.Slice(start, _colon.Length).SequenceEqual(_colon);
+    }
+
+    internal bool IsStartOpening(ReadOnlySpan<byte> data, ref int start, out Range ns)
+    {
+        Debug.Assert(start < data.Length);
+        Debug.Assert(start >= _lt.Length);
+
+        if (data.Slice(start - _lt.Length, _lt.Length).SequenceEqual(_lt))
+        {
+            start -= _lt.Length;
+            ns = default;
+            return true;
+        }
+
+        start -= _colon.Length;
+        if (start >= _lt.Length && data.Slice(start, _colon.Length).SequenceEqual(_colon))
+        {
+            var endNS = start;
+            do
+            {
+                if (data.Slice(start - _lt.Length, _lt.Length).SequenceEqual(_lt))
+                {
+                    ns = start..endNS;
+                    start -= _lt.Length;
+                    return true;
+                }
+                else if (start >= _quot.Length && data.Slice(start - _quot.Length, _quot.Length).SequenceEqual(_quot))
+                {
+                    break;
+                }
+                else if (start >= _apos.Length && data.Slice(start - _apos.Length, _apos.Length).SequenceEqual(_apos))
+                {
+                    break;
+                }
+                else
+                {
+                    //TODO: спорное решение для байтов переменной длины
+                    start -= _minLength;
+                }
+            } while (start >= _lt.Length);
+        }
+        ns = default;
+        return false;
     }
 
     private TagClosing GetClosing(ReadOnlySpan<byte> data, int start, int end, out Range ns)

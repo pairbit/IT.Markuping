@@ -34,6 +34,20 @@ public class ByteTagFinder : ITagFinder<byte>
 
     #region ITagFinder
 
+    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out Range ns)
+    {
+        var opening = First(data, name, out ns, TagEndings.Closing);
+        if (!opening.IsEmpty)
+        {
+            var closing = FirstClosing(data.Slice(opening.End), name, data[ns]);
+            if (!closing.IsEmpty)
+            {
+                return new((TagOpening)opening, closing.AddOffset(opening.End));
+            }
+        }
+        return default;
+    }
+
     public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
     {
         var opening = First(data, name, ns, TagEndings.Closing);
@@ -432,7 +446,7 @@ public class ByteTagFinder : ITagFinder<byte>
     {
         Debug.Assert(end > 0 && start < end);
 
-        if (end < data.Length && IsStartOpening(data, start, out ns))
+        if (end < data.Length && IsStartOpening(data, ref start, out ns))
         {
             var ending = endings.IsAnyClosing() ?
                 GetEndingAnyClosing(data, ref end) :
@@ -456,7 +470,7 @@ public class ByteTagFinder : ITagFinder<byte>
                data.Slice(start, ns.Length).SequenceEqual(ns);
     }
 
-    internal bool IsStartOpening(ReadOnlySpan<byte> data, int start, out Range ns)
+    internal bool IsStartOpening(ReadOnlySpan<byte> data, ref int start, out Range ns)
     {
         Debug.Assert(start < data.Length);
         Debug.Assert(start >= 0);

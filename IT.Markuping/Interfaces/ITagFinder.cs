@@ -4,7 +4,7 @@ namespace IT.Markuping.Interfaces;
 
 public interface ITagFinder<T> where T : unmanaged
 {
-    //Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out Range ns);
+    Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out Range ns);
 
     Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns);
 
@@ -16,7 +16,7 @@ public interface ITagFinder<T> where T : unmanaged
 
     Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name);
 
-    //Tag First(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out Range ns, TagEndings endings = default);
+    Tag First(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out Range ns, TagEndings endings = default);
 
     Tag First(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, TagEndings endings = default);
 
