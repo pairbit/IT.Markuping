@@ -94,6 +94,11 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
                 written = openingWritten + closingWritten;
                 return true;
             }
+            else
+            {
+                //TODO: clear openingWritten
+                //chars.Slice(0, openingWritten).Clear();
+            }
         }
         written = 0;
         return false;

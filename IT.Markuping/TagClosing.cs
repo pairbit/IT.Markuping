@@ -125,6 +125,16 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
                     chars[written - 1] = '>';
                     return true;
                 }
+                else
+                {
+                    //TODO: clear startWritten and endWritten
+                    //chars.Slice(2, startWritten + 2 + endWritten).Clear();
+                }
+            }
+            else
+            {
+                //TODO: clear startWritten
+                //chars.Slice(2, startWritten).Clear();
             }
         }
         written = 0;

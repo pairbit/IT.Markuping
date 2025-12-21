@@ -129,6 +129,16 @@ public readonly struct TagOpening : IComparable<TagOpening>, IEquatable<TagOpeni
                     chars[written - 1] = '>';
                     return true;
                 }
+                else
+                {
+                    //TODO: clear startWritten and endWritten
+                    //chars.Slice(1, startWritten + 2 + endWritten).Clear();
+                }
+            }
+            else
+            {
+                //TODO: clear startWritten
+                //chars.Slice(1, startWritten).Clear();
             }
         }
         written = 0;
