@@ -149,7 +149,7 @@ public class BytesTagFinder : ITagFinder<byte>
                 if (!tag.IsEmpty)
                 {
                     var offset = len - data.Length;
-                    ns = ns.AddOffset(offset);
+                    ns = ns.AddOffsetIfNotZero(offset);
                     return tag.AddOffset(offset);
                 }
             }
