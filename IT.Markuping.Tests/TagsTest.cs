@@ -39,6 +39,22 @@ internal class TagsTest
         Assert.That(tags.TryFormat(span, out written), Is.True);
         Assert.That(written == 16, Is.True);
         Assert.That(span.ToString(), Is.EqualTo("<0..10></10..11>"));
+
+        //HasSpace closing
+        tags = new Tags(new(0, 10, false, false), new(10, 11, true));
+        Assert.That(tags.TryFormat(stackalloc char[13], out written), Is.False);
+        Assert.That(written == 0, Is.True);
+
+        Assert.That(tags.TryFormat(stackalloc char[14], out written), Is.False);
+        Assert.That(written == 0, Is.True);
+
+        Assert.That(tags.TryFormat(stackalloc char[16], out written), Is.False);
+        Assert.That(written == 0, Is.True);
+
+        span = stackalloc char[17];
+        Assert.That(tags.TryFormat(span, out written), Is.True);
+        Assert.That(written == 17, Is.True);
+        Assert.That(span.ToString(), Is.EqualTo("<0..10></10..11 >"));
     }
 
     [Test]
