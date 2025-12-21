@@ -111,8 +111,7 @@ internal class TagOpeningTest
     [Test]
     public void TryFormatTest()
     {
-        var tag = new TagOpening(10, 11);
-
+        var tag = new TagOpening(10, 11, hasAttributes: false, isSelfClosing: false);
         Assert.That(tag.TryFormat(stackalloc char[5], out var written), Is.False);
         Assert.That(written == 0, Is.True);
 
@@ -124,7 +123,7 @@ internal class TagOpeningTest
         Assert.That(written == 8, Is.True);
         Assert.That(span.ToString(), Is.EqualTo($"<10..11>"));
 
-        tag = new TagOpening(12345, 123456);
+        tag = new TagOpening(12345, 123456, hasAttributes: false, isSelfClosing: false);
         Assert.That(tag.TryFormat(stackalloc char[14], out written), Is.False);
         Assert.That(written == 0, Is.True);
 
@@ -132,6 +131,28 @@ internal class TagOpeningTest
         Assert.That(tag.TryFormat(span, out written), Is.True);
         Assert.That(written == 15, Is.True);
         Assert.That(span.ToString(), Is.EqualTo($"<12345..123456>"));
+
+        //SelfClosing
+        tag = new TagOpening(10, 11, hasAttributes: false, isSelfClosing: true);
+        Assert.That(tag.TryFormat(stackalloc char[6], out written), Is.False);
+        Assert.That(written == 0, Is.True);
+
+        Assert.That(tag.TryFormat(stackalloc char[7], out written), Is.False);
+        Assert.That(written == 0, Is.True);
+
+        span = stackalloc char[9];
+        Assert.That(tag.TryFormat(span, out written), Is.True);
+        Assert.That(written == 9, Is.True);
+        Assert.That(span.ToString(), Is.EqualTo($"<10..11/>"));
+
+        tag = new TagOpening(12345, 123456, hasAttributes: false, isSelfClosing: true);
+        Assert.That(tag.TryFormat(stackalloc char[15], out written), Is.False);
+        Assert.That(written == 0, Is.True);
+
+        span = stackalloc char[16];
+        Assert.That(tag.TryFormat(span, out written), Is.True);
+        Assert.That(written == 16, Is.True);
+        Assert.That(span.ToString(), Is.EqualTo($"<12345..123456/>"));
     }
 
     [Test]
