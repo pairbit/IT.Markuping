@@ -5,7 +5,7 @@ namespace IT.Markuping.Tests;
 internal class TagClosingTest
 {
     [Test]
-    public void Test()
+    public void CtorTest()
     {
         var closing = new TagClosing();
         Assert.That(closing.Start, Is.EqualTo(0));

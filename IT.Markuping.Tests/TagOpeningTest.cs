@@ -109,6 +109,32 @@ internal class TagOpeningTest
     }
 
     [Test]
+    public void TryFormatTest()
+    {
+        var tag = new TagOpening(10, 11);
+
+        Assert.That(tag.TryFormat(stackalloc char[5], out var written), Is.False);
+        Assert.That(written == 0, Is.True);
+
+        Assert.That(tag.TryFormat(stackalloc char[6], out written), Is.False);
+        Assert.That(written == 0, Is.True);
+
+        Span<char> span = stackalloc char[8];
+        Assert.That(tag.TryFormat(span, out written), Is.True);
+        Assert.That(written == 8, Is.True);
+        Assert.That(span.ToString(), Is.EqualTo($"<10..11>"));
+
+        tag = new TagOpening(12345, 123456);
+        Assert.That(tag.TryFormat(stackalloc char[14], out written), Is.False);
+        Assert.That(written == 0, Is.True);
+
+        span = stackalloc char[15];
+        Assert.That(tag.TryFormat(span, out written), Is.True);
+        Assert.That(written == 15, Is.True);
+        Assert.That(span.ToString(), Is.EqualTo($"<12345..123456>"));
+    }
+
+    [Test]
     public void CompareToTest()
     {
         var tag1 = new TagOpening(100, 101, false, false);
