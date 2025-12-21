@@ -45,7 +45,7 @@ internal class TagClosingTest
         Assert.That(closing.ToString(), Is.EqualTo("</66..77 >"));
 
         closing = new(int.MaxValue - 1, int.MaxValue, hasSpace: true);
-        Assert.That(closing.ToString(), Is.EqualTo($"</2147483646..2147483647 >"));
+        Assert.That(closing.ToString(), Is.EqualTo("</2147483646..2147483647 >"));
     }
 
     [Test]
@@ -62,7 +62,7 @@ internal class TagClosingTest
         Span<char> span = stackalloc char[9];
         Assert.That(closing.TryFormat(span, out written), Is.True);
         Assert.That(written == 9, Is.True);
-        Assert.That(span.ToString(), Is.EqualTo($"</10..11>"));
+        Assert.That(span.ToString(), Is.EqualTo("</10..11>"));
 
         closing = new TagClosing(12345, 123456);
         Assert.That(closing.TryFormat(stackalloc char[15], out written), Is.False);
@@ -71,7 +71,7 @@ internal class TagClosingTest
         span = stackalloc char[16];
         Assert.That(closing.TryFormat(span, out written), Is.True);
         Assert.That(written == 16, Is.True);
-        Assert.That(span.ToString(), Is.EqualTo($"</12345..123456>"));
+        Assert.That(span.ToString(), Is.EqualTo("</12345..123456>"));
 
         //space
         closing = new TagClosing(10, 11, hasSpace: true);
@@ -85,7 +85,7 @@ internal class TagClosingTest
         span = stackalloc char[10];
         Assert.That(closing.TryFormat(span, out written), Is.True);
         Assert.That(written == 10, Is.True);
-        Assert.That(span.ToString(), Is.EqualTo($"</10..11 >"));
+        Assert.That(span.ToString(), Is.EqualTo("</10..11 >"));
 
         closing = new TagClosing(12345, 123456, hasSpace: true);
         Assert.That(closing.TryFormat(stackalloc char[16], out written), Is.False);
@@ -94,7 +94,7 @@ internal class TagClosingTest
         span = stackalloc char[17];
         Assert.That(closing.TryFormat(span, out written), Is.True);
         Assert.That(written == 17, Is.True);
-        Assert.That(span.ToString(), Is.EqualTo($"</12345..123456 >"));
+        Assert.That(span.ToString(), Is.EqualTo("</12345..123456 >"));
     }
 
     [Test]

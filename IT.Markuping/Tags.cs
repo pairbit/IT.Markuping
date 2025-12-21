@@ -1,12 +1,18 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace IT.Markuping;
 
-//<0..3></10..20>
-public readonly struct Tags : IEquatable<Tags>
+[DebuggerDisplay("{ToString(),nq}")]
+public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
+#if NET6_0_OR_GREATER
+, ISpanFormattable
+#endif
 {
     private readonly TagOpening _opening;
     private readonly TagClosing _closing;
+
+    #region Props
 
     public TagOpening Opening => _opening;
 
@@ -26,6 +32,8 @@ public readonly struct Tags : IEquatable<Tags>
 
     public bool HasAttributes => _opening.HasAttributes;
 
+    #endregion Props
+
     public Tags(TagOpening opening, TagClosing closing)
     {
         if (opening.IsSelfClosing) throw new ArgumentOutOfRangeException(nameof(opening));
@@ -41,13 +49,87 @@ public readonly struct Tags : IEquatable<Tags>
         _closing = closing;
     }
 
-    public override int GetHashCode() => HashCode.Combine(_opening, _closing);
+    #region Comparison
+
+    public int CompareTo(Tags other)
+    {
+        var compared = _opening.CompareTo(other._opening);
+
+        Debug.Assert(_closing.CompareTo(other._closing) == compared);
+
+        return compared;
+    }
+
+    public bool Equals(Tags other) => _opening.Equals(other._opening) && _closing.Equals(other._closing);
 
     public override bool Equals(object? obj) => obj is Tags tags && Equals(tags);
 
-    public bool Equals(Tags other) => _opening.Equals(other._opening) && _closing.Equals(other._closing);
+    public override int GetHashCode() => HashCode.Combine(_opening, _closing);
+
+    #endregion Comparison
+
+    #region ToString
+
+    public override string ToString()
+    {
+        Span<char> span = stackalloc char[4 + (2 * 10) + 6 + (2 * 10)];
+
+        var status = TryFormat(span, out var written);
+
+        Debug.Assert(status);
+
+        return new(span.Slice(0, written));
+    }
+
+    public bool TryFormat(Span<char> chars, out int written)
+    {
+        //<0..3></3..5>
+        //<0..3></3..5 >
+        //min-max = 13-50
+        if (chars.Length >= 13 && _opening.TryFormat(chars, out var openingWritten))
+        {
+            if (chars.Length >= openingWritten + openingWritten &&
+                _closing.TryFormat(chars.Slice(openingWritten), out var closingWritten))
+            {
+                written = openingWritten + closingWritten;
+                return true;
+            }
+        }
+        written = 0;
+        return false;
+    }
+
+    #endregion ToString
+
+    #region Formattable
+
+    string IFormattable.ToString(string? format, IFormatProvider? formatProvider)
+        => ToString();
+
+#if NET6_0_OR_GREATER
+    bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+    {
+        if (format.Length != 0) throw new FormatException();
+
+        return TryFormat(destination, out charsWritten);
+    }
+#endif
+
+    #endregion Formattable
+
+    #region Operators
 
     public static bool operator ==(Tags left, Tags right) => left.Equals(right);
 
     public static bool operator !=(Tags left, Tags right) => !left.Equals(right);
+
+    public static bool operator <(Tags left, Tags right) => left.CompareTo(right) < 0;
+
+    public static bool operator <=(Tags left, Tags right) => left.CompareTo(right) <= 0;
+
+    public static bool operator >(Tags left, Tags right) => left.CompareTo(right) > 0;
+
+    public static bool operator >=(Tags left, Tags right) => left.CompareTo(right) >= 0;
+
+    #endregion Operators
 }
