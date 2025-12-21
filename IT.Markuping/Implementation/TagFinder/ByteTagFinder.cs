@@ -105,6 +105,36 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
+    public Tag First(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out Range ns, TagEndings endings = default)
+    {
+        if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
+
+        var namelen = name.Length;
+        Debug.Assert(namelen > 0);
+
+        var len = data.Length;
+        do
+        {
+            var index = data.IndexOf(name);
+            if (index < 0) break;
+
+            var end = index + namelen;
+            if (index > 0)
+            {
+                var tag = GetTag(data, index - 1, end, endings, out ns);
+                if (!tag.IsEmpty)
+                {
+                    return tag.AddOffset(len - data.Length);
+                }
+            }
+
+            data = data.Slice(end);
+        } while (true);
+
+        ns = default;
+        return default;
+    }
+
     public Tag First(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, TagEndings endings = default)
         => ns.IsEmpty ? First(data, name, endings) : FirstNS(data, name, ns, endings);
 
@@ -398,6 +428,24 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
+    private Tag GetTag(ReadOnlySpan<byte> data, int start, int end, TagEndings endings, out Range ns)
+    {
+        Debug.Assert(end > 0 && start < end);
+
+        if (end < data.Length && IsStartOpening(data, start, out ns))
+        {
+            var ending = endings.IsAnyClosing() ?
+                GetEndingAnyClosing(data, ref end) :
+                GetEnding(data, ref end, endings);
+            if (ending != TagEnding.None)
+            {
+                return new(start, end, ending);
+            }
+        }
+        ns = default;
+        return default;
+    }
+
     internal bool IsStartOpening(ReadOnlySpan<byte> data, int start, ReadOnlySpan<byte> ns)
     {
         Debug.Assert(start >= 0);
@@ -406,6 +454,38 @@ public class ByteTagFinder : ITagFinder<byte>
         return data[start++] == _tokens._lt &&
                data[start + ns.Length] == _tokens._colon &&
                data.Slice(start, ns.Length).SequenceEqual(ns);
+    }
+
+    internal bool IsStartOpening(ReadOnlySpan<byte> data, int start, out Range ns)
+    {
+        Debug.Assert(start < data.Length);
+        Debug.Assert(start >= 0);
+
+        var token = data[start];
+        if (token == _tokens._lt)
+        {
+            ns = default;
+            return true;
+        }
+        else if (token == _tokens._colon && start > 1)
+        {
+            var endNS = start;
+            do
+            {
+                token = data[--start];
+                if (token == _tokens._lt)
+                {
+                    ns = (start + 1)..endNS;
+                    return true;
+                }
+                else if (token == _tokens._quot || token == _tokens._apos)
+                {
+                    break;
+                }
+            } while (start > 0);
+        }
+        ns = default;
+        return false;
     }
 
     private TagClosing GetClosing(ReadOnlySpan<byte> data, int start, int end, out Range ns)
