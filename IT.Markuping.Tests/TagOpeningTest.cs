@@ -13,6 +13,7 @@ internal class TagOpeningTest
         Assert.That(tag.Length, Is.EqualTo(0));
         Assert.That(tag.HasAttributes, Is.False);
         Assert.That(tag.IsSelfClosing, Is.False);
+        Assert.That(tag.ToString(), Is.EqualTo("<0..0>"));
 
         tag = default;
         Assert.That(tag.Start, Is.EqualTo(0));
@@ -27,6 +28,7 @@ internal class TagOpeningTest
         Assert.That(tag.Length, Is.EqualTo(1));
         Assert.That(tag.HasAttributes, Is.False);
         Assert.That(tag.IsSelfClosing, Is.True);
+        Assert.That(tag.ToString(), Is.EqualTo("<0..1/>"));
 
         tag = new TagOpening(10, 100, hasAttributes: true, isSelfClosing: true);
         Assert.That(tag.Start, Is.EqualTo(10));
@@ -34,6 +36,7 @@ internal class TagOpeningTest
         Assert.That(tag.Length, Is.EqualTo(90));
         Assert.That(tag.HasAttributes, Is.True);
         Assert.That(tag.IsSelfClosing, Is.True);
+        Assert.That(tag.ToString(), Is.EqualTo("<10..100/>"));
 
         tag = new TagOpening(5, 10, hasAttributes: true, isSelfClosing: false);
         Assert.That(tag.Start, Is.EqualTo(5));
@@ -41,12 +44,14 @@ internal class TagOpeningTest
         Assert.That(tag.Length, Is.EqualTo(5));
         Assert.That(tag.HasAttributes, Is.True);
         Assert.That(tag.IsSelfClosing, Is.False);
+        Assert.That(tag.ToString(), Is.EqualTo("<5..10>"));
 
         tag = new TagOpening(1, 3, hasAttributes: false, isSelfClosing: false);
         Assert.That(tag.Start, Is.EqualTo(1));
         Assert.That(tag.End, Is.EqualTo(3));
         Assert.That(tag.HasAttributes, Is.False);
         Assert.That(tag.IsSelfClosing, Is.False);
+        Assert.That(tag.ToString(), Is.EqualTo("<1..3>"));
     }
 
     [Test]
