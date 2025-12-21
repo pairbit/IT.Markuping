@@ -97,28 +97,23 @@ internal class TagFinderByteTester
         PairsTest(tagData);
     }
 
+    #region PairsTest
+
     public void PairsTest(TagData tagData)
     {
-        var data = _encoding.GetBytes($"<{tagData}></{tagData}>").AsSpan();
-        var first = _finder.FirstPair(data, tagData.Name, tagData.Namespace);
-        Assert.That(data[first.Outer].SequenceEqual(data), Is.True);
-        Assert.That(data[first.Inner].IsEmpty, Is.True);
+        FirstLastPair($"<{tagData}></{tagData}>", tagData, string.Empty);
 
-        var last = _finder.LastPair(data, tagData.Name, out var ns);
-        Assert.That(data[ns].SequenceEqual(tagData.Namespace), Is.True);
-        Assert.That(data[last.Outer].SequenceEqual(data), Is.True);
-        Assert.That(data[last.Inner].IsEmpty, Is.True);
+        var data = _encoding.GetBytes($"<{tagData}>first</{tagData}><{tagData}>last</{tagData}>").AsSpan();
 
-        data = _encoding.GetBytes($"<{tagData}>first</{tagData}><{tagData}>last</{tagData}>").AsSpan();
-
-        first = _finder.FirstPair(data, tagData.Name, tagData.Namespace);
+        var first = FirstPair(data, tagData);
         Assert.That(data[first.Outer].SequenceEqual(_encoding.GetBytes($"<{tagData}>first</{tagData}>")), Is.True);
         Assert.That(data[first.Inner].SequenceEqual(_encoding.GetBytes("first")), Is.True);
 
-        last = _finder.LastPair(data, tagData.Name, out ns);
-        Assert.That(data[ns].SequenceEqual(tagData.Namespace), Is.True);
+        var last = LastPair(data, tagData);
         Assert.That(data[last.Outer].SequenceEqual(_encoding.GetBytes($"<{tagData}>last</{tagData}>")), Is.True);
         Assert.That(data[last.Inner].SequenceEqual(_encoding.GetBytes("last")), Is.True);
+
+        Assert.That(first, Is.Not.EqualTo(last));
 
         //data = _encoding.GetBytes($"<{tagFullName}><{tagFullName}>1</{tagFullName}></{tagFullName}>").AsSpan();
         //last = _finder.LastPair(data, name, out ns);
@@ -127,6 +122,48 @@ internal class TagFinderByteTester
         //Assert.That(data[last.Outer].SequenceEqual(data), Is.True);
         //Assert.That(data[last.Inner].SequenceEqual(_encoding.GetBytes($"<{tagFullName}>1</{tagFullName}>")), Is.True);
     }
+
+    private Tags FirstLastPair(string data, TagData tagData, string inner)
+    {
+        return FirstLastPair(_encoding.GetBytes(data), tagData, _encoding.GetBytes(inner));
+    }
+
+    private Tags FirstLastPair(ReadOnlySpan<byte> data, TagData tagData, ReadOnlySpan<byte> inner)
+    {
+        var tags = FirstPair(data, tagData);
+        Assert.That(LastPair(data, tagData), Is.EqualTo(tags));
+
+        Assert.That(data[tags.Outer].SequenceEqual(data), Is.True);
+        Assert.That(data[tags.Inner].SequenceEqual(inner), Is.True);
+
+        return tags;
+    }
+
+    private Tags FirstPair(ReadOnlySpan<byte> data, TagData tagData)
+    {
+        var tags = _finder.FirstPair(data, tagData.FullName);
+        Assert.That(_finder.FirstPair(data, tagData.Name, tagData.Namespace), Is.EqualTo(tags));
+
+        return tags;
+    }
+
+    private Tags LastPair(ReadOnlySpan<byte> data, TagData tagData)
+    {
+        var tags = _finder.LastPair(data, tagData.FullName);
+        Assert.That(_finder.LastPair(data, tagData.Name, tagData.Namespace), Is.EqualTo(tags));
+        Assert.That(_finder.LastPair(data, tagData.Name, out var ns), Is.EqualTo(tags));
+        Assert.That(data[ns].SequenceEqual(tagData.Namespace), Is.True);
+
+        if (tagData.HasNamespace)
+        {
+            Assert.That(_finder.LastPair(data, tagData.FullName, out ns), Is.EqualTo(tags));
+            Assert.That(data[ns].IsEmpty, Is.True);
+        }
+
+        return tags;
+    }
+
+    #endregion PairsTest
 
     #region FirstLastClosing
 
