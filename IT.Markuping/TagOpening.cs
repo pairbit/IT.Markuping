@@ -2,6 +2,8 @@
 
 namespace IT.Markuping;
 
+//<0..3>
+//<10..13 />
 public readonly struct TagOpening : IEquatable<TagOpening>
 {
     private readonly int _start;
