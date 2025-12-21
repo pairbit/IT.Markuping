@@ -145,6 +145,8 @@ internal class TagFinderByteTester
 
         if (!tagData.HasNamespace)
         {
+            //TODO: =
+            //FailClosing($"<tag></tag><b c=:{tagData}> />", tagData);
             FailClosing($"<tag></tag><b c=\":{tagData}>\" />", tagData);
             FailClosing($"<tag></tag><b c=\"ns:{tagData}>\" />", tagData);
             FailClosing($"<tag></tag><b c=':{tagData} \r\n\t>' />", tagData);
@@ -153,20 +155,42 @@ internal class TagFinderByteTester
         }
     }
 
-    private TagClosing FirstLastClosing(string data, TagData tagData, bool hasSpace = false)
+    private void FirstLastClosing(string data, TagData tagData, bool hasSpace = false)
     {
-        return FirstLastClosing(_encoding.GetBytes(data), tagData, hasSpace);
+        FirstLastClosing(_encoding.GetBytes(data), tagData, hasSpace);
     }
 
-    private TagClosing FirstLastClosing(ReadOnlySpan<byte> data, TagData tagData, bool hasSpace = false)
+    private void FirstLastClosing(ReadOnlySpan<byte> data, TagData tagData, bool hasSpace = false)
+    {
+        EqFirstLastClosing(data, tagData, hasSpace);
+
+        //Double data
+        Span<byte> dd = new byte[data.Length * 2];
+        data.CopyTo(dd);
+        data.CopyTo(dd.Slice(data.Length));
+
+        //var ddstr = _encoding.GetString(dd);
+
+        NeqFirstLastClosing(dd, data, tagData, hasSpace);
+    }
+
+    private void EqFirstLastClosing(ReadOnlySpan<byte> data, TagData tagData, bool hasSpace = false)
     {
         var tag = FirstClosing(data, tagData, hasSpace);
-
         Assert.That(LastClosing(data, tagData, hasSpace), Is.EqualTo(tag));
 
         Assert.That(data[tag.Range].SequenceEqual(data), Is.True);
+    }
 
-        return tag;
+    private void NeqFirstLastClosing(ReadOnlySpan<byte> dd, ReadOnlySpan<byte> data, TagData tagData, bool hasSpace = false)
+    {
+        var first = FirstClosing(dd, tagData, hasSpace);
+        Assert.That(dd[first.Range].SequenceEqual(data), Is.True);
+
+        var last = LastClosing(dd, tagData, hasSpace);
+        Assert.That(dd[last.Range].SequenceEqual(data), Is.True);
+
+        Assert.That(first, Is.Not.EqualTo(last));
     }
 
     #region Success
