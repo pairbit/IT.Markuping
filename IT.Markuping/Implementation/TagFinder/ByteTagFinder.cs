@@ -138,7 +138,9 @@ public class ByteTagFinder : ITagFinder<byte>
                 var tag = GetTag(data, index - 1, end, endings, out ns);
                 if (!tag.IsEmpty)
                 {
-                    return tag.AddOffset(len - data.Length);
+                    var offset = len - data.Length;
+                    ns = ns.AddOffset(offset);
+                    return tag.AddOffset(offset);
                 }
             }
 
