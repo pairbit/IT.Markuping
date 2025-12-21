@@ -224,9 +224,7 @@ internal class TagFinderByteTester
 
     private void FailClosing(string str, TagData tagData)
     {
-        var data = _encoding.GetBytes(str);
-        FailFirstClosing(data, tagData);
-        FailLastClosing(data, tagData);
+        FailClosing(_encoding.GetBytes(str), tagData);
     }
 
     private void FailClosing(ReadOnlySpan<byte> data, TagData tagData)
