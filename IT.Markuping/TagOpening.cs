@@ -119,8 +119,8 @@ public readonly struct TagOpening : IComparable<TagOpening>, IEquatable<TagOpeni
             if (chars.Length >= minLength + startWritten + startWritten &&
                 ((uint)End).TryFormat(chars.Slice(3 + startWritten), out var endWritten))
             {
-                written = startWritten + endWritten + minLength;
-                if (written <= chars.Length)
+                written = minLength + startWritten + endWritten;
+                if (chars.Length >= written)
                 {
                     chars[0] = '<';
                     chars[startWritten + 1] = '.';

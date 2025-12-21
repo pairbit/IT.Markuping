@@ -94,7 +94,7 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
 
     public override string ToString()
     {
-        Span<char> span = stackalloc char[5 + (2 * 10)];
+        Span<char> span = stackalloc char[6 + (2 * 10)];
 
         var status = TryFormat(span, out var written);
 
@@ -105,20 +105,23 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
 
     public bool TryFormat(Span<char> chars, out int written)
     {
-        //</10..13>
-        //minLength = 7-25
-        if (chars.Length >= 7 && ((uint)Start).TryFormat(chars.Slice(2), out var startWritten))
+        var minLength = HasSpace ? 6 : 5;
+        //</0..1>
+        //</10..13 >
+        //minLength = 7-26
+        if (chars.Length >= minLength + 2 && ((uint)Start).TryFormat(chars.Slice(2), out var startWritten))
         {
-            if (chars.Length >= 5 + startWritten + startWritten &&
+            if (chars.Length >= minLength + startWritten + startWritten &&
                 ((uint)End).TryFormat(chars.Slice(4 + startWritten), out var endWritten))
             {
-                written = startWritten + endWritten + 5;
-                if (written <= chars.Length)
+                written = minLength + startWritten + endWritten;
+                if (chars.Length >= written)
                 {
                     chars[0] = '<';
                     chars[1] = '/';
                     chars[startWritten + 2] = '.';
                     chars[startWritten + 3] = '.';
+                    if (minLength == 6) chars[written - 2] = ' ';
                     chars[written - 1] = '>';
                     return true;
                 }
