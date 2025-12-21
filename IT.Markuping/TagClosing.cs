@@ -4,7 +4,11 @@ using System.Diagnostics;
 namespace IT.Markuping;
 
 //</10..13>
-public readonly struct TagClosing : IEquatable<TagClosing>
+[DebuggerDisplay("{ToString(),nq}")]
+public readonly struct TagClosing : IEquatable<TagClosing>, IFormattable
+#if NET6_0_OR_GREATER
+, ISpanFormattable
+#endif
 {
     private readonly int _start;
     private readonly int _end;
@@ -62,7 +66,7 @@ public readonly struct TagClosing : IEquatable<TagClosing>
     {
         Span<char> span = stackalloc char[5 + (2 * 10)];
 
-        var status = TryWrite(span, out var written);
+        var status = TryFormat(span, out var written);
 
         Debug.Assert(status);
 
@@ -73,7 +77,7 @@ public readonly struct TagClosing : IEquatable<TagClosing>
 
     public override bool Equals(object? obj) => obj is TagClosing tag && Equals(tag);
 
-    public bool TryWrite(Span<char> chars, out int written)
+    public bool TryFormat(Span<char> chars, out int written)
     {
         //</10..13>
         //minLength = 7-25
@@ -101,6 +105,22 @@ public readonly struct TagClosing : IEquatable<TagClosing>
     public TagClosing AddOffset(int offset) => new(_start, _end, offset);
 
     public bool Equals(TagClosing other) => _start == other._start && _end == other._end;
+
+    #region Formattable
+
+    string IFormattable.ToString(string? format, IFormatProvider? formatProvider)
+        => ToString();
+
+#if NET6_0_OR_GREATER
+    bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+    {
+        if (format.Length != 0) throw new FormatException();
+
+        return TryFormat(destination, out charsWritten);
+    }
+#endif
+
+    #endregion Formattable
 
     public static bool operator ==(TagClosing left, TagClosing right) => left.Equals(right);
 

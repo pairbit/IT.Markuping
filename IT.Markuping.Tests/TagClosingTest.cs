@@ -49,28 +49,28 @@ internal class TagClosingTest
     }
 
     [Test]
-    public void TryWriteTest()
+    public void TryFormatTest()
     {
         var closing = new TagClosing(10, 11);
 
         //Fail
-        Assert.That(closing.TryWrite(stackalloc char[6], out var written), Is.False);
+        Assert.That(closing.TryFormat(stackalloc char[6], out var written), Is.False);
         Assert.That(written == 0, Is.True);
 
-        Assert.That(closing.TryWrite(stackalloc char[7], out written), Is.False);
+        Assert.That(closing.TryFormat(stackalloc char[7], out written), Is.False);
         Assert.That(written == 0, Is.True);
 
         Span<char> span = stackalloc char[9];
-        Assert.That(closing.TryWrite(span, out written), Is.True);
+        Assert.That(closing.TryFormat(span, out written), Is.True);
         Assert.That(written == 9, Is.True);
         Assert.That(span.ToString(), Is.EqualTo($"</10..11>"));
 
         closing = new TagClosing(12345, 123456);
-        Assert.That(closing.TryWrite(stackalloc char[15], out written), Is.False);
+        Assert.That(closing.TryFormat(stackalloc char[15], out written), Is.False);
         Assert.That(written == 0, Is.True);
 
         span = stackalloc char[16];
-        Assert.That(closing.TryWrite(span, out written), Is.True);
+        Assert.That(closing.TryFormat(span, out written), Is.True);
         Assert.That(written == 16, Is.True);
         Assert.That(span.ToString(), Is.EqualTo($"</12345..123456>"));
     }
