@@ -145,30 +145,11 @@ internal class TagFinderByteTester
 
         if (!tagData.HasNamespace)
         {
-            var data = _encoding.GetBytes($"<tag></tag><b c=\":{tagData}>\" />");
-            var closing = _finder.LastClosing(data, tagData.Name, out var ns);
-            Assert.That(closing.IsEmpty, Is.True);
-            Assert.That(ns.Start.Value, Is.EqualTo(ns.End.Value));
-
-            data = _encoding.GetBytes($"<tag></tag><b c=\"ns:{tagData}>\" />");
-            closing = _finder.LastClosing(data, tagData.Name, out ns);
-            Assert.That(closing.IsEmpty, Is.True);
-            Assert.That(ns.Start.Value, Is.EqualTo(ns.End.Value));
-
-            data = _encoding.GetBytes($"<tag></tag><b c=':{tagData} \r\n\t>' />");
-            closing = _finder.LastClosing(data, tagData.Name, out ns);
-            Assert.That(closing.IsEmpty, Is.True);
-            Assert.That(ns.Start.Value, Is.EqualTo(ns.End.Value));
-
-            data = _encoding.GetBytes($"<tag></tag><b c='ns:{tagData} \r\n\t>' />");
-            closing = _finder.LastClosing(data, tagData.Name, out ns);
-            Assert.That(closing.IsEmpty, Is.True);
-            Assert.That(ns.Start.Value, Is.EqualTo(ns.End.Value));
-
-            data = _encoding.GetBytes($"</ns/:{tagData}>");
-            closing = _finder.LastClosing(data, tagData.Name, out ns);
-            Assert.That(closing.IsEmpty, Is.True);
-            Assert.That(ns.Start.Value, Is.EqualTo(ns.End.Value));
+            FailClosing($"<tag></tag><b c=\":{tagData}>\" />", tagData);
+            FailClosing($"<tag></tag><b c=\"ns:{tagData}>\" />", tagData);
+            FailClosing($"<tag></tag><b c=':{tagData} \r\n\t>' />", tagData);
+            FailClosing($"<tag></tag><b c='ns:{tagData} \r\n\t>' />", tagData);
+            FailClosing($"</ns/:{tagData}>", tagData);
         }
     }
 
