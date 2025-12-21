@@ -90,7 +90,7 @@ internal class TagFinderByteTester
 
     public void Test(TagData tagData)
     {
-        LastClosingTest(tagData);
+        FirstLastClosingTest(tagData);
 
         FirstLastTest(tagData);
 
@@ -128,21 +128,20 @@ internal class TagFinderByteTester
         //Assert.That(data[last.Inner].SequenceEqual(_encoding.GetBytes($"<{tagFullName}>1</{tagFullName}>")), Is.True);
     }
 
-    #region LastClosing
+    #region FirstLastClosing
 
-    public void LastClosingTest(TagData tagData)
+    public void FirstLastClosingTest(TagData tagData)
     {
-        LastClosing($"</{tagData}>", tagData);
-        LastClosing($"</{tagData} >", tagData, hasSpace: true);
-        LastClosing($"</{tagData}\n\r\t >", tagData, hasSpace: true);
+        FirstLastClosing($"</{tagData}>", tagData);
+        FirstLastClosing($"</{tagData} >", tagData, hasSpace: true);
+        FirstLastClosing($"</{tagData}\n\r\t >", tagData, hasSpace: true);
 
-        //Fail
-        LastClosing($"</{tagData}\n\r\t b>", tagData, fail: true);
-        LastClosing($"</{tagData}\n\r\t ", tagData, fail: true);
-        LastClosing($"/{tagData}>", tagData, fail: true);
-        LastClosing($"<{tagData}>", tagData, fail: true);
-        LastClosing($"{tagData}>", tagData, fail: true);
-        LastClosing(tagData.FullName, tagData, fail: true);
+        FailClosing($"</{tagData}\n\r\t b>", tagData);
+        FailClosing($"</{tagData}\n\r\t ", tagData);
+        FailClosing($"/{tagData}>", tagData);
+        FailClosing($"<{tagData}>", tagData);
+        FailClosing($"{tagData}>", tagData);
+        FailClosing(tagData.FullName, tagData);
 
         if (!tagData.HasNamespace)
         {
@@ -173,25 +172,59 @@ internal class TagFinderByteTester
         }
     }
 
-    private TagClosing LastClosing(string data, TagData tagData, bool hasSpace = false, bool fail = false)
+    private TagClosing FirstLastClosing(string data, TagData tagData, bool hasSpace = false)
     {
-        return LastClosing(_encoding.GetBytes(data), tagData, hasSpace, fail);
+        return FirstLastClosing(_encoding.GetBytes(data), tagData, hasSpace);
     }
 
-    private TagClosing LastClosing(ReadOnlySpan<byte> data, TagData tagData, bool hasSpace = false, bool fail = false)
+    private TagClosing FirstLastClosing(ReadOnlySpan<byte> data, TagData tagData, bool hasSpace = false)
+    {
+        var tag = FirstClosing(data, tagData, hasSpace);
+
+        Assert.That(LastClosing(data, tagData, hasSpace), Is.EqualTo(tag));
+
+        Assert.That(data[tag.Range].SequenceEqual(data), Is.True);
+
+        return tag;
+    }
+
+    #region Success
+
+    private TagClosing FirstClosing(string data, TagData tagData, bool hasSpace = false)
+    {
+        return FirstClosing(_encoding.GetBytes(data), tagData, hasSpace);
+    }
+
+    private TagClosing FirstClosing(ReadOnlySpan<byte> data, TagData tagData, bool hasSpace = false)
+    {
+        var tag = _finder.FirstClosing(data, tagData.FullName);
+        Assert.That(_finder.FirstClosing(data, tagData.Name, tagData.Namespace), Is.EqualTo(tag));
+
+        Assert.That(tag.HasSpace, Is.EqualTo(hasSpace));
+        /*
+        Assert.That(_finder.FirstClosing(data, tagData.Name, out var ns), Is.EqualTo(tag));
+        Assert.That(data[ns].SequenceEqual(tagData.Namespace), Is.True);
+
+        if (tagData.HasNamespace)
+        {
+            Assert.That(_finder.LastClosing(data, tagData.FullName, out ns), Is.EqualTo(tag));
+            Assert.That(data[ns].IsEmpty, Is.True);
+        }*/
+
+        return tag;
+    }
+
+    private TagClosing LastClosing(string data, TagData tagData, bool hasSpace = false)
+    {
+        return LastClosing(_encoding.GetBytes(data), tagData, hasSpace);
+    }
+
+    private TagClosing LastClosing(ReadOnlySpan<byte> data, TagData tagData, bool hasSpace = false)
     {
         var tag = _finder.LastClosing(data, tagData.FullName);
-
         Assert.That(_finder.LastClosing(data, tagData.Name, tagData.Namespace), Is.EqualTo(tag));
         Assert.That(_finder.LastClosing(data, tagData.Name, out var ns), Is.EqualTo(tag));
-        if (fail)
-        {
-            Assert.That(ns.Start.Value == 0 && ns.End.Value == 0, Is.True);
-        }
-        else
-        {
-            Assert.That(data[ns].SequenceEqual(tagData.Namespace), Is.True);
-        }
+        Assert.That(data[ns].SequenceEqual(tagData.Namespace), Is.True);
 
         if (tagData.HasNamespace)
         {
@@ -199,18 +232,62 @@ internal class TagFinderByteTester
             Assert.That(data[ns].IsEmpty, Is.True);
         }
 
-        if (fail)
-        {
-            Assert.That(tag.IsEmpty, Is.True);
-        }
-        else
-        {
-            Assert.That(data[tag.Range].SequenceEqual(data), Is.True);
-            Assert.That(tag.HasSpace, Is.EqualTo(hasSpace));
-        }
+        Assert.That(tag.HasSpace, Is.EqualTo(hasSpace));
 
         return tag;
     }
+
+    #endregion Success
+
+    #region Fail
+
+    private void FailClosing(string str, TagData tagData)
+    {
+        var data = _encoding.GetBytes(str);
+        FailFirstClosing(data, tagData);
+        FailLastClosing(data, tagData);
+    }
+
+    private void FailClosing(ReadOnlySpan<byte> data, TagData tagData)
+    {
+        FailFirstClosing(data, tagData);
+        FailLastClosing(data, tagData);
+    }
+
+    private void FailFirstClosing(ReadOnlySpan<byte> data, TagData tagData)
+    {
+        var tag = _finder.FirstClosing(data, tagData.FullName);
+        Assert.That(_finder.FirstClosing(data, tagData.Name, tagData.Namespace), Is.EqualTo(tag));
+        /*
+        Assert.That(_finder.FirstClosing(data, tagData.Name, out var ns), Is.EqualTo(tag));
+        Assert.That(ns.Start.Value == 0 && ns.End.Value == 0, Is.True);
+
+        if (tagData.HasNamespace)
+        {
+            Assert.That(_finder.LastClosing(data, tagData.FullName, out ns), Is.EqualTo(tag));
+            Assert.That(data[ns].IsEmpty, Is.True);
+        }*/
+
+        Assert.That(tag.IsEmpty, Is.True);
+    }
+
+    private void FailLastClosing(ReadOnlySpan<byte> data, TagData tagData)
+    {
+        var tag = _finder.LastClosing(data, tagData.FullName);
+        Assert.That(_finder.LastClosing(data, tagData.Name, tagData.Namespace), Is.EqualTo(tag));
+        Assert.That(_finder.LastClosing(data, tagData.Name, out var ns), Is.EqualTo(tag));
+        Assert.That(ns.Start.Value == 0 && ns.End.Value == 0, Is.True);
+
+        if (tagData.HasNamespace)
+        {
+            Assert.That(_finder.LastClosing(data, tagData.FullName, out ns), Is.EqualTo(tag));
+            Assert.That(data[ns].IsEmpty, Is.True);
+        }
+
+        Assert.That(tag.IsEmpty, Is.True);
+    }
+
+    #endregion Fail
 
     #endregion LastClosing
 
