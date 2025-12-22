@@ -9,6 +9,8 @@ public readonly struct Tag : IEquatable<Tag>
     private readonly int _start;
     private readonly int _end;
 
+    #region Props
+
     public int Start => _start < 0 ? ~_start : _start;
 
     public int End => _end < 0 ? ~_end : _end;
@@ -55,6 +57,16 @@ public readonly struct Tag : IEquatable<Tag>
         }
     }
 
+    #endregion Props
+
+    #region Ctors
+
+    private Tag(int start, int end)
+    {
+        _start = start;
+        _end = end;
+    }
+
     private Tag(int start, int end, int offset)
     {
         if (end < 0)
@@ -78,12 +90,6 @@ public readonly struct Tag : IEquatable<Tag>
             _start = checked(start + offset);
             if (_start < 0) throw new ArgumentOutOfRangeException(nameof(offset));
         }
-    }
-
-    internal Tag(int start, int end)
-    {
-        _start = start;
-        _end = end;
     }
 
     public Tag(int start, int end, TagEnding ending)
@@ -117,11 +123,7 @@ public readonly struct Tag : IEquatable<Tag>
         }
     }
 
-    public override int GetHashCode() => HashCode.Combine(_start, _end);
-
-    public override bool Equals(object? obj) => obj is Tag tag && Equals(tag);
-
-    public bool Equals(Tag other) => _start == other._start && _end == other._end;
+    #endregion Ctors
 
     public Tag AddOffset(int offset) => new(_start, _end, offset);
 
@@ -132,13 +134,29 @@ public readonly struct Tag : IEquatable<Tag>
             opening = default;
             return false;
         }
-        opening = new(_start, _end);
+        opening = TagOpening.New(_start, _end);
         return true;
     }
+
+    #region Comparison
+
+    public bool Equals(Tag other) => _start == other._start && _end == other._end;
+
+    public override bool Equals(object? obj) => obj is Tag tag && Equals(tag);
+
+    public override int GetHashCode() => HashCode.Combine(_start, _end);
+
+    #endregion Comparison
+
+    #region Operators
 
     public static bool operator ==(Tag left, Tag right) => left.Equals(right);
 
     public static bool operator !=(Tag left, Tag right) => !left.Equals(right);
 
-    public static explicit operator TagOpening(Tag tag) => new(tag._start, tag._end);
+    public static explicit operator TagOpening(Tag tag) => TagOpening.New(tag._start, tag._end);
+
+    #endregion Operators
+
+    internal static Tag New(int start, int end) => new(start, end);
 }

@@ -32,6 +32,12 @@ public readonly struct TagOpening : IComparable<TagOpening>, IEquatable<TagOpeni
 
     #region Ctors
 
+    private TagOpening(int start, int end)
+    {
+        _start = start;
+        _end = end;
+    }
+
     private TagOpening(int start, int end, int offset)
     {
         if (end < 0)
@@ -55,12 +61,6 @@ public readonly struct TagOpening : IComparable<TagOpening>, IEquatable<TagOpeni
             _start = checked(start + offset);
             if (_start < 0) throw new ArgumentOutOfRangeException(nameof(offset));
         }
-    }
-
-    internal TagOpening(int start, int end)
-    {
-        _start = start;
-        _end = end;
     }
 
     public TagOpening(int start, int end, bool hasAttributes, bool isSelfClosing)
@@ -177,7 +177,9 @@ public readonly struct TagOpening : IComparable<TagOpening>, IEquatable<TagOpeni
 
     public static bool operator >=(TagOpening left, TagOpening right) => left.CompareTo(right) >= 0;
 
-    public static implicit operator Tag(TagOpening opening) => new(opening._start, opening._end);
+    public static implicit operator Tag(TagOpening opening) => Tag.New(opening._start, opening._end);
 
     #endregion Operators
+
+    internal static TagOpening New(int start, int end) => new(start, end);
 }

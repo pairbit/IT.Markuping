@@ -14,6 +14,8 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
 
     #region Props
 
+    internal bool IsTree => _start < 0;
+
     public int Start => _start < 0 ? ~_start : _start;
 
     public int End => _end < 0 ? ~_end : _end;
@@ -31,6 +33,12 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
     #endregion Props
 
     #region Ctors
+
+    private TagClosing(int start, int end)
+    {
+        _start = start;
+        _end = end;
+    }
 
     private TagClosing(int start, int end, int offset)
     {
@@ -57,6 +65,15 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
         }
     }
 
+    internal TagClosing(int start, int end, bool isTree, bool hasSpace)
+    {
+        if (start < 0) throw new ArgumentOutOfRangeException(nameof(start));
+        if (end <= start) throw new ArgumentOutOfRangeException(nameof(end));
+
+        _start = isTree ? ~start : start;
+        _end = hasSpace ? ~end : end;
+    }
+
     public TagClosing(int start, int end, bool hasSpace = false)
     {
         if (start < 0) throw new ArgumentOutOfRangeException(nameof(start));
@@ -68,6 +85,12 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
     }
 
     #endregion Ctors
+
+    internal TagClosing WithTree()
+    {
+        var start = _start;
+        return start < 0 ? this : new(~start, _end);
+    }
 
     public TagClosing AddOffset(int offset) => new(_start, _end, offset);
 
