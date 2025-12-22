@@ -59,6 +59,13 @@ internal class TagFinderByteTester
     public void PairsTest(TagData tagData)
     {
         FirstLastPair($"<{tagData}></{tagData}>", tagData, string.Empty);
+        FirstLastPair($"<{tagData}>inner</{tagData}>", tagData, "inner");
+        //FirstLastPair($"<{tagData} ab>inner</{tagData} >", tagData, "inner");
+        FirstLastPair($"<{tagData} c=\"'>'\"><tag></tag></{tagData} >", tagData, "<tag></tag>");
+        FirstLastPair($"<{tagData} b c='\">\"'><{tagData}/></{tagData} \t\r\n>", tagData, $"<{tagData}/>");
+
+        FirstLastPair($"{tagData}<{tagData}></{tagData}>{tagData}", tagData, string.Empty,
+            $"<{tagData}></{tagData}>");
 
         var data = _encoding.GetBytes($"<{tagData}>first</{tagData}><{tagData}>last</{tagData}>").AsSpan();
 
@@ -72,25 +79,24 @@ internal class TagFinderByteTester
 
         Assert.That(first, Is.Not.EqualTo(last));
 
-        //data = _encoding.GetBytes($"<{tagFullName}><{tagFullName}>1</{tagFullName}></{tagFullName}>").AsSpan();
-        //last = _finder.LastPair(data, name, out ns);
-        //Assert.That(last.HasNamespace, Is.EqualTo(hasNamespace));
-        //Assert.That(data[ns].SequenceEqual(tag.NameSpaceBytes), Is.True);
-        //Assert.That(data[last.Outer].SequenceEqual(data), Is.True);
-        //Assert.That(data[last.Inner].SequenceEqual(_encoding.GetBytes($"<{tagFullName}>1</{tagFullName}>")), Is.True);
+        //FirstLastPair($"<{tagData}><{tagData}>1</{tagData}></{tagData}>", tagData, 
+        //    $"<{tagData}>1</{tagData}>");
     }
 
-    private Tags FirstLastPair(string data, TagData tagData, string inner)
+    private Tags FirstLastPair(string data, TagData tagData, string inner, string? outer = null)
     {
-        return FirstLastPair(_encoding.GetBytes(data), tagData, _encoding.GetBytes(inner));
+        return FirstLastPair(_encoding.GetBytes(data), tagData, _encoding.GetBytes(inner),
+            outer == null ? [] : _encoding.GetBytes(outer));
     }
 
-    private Tags FirstLastPair(ReadOnlySpan<byte> data, TagData tagData, ReadOnlySpan<byte> inner)
+    private Tags FirstLastPair(ReadOnlySpan<byte> data, TagData tagData, ReadOnlySpan<byte> inner, 
+        ReadOnlySpan<byte> outer = default)
     {
         var tags = FirstPair(data, tagData);
         Assert.That(LastPair(data, tagData), Is.EqualTo(tags));
 
-        Assert.That(data[tags.Outer].SequenceEqual(data), Is.True);
+        if (outer.IsEmpty) outer = data;
+        Assert.That(data[tags.Outer].SequenceEqual(outer), Is.True);
         Assert.That(data[tags.Inner].SequenceEqual(inner), Is.True);
 
         return tags;
