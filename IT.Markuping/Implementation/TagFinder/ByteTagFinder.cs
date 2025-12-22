@@ -511,7 +511,7 @@ public class ByteTagFinder : ITagFinder<byte>
         Debug.Assert(start > 0 && end > 0);
         Debug.Assert(start < end);
 
-        if (IsStartClosing(data, ref start, out ns) &&
+        if (end < data.Length && IsStartClosing(data, ref start, out ns) &&
             IsEndClosing(data, ref end, out var hasSpace))
         {
             return new(start, end, hasSpace: hasSpace);
@@ -525,7 +525,7 @@ public class ByteTagFinder : ITagFinder<byte>
         Debug.Assert(start >= 0 && start + 1 < data.Length);
         Debug.Assert(end > 0 && start < end);
 
-        if (IsStartClosing(data, start) &&
+        if (end < data.Length && IsStartClosing(data, start) &&
             IsEndClosing(data, ref end, out var hasSpace))
         {
             return new(start, end, hasSpace: hasSpace);
@@ -538,7 +538,7 @@ public class ByteTagFinder : ITagFinder<byte>
         Debug.Assert(start >= 0 && end > 0);
         Debug.Assert(start < end);
 
-        if (IsStartClosing(data, start, ns) &&
+        if (end < data.Length && IsStartClosing(data, start, ns) &&
             IsEndClosing(data, ref end, out var hasSpace))
         {
             return new(start, end, hasSpace: hasSpace);
@@ -607,11 +607,11 @@ public class ByteTagFinder : ITagFinder<byte>
 
     internal bool IsEndClosing(ReadOnlySpan<byte> data, ref int end, out bool hasSpace)
     {
-        Debug.Assert(end >= 0);
+        Debug.Assert(end >= 0 && end < data.Length);
 
         hasSpace = false;
 
-        while (end < data.Length)
+        do
         {
             var token = data[end++];
             if (token == _tokens._gt) return true;
@@ -621,7 +621,7 @@ public class ByteTagFinder : ITagFinder<byte>
                 continue;
             }
             break;
-        }
+        } while (end < data.Length);
 
         return false;
     }
