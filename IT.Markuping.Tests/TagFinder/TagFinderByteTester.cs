@@ -295,6 +295,8 @@ internal class TagFinderByteTester
         FirstLast($"<{tagData} b=\"'>\" c='\"/>'>", tagData, TagEnding.ClosingHasAttributes, endingName, endingName);
         FirstLast($"<{tagData}\rb>", tagData, TagEnding.ClosingHasAttributes, endingName2, endingName2);
         FirstLast($"<{tagData}\r\n\tb >", tagData, TagEnding.ClosingHasAttributes, endingName2, attributeStart);
+        FirstLast($"<{tagData} {tagData}>", tagData, TagEnding.ClosingHasAttributes, endingName, endingName);
+        FirstLast($"<{tagData} {tagData}='{tagData}>'>", tagData, TagEnding.ClosingHasAttributes, endingName, endingName);
 
         FirstLast($"<{tagData}/>", tagData, TagEnding.SelfClosing);
         FirstLast($"<{tagData} \r\n\t/>", tagData, TagEnding.SelfClosing, endingName);
@@ -302,8 +304,8 @@ internal class TagFinderByteTester
         FirstLast($"<{tagData} b=\"'>\" c='\">'/>", tagData, TagEnding.SelfClosingHasAttributes, endingName, endingName);
         FirstLast($"<{tagData}\rb />", tagData, TagEnding.SelfClosingHasAttributes, endingName2, endingName2);
         FirstLast($"<{tagData}\r\n\tb />", tagData, TagEnding.SelfClosingHasAttributes, endingName2, attributeStart);
-
-        FirstLast($"<{tagData} {tagData}>", tagData, TagEnding.ClosingHasAttributes, endingName, endingName);
+        FirstLast($"<{tagData} {tagData}/>", tagData, TagEnding.SelfClosingHasAttributes, endingName, endingName);
+        FirstLast($"<{tagData} {tagData}='{tagData}>'/>", tagData, TagEnding.SelfClosingHasAttributes, endingName, endingName);
 
         FailFirstLast(tagData.FullName, tagData);
         FailFirstLast($"<{tagData}", tagData);
