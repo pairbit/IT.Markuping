@@ -80,11 +80,14 @@ internal class TagsTest
 
         var ex2 = Assert.Throws<ArgumentOutOfRangeException>(() => new Tags(default, default));
         Assert.That(ex2.ParamName, Is.EqualTo("opening"));
+        Assert.That(ex2.Message, Is.EqualTo("Start >= End (Parameter 'opening')"));
 
         ex2 = Assert.Throws<ArgumentOutOfRangeException>(() => new Tags(new(0, 1, false, false), default));
         Assert.That(ex2.ParamName, Is.EqualTo("closing"));
+        Assert.That(ex2.Message, Is.EqualTo("Start >= End (Parameter 'closing')"));
 
         ex2 = Assert.Throws<ArgumentOutOfRangeException>(() => new Tags(new(1, 2, false, false), new(1, 2)));
         Assert.That(ex2.ParamName, Is.EqualTo("closing"));
+        Assert.That(ex2.Message, Is.EqualTo("openingEnd > closingStart (Parameter 'closing')"));
     }
 }

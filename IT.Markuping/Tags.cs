@@ -42,11 +42,11 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
         if (opening.IsSelfClosing) throw new ArgumentException("SelfClosing", nameof(opening));
 
         var openingEnd = opening.End;
-        if (openingEnd <= opening.Start) throw new ArgumentOutOfRangeException(nameof(opening));
+        if (opening.Start >= openingEnd) throw new ArgumentOutOfRangeException(nameof(opening), "Start >= End");
 
         var closingStart = closing.Start;
-        if (closing.End <= closingStart) throw new ArgumentOutOfRangeException(nameof(closing));
-        if (closingStart < openingEnd) throw new ArgumentOutOfRangeException(nameof(closing));
+        if (closingStart >= closing.End) throw new ArgumentOutOfRangeException(nameof(closing), "Start >= End");
+        if (openingEnd > closingStart) throw new ArgumentOutOfRangeException(nameof(closing), "openingEnd > closingStart");
 
         _opening = opening;
         _closing = closing;
@@ -60,11 +60,11 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
         if (isTree != closing.IsTree) throw new ArgumentOutOfRangeException(nameof(closing));
 
         var openingEnd = opening.End;
-        if (openingEnd <= opening.Start) throw new ArgumentOutOfRangeException(nameof(opening));
+        if (opening.Start >= openingEnd) throw new ArgumentOutOfRangeException(nameof(opening), "Start >= End");
 
         var closingStart = closing.Start;
-        if (closing.End <= closingStart) throw new ArgumentOutOfRangeException(nameof(closing));
-        if (closingStart < openingEnd) throw new ArgumentOutOfRangeException(nameof(closing));
+        if (closingStart >= closing.End) throw new ArgumentOutOfRangeException(nameof(closing), "Start >= End");
+        if (openingEnd > closingStart) throw new ArgumentOutOfRangeException(nameof(closing), "openingEnd > closingStart");
 
         _opening = opening;
         _closing = isTree ? closing.WithTree() : closing;
