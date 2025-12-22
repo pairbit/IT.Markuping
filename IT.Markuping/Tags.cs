@@ -35,6 +35,8 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
 
     public bool IsTree => _closing.IsTree;
 
+    public bool HasSpaceAtEnd => _closing.HasSpace;
+
     #endregion Props
 
     public Tags(TagOpening opening, TagClosing closing)
@@ -57,7 +59,7 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
         if (opening.IsSelfClosing) throw new ArgumentException("SelfClosing", nameof(opening));
 
         //TODO: что делать если уже с признаком IsTree
-        if (isTree != closing.IsTree) throw new ArgumentOutOfRangeException(nameof(closing));
+        if (!isTree && closing.IsTree) throw new ArgumentException("Tree", nameof(closing));
 
         var openingEnd = opening.End;
         if (opening.Start >= openingEnd) throw new ArgumentOutOfRangeException(nameof(opening), "Start >= End");

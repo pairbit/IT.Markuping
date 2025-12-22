@@ -63,7 +63,7 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
         }
     }
 
-    internal TagClosing(int start, int end, bool isTree, bool hasSpace)
+    internal TagClosing(int start, int end, bool hasSpace, bool isTree)
     {
         if (start < 0) throw new ArgumentOutOfRangeException(nameof(start));
         if (end <= start) throw new ArgumentOutOfRangeException(nameof(end));

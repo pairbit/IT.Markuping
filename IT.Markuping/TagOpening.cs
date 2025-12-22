@@ -63,7 +63,7 @@ public readonly struct TagOpening : IComparable<TagOpening>, IEquatable<TagOpeni
         }
     }
 
-    public TagOpening(int start, int end, bool hasAttributes, bool isSelfClosing)
+    public TagOpening(int start, int end, bool hasAttributes = false, bool isSelfClosing = false)
     {
         if (start < 0) throw new ArgumentOutOfRangeException(nameof(start));
         if (end <= start) throw new ArgumentOutOfRangeException(nameof(end));
