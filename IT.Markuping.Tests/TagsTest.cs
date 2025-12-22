@@ -54,7 +54,7 @@ internal class TagsTest
         Assert.That(tags.HasSpaceAtEnd, Is.False);
         Assert.That(tags.Closing, Is.Not.EqualTo(closing));
         Assert.That(tags.ToString(), Is.EqualTo("<5..10></11..22>"));
-        
+
         Assert.That(tags.Closing.IsTree, Is.True);
         tags = new Tags(new(6, 10), tags.Closing, isTree: true);
         Assert.That(tags.IsTree, Is.True);
@@ -92,7 +92,7 @@ internal class TagsTest
         span = stackalloc char[14];
         Assert.That(tags.TryFormat(span, out written), Is.False);
         Assert.That(written == 0, Is.True);
-        
+
         span = stackalloc char[16];
         Assert.That(tags.TryFormat(span, out written), Is.False);
         Assert.That(written == 0, Is.True);
