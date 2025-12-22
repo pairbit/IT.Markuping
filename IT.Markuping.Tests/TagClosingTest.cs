@@ -11,7 +11,7 @@ internal class TagClosingTest
         Assert.That(closing.Start, Is.EqualTo(0));
         Assert.That(closing.End, Is.EqualTo(0));
         Assert.That(closing.Length, Is.EqualTo(0));
-        //Assert.That(closing.HasNamespace, Is.False);
+        Assert.That(closing.IsTree, Is.False);
         Assert.That(closing.HasSpace, Is.False);
         Assert.That(closing.ToString(), Is.EqualTo("</0..0>"));
 
@@ -19,32 +19,39 @@ internal class TagClosingTest
         Assert.That(closing.Start, Is.EqualTo(0));
         Assert.That(closing.End, Is.EqualTo(0));
         Assert.That(closing.Length, Is.EqualTo(0));
-        //Assert.That(closing.HasNamespace, Is.False);
+        Assert.That(closing.IsTree, Is.False);
         Assert.That(closing.HasSpace, Is.False);
 
         closing = new(0, 1, hasSpace: false);
         Assert.That(closing.Start, Is.EqualTo(0));
         Assert.That(closing.End, Is.EqualTo(1));
         Assert.That(closing.Length, Is.EqualTo(1));
-        //Assert.That(closing.HasNamespace, Is.True);
+        Assert.That(closing.IsTree, Is.False);
         Assert.That(closing.HasSpace, Is.False);
 
         closing = new(10, 50, hasSpace: true);
         Assert.That(closing.Start, Is.EqualTo(10));
         Assert.That(closing.End, Is.EqualTo(50));
         Assert.That(closing.Length, Is.EqualTo(40));
-        //Assert.That(closing.HasNamespace, Is.False);
+        Assert.That(closing.IsTree, Is.False);
         Assert.That(closing.HasSpace, Is.True);
 
         closing = new(66, 77, hasSpace: true);
         Assert.That(closing.Start, Is.EqualTo(66));
         Assert.That(closing.End, Is.EqualTo(77));
         Assert.That(closing.Length, Is.EqualTo(11));
-        //Assert.That(closing.HasNamespace, Is.True);
+        Assert.That(closing.IsTree, Is.False);
         Assert.That(closing.HasSpace, Is.True);
         Assert.That(closing.ToString(), Is.EqualTo("</66..77 >"));
 
         closing = new(int.MaxValue - 1, int.MaxValue, hasSpace: true);
+        closing = closing.WithTree();
+        Assert.That(closing, Is.EqualTo(closing.WithTree()));
+        Assert.That(closing.Start, Is.EqualTo(2147483646));
+        Assert.That(closing.End, Is.EqualTo(2147483647));
+        Assert.That(closing.Length, Is.EqualTo(1));
+        Assert.That(closing.IsTree, Is.True);
+        Assert.That(closing.HasSpace, Is.True);
         Assert.That(closing.ToString(), Is.EqualTo("</2147483646..2147483647 >"));
     }
 

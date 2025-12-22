@@ -26,8 +26,6 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
 
     public Range Range => new(Start, End);
 
-    //public bool HasNamespace => _start < 0;
-
     public bool HasSpace => _end < 0;
 
     #endregion Props
@@ -79,7 +77,6 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
         if (start < 0) throw new ArgumentOutOfRangeException(nameof(start));
         if (end <= start) throw new ArgumentOutOfRangeException(nameof(end));
 
-        //_start = hasNamespace ? ~start : start;
         _start = start;
         _end = hasSpace ? ~end : end;
     }

@@ -74,16 +74,17 @@ internal class TagsTest
     [Test]
     public void InvalidTest()
     {
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new Tags(new(0, 1, false, isSelfClosing: true), default));
-        Assert.That(ex.ParamName, Is.EqualTo("opening"));
+        var ex1 = Assert.Throws<ArgumentException>(() => new Tags(new(0, 1, false, isSelfClosing: true), default));
+        Assert.That(ex1.ParamName, Is.EqualTo("opening"));
+        Assert.That(ex1.Message, Is.EqualTo("SelfClosing (Parameter 'opening')"));
 
-        ex = Assert.Throws<ArgumentOutOfRangeException>(() => new Tags(default, default));
-        Assert.That(ex.ParamName, Is.EqualTo("opening"));
+        var ex2 = Assert.Throws<ArgumentOutOfRangeException>(() => new Tags(default, default));
+        Assert.That(ex2.ParamName, Is.EqualTo("opening"));
 
-        ex = Assert.Throws<ArgumentOutOfRangeException>(() => new Tags(new(0, 1, false, false), default));
-        Assert.That(ex.ParamName, Is.EqualTo("closing"));
+        ex2 = Assert.Throws<ArgumentOutOfRangeException>(() => new Tags(new(0, 1, false, false), default));
+        Assert.That(ex2.ParamName, Is.EqualTo("closing"));
 
-        ex = Assert.Throws<ArgumentOutOfRangeException>(() => new Tags(new(1, 2, false, false), new(1, 2)));
-        Assert.That(ex.ParamName, Is.EqualTo("closing"));
+        ex2 = Assert.Throws<ArgumentOutOfRangeException>(() => new Tags(new(1, 2, false, false), new(1, 2)));
+        Assert.That(ex2.ParamName, Is.EqualTo("closing"));
     }
 }

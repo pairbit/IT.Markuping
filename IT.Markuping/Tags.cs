@@ -16,6 +16,7 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
 
     public TagOpening Opening => _opening;
 
+    //TODO: нужно ли удалять признак IsTree при возврате???
     public TagClosing Closing => _closing;
 
     public Range Outer => new(_opening.Start, _closing.End);
@@ -36,9 +37,27 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
 
     #endregion Props
 
-    public Tags(TagOpening opening, TagClosing closing, bool isTree = false)
+    public Tags(TagOpening opening, TagClosing closing)
     {
-        if (opening.IsSelfClosing) throw new ArgumentOutOfRangeException(nameof(opening));
+        if (opening.IsSelfClosing) throw new ArgumentException("SelfClosing", nameof(opening));
+
+        var openingEnd = opening.End;
+        if (openingEnd <= opening.Start) throw new ArgumentOutOfRangeException(nameof(opening));
+
+        var closingStart = closing.Start;
+        if (closing.End <= closingStart) throw new ArgumentOutOfRangeException(nameof(closing));
+        if (closingStart < openingEnd) throw new ArgumentOutOfRangeException(nameof(closing));
+
+        _opening = opening;
+        _closing = closing;
+    }
+
+    public Tags(TagOpening opening, TagClosing closing, bool isTree)
+    {
+        if (opening.IsSelfClosing) throw new ArgumentException("SelfClosing", nameof(opening));
+
+        //TODO: что делать если уже с признаком IsTree
+        if (isTree != closing.IsTree) throw new ArgumentOutOfRangeException(nameof(closing));
 
         var openingEnd = opening.End;
         if (openingEnd <= opening.Start) throw new ArgumentOutOfRangeException(nameof(opening));
