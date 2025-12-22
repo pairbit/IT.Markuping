@@ -204,18 +204,18 @@ public class BytesTagFinder : ITagFinder<byte>
         var namelen = name.Length;
         Debug.Assert(namelen > 0);
 
+        var min = _lt.Length;
+        int index = data.Length;
         do
         {
-            var index = data.LastIndexOf(name);
-            if (index < _lt.Length) break;
+            index = data.Slice(0, index).LastIndexOf(name);
+            if (index < min) break;
 
-            var tag = GetTag(data, index - _lt.Length, index + namelen, endings);
+            var tag = GetTag(data, index - min, index + namelen, endings);
             if (!tag.IsEmpty)
             {
                 return tag;
             }
-
-            data = data.Slice(0, index);
         } while (true);
 
         return default;
@@ -350,9 +350,10 @@ public class BytesTagFinder : ITagFinder<byte>
         Debug.Assert(nslen > 0);
 
         var min = nslen + _lt.Length + _colon.Length;
+        int index = data.Length;
         do
         {
-            var index = data.LastIndexOf(name);
+            index = data.Slice(0, index).LastIndexOf(name);
             if (index < min) break;
 
             var tag = GetTag(data, index - min, index + namelen, endings, ns);
@@ -360,8 +361,6 @@ public class BytesTagFinder : ITagFinder<byte>
             {
                 return tag;
             }
-
-            data = data.Slice(0, index);
         } while (true);
 
         return default;

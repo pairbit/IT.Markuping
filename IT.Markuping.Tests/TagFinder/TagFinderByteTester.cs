@@ -60,7 +60,7 @@ internal class TagFinderByteTester
     {
         FirstLastPair($"<{tagData}></{tagData}>", tagData, string.Empty);
         FirstLastPair($"<{tagData}>inner</{tagData}>", tagData, "inner");
-        //FirstLastPair($"<{tagData} ab>inner</{tagData} >", tagData, "inner");
+        FirstLastPair($"<{tagData} ab>inner</{tagData} >", tagData, "inner");
         FirstLastPair($"<{tagData} c=\"'>'\"><tag></tag></{tagData} >", tagData, "<tag></tag>");
         FirstLastPair($"<{tagData} b c='\">\"'><{tagData}/></{tagData} \t\r\n>", tagData, $"<{tagData}/>");
 
@@ -89,7 +89,7 @@ internal class TagFinderByteTester
             outer == null ? [] : _encoding.GetBytes(outer));
     }
 
-    private void FirstLastPair(ReadOnlySpan<byte> data, TagData tagData, ReadOnlySpan<byte> inner, 
+    private void FirstLastPair(ReadOnlySpan<byte> data, TagData tagData, ReadOnlySpan<byte> inner,
         ReadOnlySpan<byte> outer = default)
     {
         var tags = FirstPair(data, tagData);
@@ -302,6 +302,8 @@ internal class TagFinderByteTester
         FirstLast($"<{tagData} b=\"'>\" c='\">'/>", tagData, TagEnding.SelfClosingHasAttributes, endingName, endingName);
         FirstLast($"<{tagData}\rb />", tagData, TagEnding.SelfClosingHasAttributes, endingName2, endingName2);
         FirstLast($"<{tagData}\r\n\tb />", tagData, TagEnding.SelfClosingHasAttributes, endingName2, attributeStart);
+
+        FirstLast($"<{tagData} {tagData}>", tagData, TagEnding.ClosingHasAttributes, endingName, endingName);
 
         FailFirstLast(tagData.FullName, tagData);
         FailFirstLast($"<{tagData}", tagData);
