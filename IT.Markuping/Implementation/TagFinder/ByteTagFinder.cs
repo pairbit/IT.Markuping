@@ -511,8 +511,8 @@ public class ByteTagFinder : ITagFinder<byte>
         Debug.Assert(start > 0 && end > 0);
         Debug.Assert(start < end);
 
-        if (IsEndClosing(data, ref end, out var hasSpace) &&
-            IsStartClosing(data, ref start, out ns))
+        if (IsStartClosing(data, ref start, out ns) &&
+            IsEndClosing(data, ref end, out var hasSpace))
         {
             return new(start, end, hasSpace: hasSpace);
         }
