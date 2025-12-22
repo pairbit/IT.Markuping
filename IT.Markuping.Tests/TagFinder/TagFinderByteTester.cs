@@ -325,6 +325,10 @@ internal class TagFinderByteTester
             FailFirstLast($"<b c=\"ns:{tagData}>\" />", tagData);
             FailFirstLast($"<b c=':{tagData} \r\n\t>' />", tagData);
             FailFirstLast($"<b c='ns:{tagData} \r\n\t>' />", tagData);
+            FailFirstLast($"<b c=\":{tagData} d='>'>\" />", tagData);
+            FailFirstLast($"<b c=\"ns:{tagData} d='>'>\" />", tagData);
+            FailFirstLast($"<b c=':{tagData} \r\n\t d=\">\">' />", tagData);
+            FailFirstLast($"<b c='ns:{tagData} \r\n\t d=\">\">' />", tagData);
             FailFirstLast($"<:{tagData}>", tagData);
         }
 
