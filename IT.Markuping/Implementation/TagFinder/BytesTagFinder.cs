@@ -428,7 +428,7 @@ public class BytesTagFinder : ITagFinder<byte>
         Debug.Assert(start >= 0 && start + _lt.Length <= data.Length);
         Debug.Assert(end > 0 && start < end);
 
-        if (data.Slice(start, _lt.Length).SequenceEqual(_lt))
+        if (end < data.Length && data.Slice(start, _lt.Length).SequenceEqual(_lt))
         {
             var ending = endings.IsAnyClosing() ?
                 GetEndingAnyClosing(data, ref end) :
