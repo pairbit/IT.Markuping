@@ -505,13 +505,15 @@ public class BytesTagFinder : ITagFinder<byte>
         }
 
         start -= _colon.Length;
-        if (start >= _lt.Length && data.Slice(start, _colon.Length).SequenceEqual(_colon))
+        if (start > _lt.Length && data.Slice(start, _colon.Length).SequenceEqual(_colon))
         {
             var endNS = start;
             do
             {
                 if (data.Slice(start - _lt.Length, _lt.Length).SequenceEqual(_lt))
                 {
+                    Debug.Assert(endNS > start);
+
                     ns = start..endNS;
                     start -= _lt.Length;
                     return true;
@@ -619,7 +621,7 @@ public class BytesTagFinder : ITagFinder<byte>
         }
 
         start -= _colon.Length;
-        if (start >= startClosingLength && data.Slice(start, _colon.Length).SequenceEqual(_colon))
+        if (start > startClosingLength && data.Slice(start, _colon.Length).SequenceEqual(_colon))
         {
             var endNS = start;
             do
@@ -628,6 +630,8 @@ public class BytesTagFinder : ITagFinder<byte>
                 {
                     if (data.Slice(start - startClosingLength, _lt.Length).SequenceEqual(_lt))
                     {
+                        Debug.Assert(endNS > start);
+
                         ns = start..endNS;
                         start -= startClosingLength;
                         return true;

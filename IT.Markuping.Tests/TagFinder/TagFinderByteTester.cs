@@ -151,6 +151,7 @@ internal class TagFinderByteTester
             FailClosing($"<tag></tag><b c=':{tagData} \r\n\t>' />", tagData);
             FailClosing($"<tag></tag><b c='ns:{tagData} \r\n\t>' />", tagData);
             FailClosing($"</ns/:{tagData}>", tagData);
+            FailClosing($"</:{tagData}>", tagData);
         }
     }
 
@@ -260,7 +261,7 @@ internal class TagFinderByteTester
         var tag = _finder.LastClosing(data, tagData.FullName);
         Assert.That(_finder.LastClosing(data, tagData.Name, tagData.Namespace), Is.EqualTo(tag));
         Assert.That(_finder.LastClosing(data, tagData.Name, out var ns), Is.EqualTo(tag));
-        Assert.That(ns.Start.Value == 0 && ns.End.Value == 0, Is.True);
+        Assert.That(ns.IsZero(), Is.True);
 
         if (tagData.HasNamespace)
         {
@@ -315,6 +316,17 @@ internal class TagFinderByteTester
         FailFirstLast($"<{tagData} \">", tagData);
 
         FailFirstLast($"<{tagData} /", tagData, TagEndings.HasAttributes);
+
+        if (!tagData.HasNamespace)
+        {
+            //TODO: =
+            //FailFirstLast($"<b c=:{tagData}> />", tagData);
+            FailFirstLast($"<b c=\":{tagData}>\" />", tagData);
+            FailFirstLast($"<b c=\"ns:{tagData}>\" />", tagData);
+            FailFirstLast($"<b c=':{tagData} \r\n\t>' />", tagData);
+            FailFirstLast($"<b c='ns:{tagData} \r\n\t>' />", tagData);
+            FailFirstLast($"<:{tagData}>", tagData);
+        }
 
         var encoding = _encoding;
         var closing = encoding.GetBytes($"<{tagData}>");

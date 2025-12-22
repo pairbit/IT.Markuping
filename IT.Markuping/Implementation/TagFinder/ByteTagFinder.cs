@@ -491,6 +491,8 @@ public class ByteTagFinder : ITagFinder<byte>
                 token = data[--start];
                 if (token == _tokens._lt)
                 {
+                    Debug.Assert(endNS > start + 1);
+
                     ns = (start + 1)..endNS;
                     return true;
                 }
@@ -586,6 +588,8 @@ public class ByteTagFinder : ITagFinder<byte>
                 {
                     if (data[--start] == _tokens._lt)
                     {
+                        Debug.Assert(endNS > start + 2);
+
                         ns = (start + 2)..endNS;
                         return true;
                     }
