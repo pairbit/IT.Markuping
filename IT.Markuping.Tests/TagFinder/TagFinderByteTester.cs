@@ -83,13 +83,13 @@ internal class TagFinderByteTester
         //    $"<{tagData}>1</{tagData}>");
     }
 
-    private Tags FirstLastPair(string data, TagData tagData, string inner, string? outer = null)
+    private void FirstLastPair(string data, TagData tagData, string inner, string? outer = null)
     {
-        return FirstLastPair(_encoding.GetBytes(data), tagData, _encoding.GetBytes(inner),
+        FirstLastPair(_encoding.GetBytes(data), tagData, _encoding.GetBytes(inner),
             outer == null ? [] : _encoding.GetBytes(outer));
     }
 
-    private Tags FirstLastPair(ReadOnlySpan<byte> data, TagData tagData, ReadOnlySpan<byte> inner, 
+    private void FirstLastPair(ReadOnlySpan<byte> data, TagData tagData, ReadOnlySpan<byte> inner, 
         ReadOnlySpan<byte> outer = default)
     {
         var tags = FirstPair(data, tagData);
@@ -98,8 +98,6 @@ internal class TagFinderByteTester
         if (outer.IsEmpty) outer = data;
         Assert.That(data[tags.Outer].SequenceEqual(outer), Is.True);
         Assert.That(data[tags.Inner].SequenceEqual(inner), Is.True);
-
-        return tags;
     }
 
     private Tags FirstPair(ReadOnlySpan<byte> data, TagData tagData)
