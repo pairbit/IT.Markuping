@@ -104,23 +104,22 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
         return new(span.Slice(0, written));
     }
 
-    public bool TryFormat(Span<char> chars, out int written)
+    public bool TryFormat(Span<char> chars, out int written, bool clear = true)
     {
         //<0..3></3..5>
         //<0..3></3..5 >
         //min-max = 13-50
-        if (chars.Length >= 13 && _opening.TryFormat(chars, out var openingWritten))
+        if (chars.Length >= 13 && _opening.TryFormat(chars, out var openingWritten, clear))
         {
             if (chars.Length >= openingWritten + openingWritten &&
-                _closing.TryFormat(chars.Slice(openingWritten), out var closingWritten))
+                _closing.TryFormat(chars.Slice(openingWritten), out var closingWritten, clear))
             {
                 written = openingWritten + closingWritten;
                 return true;
             }
-            else
+            else if (clear)
             {
-                //TODO: clear openingWritten
-                //chars.Slice(0, openingWritten).Clear();
+                chars.Slice(0, openingWritten).Clear();
             }
         }
         written = 0;
