@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace IT.Markuping;
 
-//<0..3>
-//<10..13 />
-public readonly struct Tag : IEquatable<Tag>
+[DebuggerDisplay("{ToString(),nq}")]
+public readonly struct Tag : IComparable<Tag>, IEquatable<Tag>, IFormattable
+#if NET6_0_OR_GREATER
+, ISpanFormattable
+#endif
 {
     private readonly int _start;
     private readonly int _end;
@@ -140,6 +143,15 @@ public readonly struct Tag : IEquatable<Tag>
 
     #region Comparison
 
+    public int CompareTo(Tag other)
+    {
+        var compared = Start.CompareTo(other.Start);
+
+        Debug.Assert(End.CompareTo(other.End) == compared);
+
+        return compared;
+    }
+
     public bool Equals(Tag other) => _start == other._start && _end == other._end;
 
     public override bool Equals(object? obj) => obj is Tag tag && Equals(tag);
@@ -148,11 +160,86 @@ public readonly struct Tag : IEquatable<Tag>
 
     #endregion Comparison
 
+    #region ToString
+
+    public override string ToString()
+    {
+        Span<char> span = stackalloc char[4 + (2 * 10)];
+
+        var status = TryFormat(span, out var written);
+
+        Debug.Assert(status);
+
+        return new(span.Slice(0, written));
+    }
+
+    public bool TryFormat(Span<char> chars, out int written)
+    {
+        const int minLength = 4;
+        //<0..3>
+        //min-max = 6-25
+        if (chars.Length >= minLength + 2 && ((uint)Start).TryFormat(chars.Slice(1), out var startWritten))
+        {
+            if (chars.Length >= minLength + startWritten + startWritten &&
+                ((uint)End).TryFormat(chars.Slice(3 + startWritten), out var endWritten))
+            {
+                written = minLength + startWritten + endWritten;
+                if (chars.Length >= written)
+                {
+                    chars[0] = '<';
+                    chars[startWritten + 1] = '.';
+                    chars[startWritten + 2] = '.';
+                    chars[written - 1] = '>';
+                    return true;
+                }
+                else
+                {
+                    //TODO: clear startWritten and endWritten
+                    //chars.Slice(1, startWritten + 2 + endWritten).Clear();
+                }
+            }
+            else
+            {
+                //TODO: clear startWritten
+                //chars.Slice(1, startWritten).Clear();
+            }
+        }
+        written = 0;
+        return false;
+    }
+
+    #endregion ToString
+
+    #region Formattable
+
+    string IFormattable.ToString(string? format, IFormatProvider? formatProvider)
+        => ToString();
+
+#if NET6_0_OR_GREATER
+    bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+    {
+        if (format.Length != 0) throw new FormatException();
+
+        return TryFormat(destination, out charsWritten);
+    }
+#endif
+
+    #endregion Formattable
+
     #region Operators
 
     public static bool operator ==(Tag left, Tag right) => left.Equals(right);
 
     public static bool operator !=(Tag left, Tag right) => !left.Equals(right);
+
+    public static bool operator <(Tag left, Tag right) => left.CompareTo(right) < 0;
+
+    public static bool operator <=(Tag left, Tag right) => left.CompareTo(right) <= 0;
+
+    public static bool operator >(Tag left, Tag right) => left.CompareTo(right) > 0;
+
+    public static bool operator >=(Tag left, Tag right) => left.CompareTo(right) >= 0;
+
 
     public static explicit operator TagOpening(Tag tag) => TagOpening.New(tag._start, tag._end);
 

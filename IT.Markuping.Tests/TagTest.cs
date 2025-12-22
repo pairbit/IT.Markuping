@@ -18,6 +18,7 @@ internal class TagTest
         Assert.That(opening.IsEmpty, Is.True);
         Assert.That(tag.TryGetOpening(out opening), Is.False);
         Assert.That(opening.IsEmpty, Is.True);
+        Assert.That(tag.ToString(), Is.EqualTo("<0..0>"));
 
         tag = default;
         Assert.That(tag.Start, Is.EqualTo(0));
@@ -38,6 +39,7 @@ internal class TagTest
         Assert.That(tag.Ending, Is.EqualTo(TagEnding.Closing));
         Assert.That(tag.Ended, Is.EqualTo(TagEnding.Closing));
         Assert.That(tag.Unended, Is.EqualTo(TagEnding.Closing));
+        Assert.That(tag.ToString(), Is.EqualTo("<0..1>"));
         opening = (TagOpening)tag;
         Assert.That(opening.HasAttributes, Is.False);
         Assert.That(opening.IsSelfClosing, Is.False);
@@ -58,6 +60,7 @@ internal class TagTest
         Assert.That(tag.Ending, Is.EqualTo(TagEnding.SelfClosing));
         Assert.That(tag.Ended, Is.EqualTo(TagEnding.SelfClosing));
         Assert.That(tag.Unended, Is.EqualTo(TagEnding.SelfClosing));
+        Assert.That(tag.ToString(), Is.EqualTo("<10..100>"));
         opening = (TagOpening)tag;
         Assert.That(opening.HasAttributes, Is.False);
         Assert.That(opening.IsSelfClosing, Is.True);
@@ -78,6 +81,7 @@ internal class TagTest
         Assert.That(tag.Ending, Is.EqualTo(TagEnding.None));
         Assert.That(tag.Ended, Is.EqualTo(TagEnding.ClosingHasAttributes));
         Assert.That(tag.Unended, Is.EqualTo(TagEnding.Name));
+        Assert.That(tag.ToString(), Is.EqualTo("<5..10>"));
         opening = (TagOpening)tag;
         Assert.That(opening.HasAttributes, Is.True);
         Assert.That(opening.IsSelfClosing, Is.False);
@@ -134,6 +138,45 @@ internal class TagTest
         Assert.That((Tag)opening, Is.EqualTo(tag));
         Assert.That(tag.TryGetOpening(out opening), Is.False);
         Assert.That(opening.IsEmpty, Is.True);
+    }
+
+    [Test]
+    public void TryFormatTest()
+    {
+        var tag = new Tag(10, 11, TagEnding.Closing);
+        Assert.That(tag.TryFormat(stackalloc char[5], out var written), Is.False);
+        Assert.That(written == 0, Is.True);
+
+        Assert.That(tag.TryFormat(stackalloc char[6], out written), Is.False);
+        Assert.That(written == 0, Is.True);
+
+        Span<char> span = stackalloc char[8];
+        Assert.That(tag.TryFormat(span, out written), Is.True);
+        Assert.That(written == 8, Is.True);
+        Assert.That(span.ToString(), Is.EqualTo("<10..11>"));
+
+        tag = new Tag(12345, 123456, TagEnding.Closing);
+        Assert.That(tag.TryFormat(stackalloc char[14], out written), Is.False);
+        Assert.That(written == 0, Is.True);
+
+        span = stackalloc char[15];
+        Assert.That(tag.TryFormat(span, out written), Is.True);
+        Assert.That(written == 15, Is.True);
+        Assert.That(span.ToString(), Is.EqualTo("<12345..123456>"));
+    }
+
+    [Test]
+    public void CompareToTest()
+    {
+        var tag1 = new Tag(100, 101, TagEnding.Closing);
+        var tag2 = new Tag(101, 102, TagEnding.Closing);
+
+        Assert.That(tag1 < tag2, Is.True);
+        Assert.That(tag2 > tag1, Is.True);
+
+        tag2 = tag1;
+        Assert.That(tag1 <= tag2, Is.True);
+        Assert.That(tag1 >= tag2, Is.True);
     }
 
     [Test]
