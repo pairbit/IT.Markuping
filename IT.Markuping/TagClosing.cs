@@ -123,7 +123,7 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
         return new(span.Slice(0, written));
     }
 
-    public bool TryFormat(Span<char> chars, out int written)
+    public bool TryFormat(Span<char> chars, out int written, bool clear = true)
     {
         var minLength = HasSpace ? 6 : 5;
         //</0..1>
@@ -145,16 +145,14 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
                     chars[written - 1] = '>';
                     return true;
                 }
-                else
+                else if (clear)
                 {
-                    //TODO: clear startWritten and endWritten
-                    //chars.Slice(2, startWritten + 2 + endWritten).Clear();
+                    chars.Slice(2, startWritten + 2 + endWritten).Clear();
                 }
             }
-            else
+            else if (clear)
             {
-                //TODO: clear startWritten
-                //chars.Slice(2, startWritten).Clear();
+                chars.Slice(2, startWritten).Clear();
             }
         }
         written = 0;

@@ -115,16 +115,18 @@ internal class TagOpeningTest
         Assert.That(tag.TryFormat(stackalloc char[5], out var written), Is.False);
         Assert.That(written == 0, Is.True);
 
-        Assert.That(tag.TryFormat(stackalloc char[6], out written), Is.False);
+        Span<char> span = stackalloc char[6];
+        Assert.That(tag.TryFormat(span, out written), Is.False);
         Assert.That(written == 0, Is.True);
 
-        Span<char> span = stackalloc char[8];
+        span = stackalloc char[8];
         Assert.That(tag.TryFormat(span, out written), Is.True);
         Assert.That(written == 8, Is.True);
         Assert.That(span.ToString(), Is.EqualTo("<10..11>"));
 
         tag = new TagOpening(12345, 123456, hasAttributes: false, isSelfClosing: false);
-        Assert.That(tag.TryFormat(stackalloc char[14], out written), Is.False);
+        span = stackalloc char[14];
+        Assert.That(tag.TryFormat(span, out written), Is.False);
         Assert.That(written == 0, Is.True);
 
         span = stackalloc char[15];
@@ -137,7 +139,8 @@ internal class TagOpeningTest
         Assert.That(tag.TryFormat(stackalloc char[6], out written), Is.False);
         Assert.That(written == 0, Is.True);
 
-        Assert.That(tag.TryFormat(stackalloc char[7], out written), Is.False);
+        span = stackalloc char[7];
+        Assert.That(tag.TryFormat(span, out written), Is.False);
         Assert.That(written == 0, Is.True);
 
         span = stackalloc char[9];
@@ -146,7 +149,8 @@ internal class TagOpeningTest
         Assert.That(span.ToString(), Is.EqualTo("<10..11/>"));
 
         tag = new TagOpening(12345, 123456, hasAttributes: false, isSelfClosing: true);
-        Assert.That(tag.TryFormat(stackalloc char[15], out written), Is.False);
+        span = stackalloc char[15];
+        Assert.That(tag.TryFormat(span, out written), Is.False);
         Assert.That(written == 0, Is.True);
 
         span = stackalloc char[16];

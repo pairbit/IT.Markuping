@@ -108,7 +108,7 @@ public readonly struct TagOpening : IComparable<TagOpening>, IEquatable<TagOpeni
         return new(span.Slice(0, written));
     }
 
-    public bool TryFormat(Span<char> chars, out int written)
+    public bool TryFormat(Span<char> chars, out int written, bool clear = true)
     {
         var minLength = IsSelfClosing ? 5 : 4;
         //<0..3>
@@ -129,16 +129,14 @@ public readonly struct TagOpening : IComparable<TagOpening>, IEquatable<TagOpeni
                     chars[written - 1] = '>';
                     return true;
                 }
-                else
+                else if (clear)
                 {
-                    //TODO: clear startWritten and endWritten
-                    //chars.Slice(1, startWritten + 2 + endWritten).Clear();
+                    chars.Slice(1, startWritten + 2 + endWritten).Clear();
                 }
             }
-            else
+            else if (clear)
             {
-                //TODO: clear startWritten
-                //chars.Slice(1, startWritten).Clear();
+                chars.Slice(1, startWritten).Clear();
             }
         }
         written = 0;
