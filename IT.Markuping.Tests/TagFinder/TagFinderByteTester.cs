@@ -140,6 +140,7 @@ internal class TagFinderByteTester
         FailClosing($"/{tagData}>", tagData);
         FailClosing($"<{tagData}>", tagData);
         FailClosing($"{tagData}>", tagData);
+        FailClosing($"</{tagData}", tagData);
         FailClosing(tagData.FullName, tagData);
 
         if (!tagData.HasNamespace)
@@ -298,6 +299,8 @@ internal class TagFinderByteTester
         FirstLast($"<{tagData}\rb />", tagData, TagEnding.SelfClosingHasAttributes, endingName2, endingName2);
         FirstLast($"<{tagData}\r\n\tb />", tagData, TagEnding.SelfClosingHasAttributes, endingName2, attributeStart);
 
+        FailFirstLast(tagData.FullName, tagData);
+        FailFirstLast($"<{tagData}", tagData);
         FailFirstLast($"<{tagData}/", tagData);
         FailFirstLast($"<{tagData} ", tagData);
         FailFirstLast($"<{tagData} /", tagData);
@@ -545,7 +548,11 @@ internal class TagFinderByteTester
 
     private void FailFirstLast(string str, TagData tagData, TagEndings endings = default)
     {
-        var data = _encoding.GetBytes(str).AsSpan();
+        FailFirstLast(_encoding.GetBytes(str), tagData, endings);
+    }
+
+    private void FailFirstLast(ReadOnlySpan<byte> data, TagData tagData, TagEndings endings = default)
+    {
         Assert.That(_finder.First(data, tagData.FullName, endings).IsEmpty, Is.True);
         Assert.That(_finder.First(data, tagData.Name, tagData.Namespace, endings).IsEmpty, Is.True);
         Assert.That(_finder.First(data, tagData.Name, out var ns, endings).IsEmpty, Is.True);
