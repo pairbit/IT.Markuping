@@ -175,19 +175,20 @@ public class ByteTagFinder : ITagFinder<byte>
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
 
-        var len = data.Length;
         var namelen = name.Length;
         Debug.Assert(namelen > 0);
 
+        var len = data.Length;
+        var min = LtLength;
         do
         {
             var index = data.IndexOf(name);
             if (index < 0) break;
 
             var end = index + namelen;
-            if (index > 0)
+            if (index >= min)
             {
-                var tag = GetTag(data, index - 1, end, endings);
+                var tag = GetTag(data, index - min, end, endings);
                 if (!tag.IsEmpty)
                 {
                     return tag.AddOffset(len - data.Length);
@@ -209,14 +210,15 @@ public class ByteTagFinder : ITagFinder<byte>
 
         var namelen = name.Length;
         Debug.Assert(namelen > 0);
-
+        
+        var min = LtLength;
         int index = data.Length;
         do
         {
             index = data.Slice(0, index).LastIndexOf(name);
-            if (index < 1) break;
+            if (index < min) break;
 
-            var tag = GetTag(data, index - 1, index + namelen, endings);
+            var tag = GetTag(data, index - min, index + namelen, endings);
             if (!tag.IsEmpty)
             {
                 return tag;
