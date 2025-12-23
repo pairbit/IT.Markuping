@@ -2,8 +2,6 @@
 using IT.Markuping.Interfaces;
 using System;
 using System.Diagnostics;
-using System.Drawing;
-using System.Text;
 
 namespace IT.Markuping.Implementation;
 
@@ -19,11 +17,11 @@ public abstract class TagFinder<T> : ITagFinder<T> where T : unmanaged
 
     #region Protected Methods
 
+    //protected abstract string GetString(ReadOnlySpan<T> data);
+
     protected abstract int IndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value);
 
     protected abstract int LastIndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value);
-
-    protected abstract string GetString(ReadOnlySpan<T> data);
 
     protected abstract bool IsStartOpening(ReadOnlySpan<T> data, int start);
 
@@ -327,7 +325,7 @@ public abstract class TagFinder<T> : ITagFinder<T> where T : unmanaged
         do
         {
 #if DEBUG
-            var str = GetString(data);
+            //var str = GetString(data);
 #endif
 
             var closing = FirstClosing(data, name, ns);
@@ -351,7 +349,7 @@ public abstract class TagFinder<T> : ITagFinder<T> where T : unmanaged
         do
         {
 #if DEBUG
-            var str = GetString(data);
+            //var str = GetString(data);
 #endif
 
             var opening = First(data, name, ns, TagEndings.Closing);
@@ -370,7 +368,7 @@ public abstract class TagFinder<T> : ITagFinder<T> where T : unmanaged
         do
         {
 #if DEBUG
-            var str = GetString(data);
+            //var str = GetString(data);
 #endif
 
             var opening = Last(data, name, ns, TagEndings.Closing);
@@ -393,7 +391,7 @@ public abstract class TagFinder<T> : ITagFinder<T> where T : unmanaged
         do
         {
 #if DEBUG
-            var str = GetString(data);
+            //var str = GetString(data);
 #endif
 
             var closing = LastClosing(data, name, ns);
