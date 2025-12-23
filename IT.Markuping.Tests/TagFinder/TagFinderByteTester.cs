@@ -79,18 +79,11 @@ internal class TagFinderByteTester
 
         Assert.That(first, Is.Not.EqualTo(last));
 
-        //FirstLastPair($"<{tagData}><{tagData}>1</{tagData}></{tagData}>", tagData,
-        //    $"<{tagData}>1</{tagData}>", isTree: true);
+        FirstLastPair($"<{tagData}><{tagData}>1</{tagData}></{tagData}>", tagData,
+            $"<{tagData}>1</{tagData}>", isTree: true);
 
-        data = _encoding.GetBytes($"<{tagData}><{tagData}>1</{tagData}></{tagData}>").AsSpan();
-        var tags = FirstPair(data, tagData, isTree: true);
-        Assert.That(data[tags.Outer].SequenceEqual(data), Is.True);
-        Assert.That(data[tags.Inner].SequenceEqual(_encoding.GetBytes($"<{tagData}>1</{tagData}>")), Is.True);
-
-        data = _encoding.GetBytes($"<{tagData}><{tagData}><{tagData}>1</{tagData}><{tagData}>2</{tagData}></{tagData}><{tagData}><{tagData}>3</{tagData}><{tagData}>4</{tagData}></{tagData}></{tagData}>").AsSpan();
-        tags = FirstPair(data, tagData, isTree: true);
-        Assert.That(data[tags.Outer].SequenceEqual(data), Is.True);
-        Assert.That(data[tags.Inner].SequenceEqual(_encoding.GetBytes($"<{tagData}><{tagData}>1</{tagData}><{tagData}>2</{tagData}></{tagData}><{tagData}><{tagData}>3</{tagData}><{tagData}>4</{tagData}></{tagData}>")), Is.True);
+        FirstLastPair($"<{tagData}><{tagData}><{tagData}>1</{tagData}><{tagData}>2</{tagData}></{tagData}><{tagData}><{tagData}>3</{tagData}><{tagData}>4</{tagData}></{tagData}></{tagData}>", tagData,
+            $"<{tagData}><{tagData}>1</{tagData}><{tagData}>2</{tagData}></{tagData}><{tagData}><{tagData}>3</{tagData}><{tagData}>4</{tagData}></{tagData}>", isTree: true);
     }
 
     private void FirstLastPair(string data, TagData tagData, string inner, string? outer = null, bool isTree = false)

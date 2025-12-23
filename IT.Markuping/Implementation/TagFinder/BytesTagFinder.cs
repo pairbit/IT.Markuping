@@ -91,10 +91,10 @@ public class BytesTagFinder : ITagFinder<byte>
         var closing = LastClosing(data, name, out ns);
         if (!closing.IsEmpty)
         {
-            var opening = Last(data.Slice(0, closing.Start), name, data[ns], TagEndings.Closing);
+            var opening = LastOpening(data.Slice(0, closing.Start), name, data[ns], out var isTree);
             if (!opening.IsEmpty)
             {
-                return new((TagOpening)opening, closing);
+                return new(opening, closing, isTree);
             }
         }
         ns = default;
@@ -106,10 +106,10 @@ public class BytesTagFinder : ITagFinder<byte>
         var closing = LastClosing(data, name, ns);
         if (!closing.IsEmpty)
         {
-            var opening = Last(data.Slice(0, closing.Start), name, ns, TagEndings.Closing);
+            var opening = LastOpening(data.Slice(0, closing.Start), name, ns, out var isTree);
             if (!opening.IsEmpty)
             {
-                return new((TagOpening)opening, closing);
+                return new(opening, closing, isTree);
             }
         }
         return default;
@@ -120,10 +120,10 @@ public class BytesTagFinder : ITagFinder<byte>
         var closing = LastClosing(data, name);
         if (!closing.IsEmpty)
         {
-            var opening = Last(data.Slice(0, closing.Start), name, TagEndings.Closing);
+            var opening = LastOpening(data.Slice(0, closing.Start), name, default, out var isTree);
             if (!opening.IsEmpty)
             {
-                return new((TagOpening)opening, closing);
+                return new(opening, closing, isTree);
             }
         }
         return default;
@@ -349,6 +349,48 @@ public class BytesTagFinder : ITagFinder<byte>
             if (opening.IsEmpty) break;
 
             data = data.Slice(opening.End);
+            count++;
+        } while (true);
+        return count;
+    }
+
+    private TagOpening LastOpening(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, out bool isTree)
+    {
+        int count = 1;
+        isTree = false;
+        do
+        {
+#if DEBUG
+            var str = Encoding.UTF8.GetString(data);
+#endif
+
+            var opening = Last(data, name, ns, TagEndings.Closing);
+            if (opening.IsEmpty) break;
+
+            count += CountLastClosing(data.Slice(opening.End), name, ns) - 1;
+            if (count == 0)
+                return (TagOpening)opening;
+
+            data = data.Slice(0, opening.Start);
+            isTree = true;
+        } while (true);
+
+        return default;
+    }
+
+    private int CountLastClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
+    {
+        int count = 0;
+        do
+        {
+#if DEBUG
+            var str = Encoding.UTF8.GetString(data);
+#endif
+
+            var closing = LastClosing(data, name, ns);
+            if (closing.IsEmpty) break;
+
+            data = data.Slice(0, closing.Start);
             count++;
         } while (true);
         return count;
