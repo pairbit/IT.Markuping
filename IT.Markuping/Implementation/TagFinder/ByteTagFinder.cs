@@ -4,6 +4,7 @@ using IT.Markuping.Interfaces;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 
 namespace IT.Markuping.Implementation;
 
@@ -39,11 +40,28 @@ public class ByteTagFinder : ITagFinder<byte>
         var opening = First(data, name, out ns, TagEndings.Closing);
         if (!opening.IsEmpty)
         {
-            var closing = FirstClosing(data.Slice(opening.End), name, data[ns]);
-            if (!closing.IsEmpty)
+            var nameSpace = data[ns];
+            int count = 1;
+            var offset = opening.End;
+            data = data.Slice(offset);
+            bool isTree = false;
+            do
             {
-                return new((TagOpening)opening, closing.AddOffset(opening.End));
-            }
+#if DEBUG
+                var str = Encoding.UTF8.GetString(data);
+#endif
+
+                var closing = FirstClosing(data, name, nameSpace);
+                if (closing.IsEmpty) break;
+
+                count += CountFirst(data.Slice(0, closing.Start), name, nameSpace) - 1;
+                if (count == 0)
+                    return new((TagOpening)opening, closing.AddOffset(offset), isTree);
+
+                data = data.Slice(closing.End);
+                offset += closing.End;
+                isTree = true;
+            } while (true);
         }
         return default;
     }
@@ -289,6 +307,24 @@ public class ByteTagFinder : ITagFinder<byte>
     #endregion ITagFinder
 
     #region Private Methods
+
+    private int CountFirst(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
+    {
+        int count = 0;
+        do
+        {
+#if DEBUG
+            var str = Encoding.UTF8.GetString(data);
+#endif
+
+            var opening = First(data, name, ns, TagEndings.Closing);
+            if (opening.IsEmpty) break;
+
+            data = data.Slice(opening.End);
+            count++;
+        } while (true);
+        return count;
+    }
 
     private Tag FirstNS(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, TagEndings endings)
     {
