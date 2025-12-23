@@ -33,9 +33,9 @@ internal class TagFinderByteTester
         var ns = _encoding.GetBytes("ns");
         if (_finder is ByteTagFinder byteFinder)
         {
-            Assert.That(byteFinder.IsStartClosing(startClosing, 0), Is.True);
-            Assert.That(byteFinder.IsStartClosing(startClosingNS, 0, ns), Is.True);
-            Assert.That(byteFinder.IsStartOpening(startOpeningNS, 0, ns), Is.True);
+            //Assert.That(byteFinder.IsStartClosing(startClosing, 0), Is.True);
+            //Assert.That(byteFinder.IsStartClosing(startClosingNS, 0, ns), Is.True);
+            //Assert.That(byteFinder.IsStartOpening(startOpeningNS, 0, ns), Is.True);
         }
         else if (_finder is BytesTagFinder bytesFinder)
         {

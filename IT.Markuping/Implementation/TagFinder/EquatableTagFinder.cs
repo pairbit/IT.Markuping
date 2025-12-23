@@ -29,7 +29,7 @@ public class EquatableTagFinder<T> : TagFinder<T> where T : unmanaged, IEquatabl
         }
     }
 
-    private readonly Tokens _tokens;
+    protected readonly Tokens _tokens;
 
     protected override int LtLength => 1;
 

@@ -1,17 +1,13 @@
 ﻿using IT.Markuping.Encodings;
-using IT.Markuping.Extensions;
-using IT.Markuping.Interfaces;
 using System;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 
 namespace IT.Markuping.Implementation;
 
-public class ByteTagFinder : ITagFinder<byte>
+public class ByteTagFinder : EquatableTagFinder<byte>
 {
     private readonly bool[]? _otherSpaces;
-    private readonly ByteEncoding.Tokens _tokens;
+    //private readonly ByteEncoding.Tokens _tokens;
 
     public static readonly ByteTagFinder Utf8 = new(ByteEncoding.Utf8);
     public static readonly ByteTagFinder Europa = new(ByteEncoding.Europa);
@@ -19,20 +15,29 @@ public class ByteTagFinder : ITagFinder<byte>
     public static readonly ByteTagFinder EBCDIC_Turkish = new(ByteEncoding.EBCDIC_Turkish);
     public static readonly ByteTagFinder IBM_Latin1 = new(ByteEncoding.IBM_Latin1);
 
-    public ByteTagFinder(ByteEncoding.Tokens tokens, bool[]? otherSpaces)
+    public ByteTagFinder(Tokens tokens, bool[]? otherSpaces) : base(tokens)
     {
         _otherSpaces = otherSpaces;
-        _tokens = tokens;
     }
 
-    public ByteTagFinder(ByteEncoding byteEncoding)
+    public ByteTagFinder(ByteEncoding byteEncoding) 
+        : base(MapTokens(byteEncoding._tokens))
     {
         if (byteEncoding == null) throw new ArgumentNullException(nameof(byteEncoding));
 
         _otherSpaces = byteEncoding._otherSpaces;
-        _tokens = byteEncoding._tokens;
     }
 
+    private static Tokens MapTokens(ByteEncoding.Tokens tokens)
+    {
+        return new(tokens._lt, tokens._gt, tokens._slash, tokens._colon, 
+            tokens._space, tokens._quot, tokens._apos, tokens._eq);
+    }
+
+    protected override bool IsSpace(byte value)
+        => value.Equals(_tokens._space) || _otherSpaces != null && _otherSpaces[value];
+
+    /*
     private int LtLength => 1;
 
     private int LtColonLength => 2;
@@ -903,6 +908,7 @@ public class ByteTagFinder : ITagFinder<byte>
     }
 
     #endregion Private Methods
+    */
 
     public static bool TryGet(int codePage, [MaybeNullWhen(false)] out ByteTagFinder byteTagFinder)
     {
