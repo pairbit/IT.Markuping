@@ -1,49 +1,55 @@
-﻿using IT.Markuping.Encodings;
-using IT.Markuping.Extensions;
+﻿using IT.Markuping.Extensions;
 using IT.Markuping.Interfaces;
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Text;
 
 namespace IT.Markuping.Implementation;
 
-public class ByteTagFinder : ITagFinder<byte>
+public abstract class TagFinder<T> : ITagFinder<T> where T : unmanaged
 {
-    private readonly bool[]? _otherSpaces;
-    private readonly ByteEncoding.Tokens _tokens;
+    protected abstract int LtLength { get; }
 
-    public static readonly ByteTagFinder Utf8 = new(ByteEncoding.Utf8);
-    public static readonly ByteTagFinder Europa = new(ByteEncoding.Europa);
-    public static readonly ByteTagFinder EBCDIC = new(ByteEncoding.EBCDIC);
-    public static readonly ByteTagFinder EBCDIC_Turkish = new(ByteEncoding.EBCDIC_Turkish);
-    public static readonly ByteTagFinder IBM_Latin1 = new(ByteEncoding.IBM_Latin1);
+    protected abstract int LtColonLength { get; }
 
-    public ByteTagFinder(ByteEncoding.Tokens tokens, bool[]? otherSpaces)
-    {
-        _otherSpaces = otherSpaces;
-        _tokens = tokens;
-    }
+    protected abstract int LtSlashLength { get; }
 
-    public ByteTagFinder(ByteEncoding byteEncoding)
-    {
-        if (byteEncoding == null) throw new ArgumentNullException(nameof(byteEncoding));
+    protected abstract int LtSlashColonLength { get; }
 
-        _otherSpaces = byteEncoding._otherSpaces;
-        _tokens = byteEncoding._tokens;
-    }
+    #region Protected Methods
 
-    private int LtLength => 1;
+    protected abstract int IndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value);
 
-    private int LtColonLength => 2;
+    protected abstract int LastIndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value);
 
-    private int LtSlashLength => 2;
+    protected abstract string GetString(ReadOnlySpan<T> data);
 
-    private int LtSlashColonLength => 3;
+    protected abstract bool IsStartOpening(ReadOnlySpan<T> data, int start);
+
+    protected abstract bool IsStartOpening(ReadOnlySpan<T> data, int start, ReadOnlySpan<T> ns);
+
+    protected abstract bool IsStartOpening(ReadOnlySpan<T> data, ref int start, out Range ns);
+
+    protected abstract bool IsStartClosing(ReadOnlySpan<T> data, int start);
+
+    protected abstract bool IsStartClosing(ReadOnlySpan<T> data, int start, ReadOnlySpan<T> ns);
+
+    protected abstract bool IsStartClosing(ReadOnlySpan<T> data, ref int start, out Range ns);
+
+    protected abstract bool IsEndClosing(ReadOnlySpan<T> data, ref int end, out bool hasSpace);
+
+    protected abstract TagEnding GetEndingName(ReadOnlySpan<T> data, ref int end);
+
+    protected abstract TagEnding GetEndingAttributeStart(ReadOnlySpan<T> data, ref int end);
+
+    protected abstract TagEnding GetEndingHasAttributes(ReadOnlySpan<T> data, ref int end);
+
+    #endregion Protected Methods
 
     #region ITagFinder
 
-    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes, out Range ns)
+    public Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes, out Range ns)
     {
         var opening = First(data, name, out ns, TagEndings.Closing);
         if (!opening.IsEmpty)
@@ -58,7 +64,7 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes, ReadOnlySpan<byte> ns)
+    public Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes, ReadOnlySpan<T> ns)
     {
         var opening = First(data, name, ns, TagEndings.Closing);
         if (!opening.IsEmpty)
@@ -73,7 +79,7 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes)
+    public Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes)
     {
         var opening = First(data, name, TagEndings.Closing);
         if (!opening.IsEmpty)
@@ -88,7 +94,7 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes, out Range ns)
+    public Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes, out Range ns)
     {
         var closing = LastClosing(data, name, out ns);
         if (!closing.IsEmpty)
@@ -104,7 +110,7 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes, ReadOnlySpan<byte> ns)
+    public Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes, ReadOnlySpan<T> ns)
     {
         var closing = LastClosing(data, name, ns);
         if (!closing.IsEmpty)
@@ -119,7 +125,7 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes)
+    public Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes)
     {
         var closing = LastClosing(data, name);
         if (!closing.IsEmpty)
@@ -134,7 +140,7 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    public Tag First(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out Range ns, TagEndings endings = default)
+    public Tag First(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out Range ns, TagEndings endings = default)
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
 
@@ -145,7 +151,7 @@ public class ByteTagFinder : ITagFinder<byte>
         var min = LtLength;
         do
         {
-            var index = data.IndexOf(name);
+            var index = IndexOf(data, name);
             if (index < 0) break;
 
             var end = index + namelen;
@@ -167,10 +173,10 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    public Tag First(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, TagEndings endings = default)
+    public Tag First(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, TagEndings endings = default)
         => ns.IsEmpty ? First(data, name, endings) : FirstNS(data, name, ns, endings);
 
-    public Tag First(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, TagEndings endings = default)
+    public Tag First(ReadOnlySpan<T> data, ReadOnlySpan<T> name, TagEndings endings = default)
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
 
@@ -181,7 +187,7 @@ public class ByteTagFinder : ITagFinder<byte>
         var min = LtLength;
         do
         {
-            var index = data.IndexOf(name);
+            var index = IndexOf(data, name);
             if (index < 0) break;
 
             var end = index + namelen;
@@ -200,10 +206,10 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    public Tag Last(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, TagEndings endings = default)
+    public Tag Last(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, TagEndings endings = default)
         => ns.IsEmpty ? Last(data, name, endings) : LastNS(data, name, ns, endings);
 
-    public Tag Last(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, TagEndings endings = default)
+    public Tag Last(ReadOnlySpan<T> data, ReadOnlySpan<T> name, TagEndings endings = default)
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
 
@@ -214,7 +220,7 @@ public class ByteTagFinder : ITagFinder<byte>
         int index = data.Length;
         do
         {
-            index = data.Slice(0, index).LastIndexOf(name);
+            index = LastIndexOf(data.Slice(0, index), name);
             if (index < min) break;
 
             var tag = GetTag(data, index - min, index + namelen, endings);
@@ -227,10 +233,10 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    public TagClosing FirstClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
+    public TagClosing FirstClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns)
         => ns.IsEmpty ? FirstClosing(data, name) : FirstClosingNS(data, name, ns);
 
-    public TagClosing FirstClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name)
+    public TagClosing FirstClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name)
     {
         var namelen = name.Length;
         Debug.Assert(namelen > 0);
@@ -239,7 +245,7 @@ public class ByteTagFinder : ITagFinder<byte>
         var min = LtSlashLength;
         do
         {
-            var index = data.IndexOf(name);
+            var index = IndexOf(data, name);
             if (index < 0) break;
 
             var end = index + namelen;
@@ -257,7 +263,7 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    public TagClosing LastClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out Range ns)
+    public TagClosing LastClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out Range ns)
     {
         var namelen = name.Length;
         Debug.Assert(namelen > 0);
@@ -265,7 +271,7 @@ public class ByteTagFinder : ITagFinder<byte>
         var min = LtSlashLength;
         do
         {
-            var index = data.LastIndexOf(name);
+            var index = LastIndexOf(data, name);
             if (index < min) break;
 
             var closing = GetClosing(data, index, index + namelen, out ns);
@@ -281,10 +287,10 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    public TagClosing LastClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
+    public TagClosing LastClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns)
         => ns.IsEmpty ? LastClosing(data, name) : LastClosingNS(data, name, ns);
 
-    public TagClosing LastClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name)
+    public TagClosing LastClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name)
     {
         var namelen = name.Length;
         Debug.Assert(namelen > 0);
@@ -292,7 +298,7 @@ public class ByteTagFinder : ITagFinder<byte>
         var min = LtSlashLength;
         do
         {
-            var index = data.LastIndexOf(name);
+            var index = LastIndexOf(data, name);
             if (index < min) break;
 
             var closing = GetClosing(data, index - min, index + namelen);
@@ -307,241 +313,11 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    #endregion ITagFinder
-
-    #region Internal
-
-    internal bool IsStartOpening(ReadOnlySpan<byte> data, int start)
-    {
-        Debug.Assert(start >= 0);
-        Debug.Assert(start < data.Length);
-
-        return data[start] == _tokens._lt;
-    }
-
-    internal bool IsStartOpening(ReadOnlySpan<byte> data, int start, ReadOnlySpan<byte> ns)
-    {
-        Debug.Assert(start >= 0);
-        Debug.Assert(start + ns.Length + 1 < data.Length);
-
-        return data[start++] == _tokens._lt &&
-               data[start + ns.Length] == _tokens._colon &&
-               data.Slice(start, ns.Length).SequenceEqual(ns);
-    }
-
-    internal bool IsStartOpening(ReadOnlySpan<byte> data, ref int start, out Range ns)
-    {
-        Debug.Assert(start < data.Length);
-        Debug.Assert(start >= 1);
-
-        var token = data[--start];
-        if (token == _tokens._lt)
-        {
-            ns = default;
-            return true;
-        }
-        else if (token == _tokens._colon && start > 1)
-        {
-            var endNS = start;
-            do
-            {
-                token = data[--start];
-                if (token == _tokens._lt)
-                {
-                    Debug.Assert(endNS > start + 1);
-
-                    ns = (start + 1)..endNS;
-                    return true;
-                }
-                else if (token == _tokens._quot || token == _tokens._apos)
-                {
-                    break;
-                }
-            } while (start > 0);
-        }
-        ns = default;
-        return false;
-    }
-
-    internal bool IsStartClosing(ReadOnlySpan<byte> data, int start)
-    {
-        Debug.Assert(start >= 0 && start + 1 < data.Length);
-
-        return data[start++] == _tokens._lt && data[start] == _tokens._slash;
-    }
-
-    internal bool IsStartClosing(ReadOnlySpan<byte> data, int start, ReadOnlySpan<byte> ns)
-    {
-        Debug.Assert(start >= 0 && start + ns.Length + 2 < data.Length);
-
-        return data[start++] == _tokens._lt &&
-               data[start++] == _tokens._slash &&
-               data[start + ns.Length] == _tokens._colon &&
-               data.Slice(start, ns.Length).SequenceEqual(ns);
-    }
-
-    internal bool IsStartClosing(ReadOnlySpan<byte> data, ref int start, out Range ns)
-    {
-        Debug.Assert(start < data.Length);
-        Debug.Assert(start >= 2);
-
-        var token = data[--start];
-
-        //</
-        if (token == _tokens._slash)
-        {
-            ns = default;
-            return data[--start] == _tokens._lt;
-        }
-        //</*:
-        else if (token == _tokens._colon && start > 2)
-        {
-            var endNS = start;
-            //</
-            do
-            {
-                token = data[--start];
-                if (token == _tokens._slash)
-                {
-                    if (data[--start] == _tokens._lt)
-                    {
-                        Debug.Assert(endNS > start + 2);
-
-                        ns = (start + 2)..endNS;
-                        return true;
-                    }
-                    break;
-                }
-                else if (token == _tokens._quot || token == _tokens._apos)
-                {
-                    break;
-                }
-            } while (start > 1);
-        }
-        ns = default;
-        return false;
-    }
-
-    internal bool IsEndClosing(ReadOnlySpan<byte> data, ref int end, out bool hasSpace)
-    {
-        Debug.Assert(end >= 0 && end < data.Length);
-
-        hasSpace = false;
-
-        do
-        {
-            var token = data[end++];
-            if (token == _tokens._gt) return true;
-            if (token == _tokens._space || _otherSpaces != null && _otherSpaces[token])
-            {
-                hasSpace = true;
-                continue;
-            }
-            break;
-        } while (end < data.Length);
-
-        return false;
-    }
-
-    internal TagEnding GetEndingName(ReadOnlySpan<byte> data, ref int end)
-    {
-        Debug.Assert(end >= 0);
-        Debug.Assert(end < data.Length);
-
-        var token = data[end++];
-        if (token == _tokens._gt)
-            return TagEnding.Closing;
-
-        if (token == _tokens._slash)
-            return end < data.Length && data[end++] == _tokens._gt
-                ? TagEnding.SelfClosing : TagEnding.None;
-
-        if (token == _tokens._space || _otherSpaces != null && _otherSpaces[token])
-            return TagEnding.Name;
-
-        return TagEnding.None;
-    }
-
-    internal TagEnding GetEndingAttributeStart(ReadOnlySpan<byte> data, ref int end)
-    {
-        Debug.Assert(end >= 0);
-
-        while (end < data.Length)
-        {
-            var token = data[end];
-            if (token == _tokens._gt)
-            {
-                end++;
-                return TagEnding.Closing;
-            }
-            else if (token == _tokens._slash)
-            {
-                end++;
-                return end < data.Length && data[end++] == _tokens._gt
-                    ? TagEnding.SelfClosing : TagEnding.None;
-            }
-            else if (token == _tokens._space || _otherSpaces != null && _otherSpaces[token])
-            {
-                end++;
-            }
-            else
-            {
-                return TagEnding.AttributeStart;
-            }
-        }
-
-        return TagEnding.None;
-    }
-
-    internal TagEnding GetEndingHasAttributes(ReadOnlySpan<byte> data, ref int end)
-    {
-        Debug.Assert(end < data.Length);
-        Debug.Assert(end >= 0);
-
-        //TODO: _gt, _slash и space был проверен ранее
-        //стоит пропустить этот символ?
-        Debug.Assert(data[end] != _tokens._gt);
-        Debug.Assert(data[end] != _tokens._slash);
-
-        do
-        {
-            var token = data[end++];
-            if (token == _tokens._gt)
-            {
-                return TagEnding.ClosingHasAttributes;
-            }
-            else if (token == _tokens._slash)
-            {
-                return end < data.Length && data[end++] == _tokens._gt ? TagEnding.SelfClosingHasAttributes : TagEnding.None;
-            }
-            else if (token == _tokens._quot)
-            {
-                //Добавляем еще длину gt
-                if (end + 1 >= data.Length) break;
-
-                var index = data.Slice(end).IndexOf(_tokens._quot);
-                if (index < 0) break;
-                end += index + 1;
-            }
-            else if (token == _tokens._apos)
-            {
-                //Добавляем еще длину gt
-                if (end + 1 >= data.Length) break;
-
-                var index = data.Slice(end).IndexOf(_tokens._apos);
-                if (index < 0) break;
-                end += index + 1;
-            }
-        } while (end < data.Length);
-
-        return TagEnding.None;
-    }
-
     #endregion
 
     #region Private Methods
 
-    private TagClosing FirstClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, int offset, out int nodes)
+    private TagClosing FirstClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, int offset, out int nodes)
     {
         Debug.Assert(data.Length >= offset);
 
@@ -551,7 +327,7 @@ public class ByteTagFinder : ITagFinder<byte>
         do
         {
 #if DEBUG
-            var str = Encoding.UTF8.GetString(data);
+            var str = GetString(data);
 #endif
 
             var closing = FirstClosing(data, name, ns);
@@ -569,13 +345,13 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    private int CountFirst(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
+    private int CountFirst(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns)
     {
         int count = 0;
         do
         {
 #if DEBUG
-            var str = Encoding.UTF8.GetString(data);
+            var str = GetString(data);
 #endif
 
             var opening = First(data, name, ns, TagEndings.Closing);
@@ -587,14 +363,14 @@ public class ByteTagFinder : ITagFinder<byte>
         return count;
     }
 
-    private TagOpening LastOpening(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, out int nodes)
+    private TagOpening LastOpening(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, out int nodes)
     {
         int count = 1;
         nodes = 0;
         do
         {
 #if DEBUG
-            var str = Encoding.UTF8.GetString(data);
+            var str = GetString(data);
 #endif
 
             var opening = Last(data, name, ns, TagEndings.Closing);
@@ -611,13 +387,13 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    private int CountLastClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
+    private int CountLastClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns)
     {
         int count = 0;
         do
         {
 #if DEBUG
-            var str = Encoding.UTF8.GetString(data);
+            var str = GetString(data);
 #endif
 
             var closing = LastClosing(data, name, ns);
@@ -629,7 +405,7 @@ public class ByteTagFinder : ITagFinder<byte>
         return count;
     }
 
-    private Tag FirstNS(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, TagEndings endings)
+    private Tag FirstNS(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, TagEndings endings)
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
 
@@ -644,7 +420,7 @@ public class ByteTagFinder : ITagFinder<byte>
         var min = nslen + LtColonLength;
         do
         {
-            var index = data.IndexOf(name);
+            var index = IndexOf(data, name);
             if (index < 0) break;
 
             var end = index + namelen;
@@ -663,7 +439,7 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    private Tag LastNS(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, TagEndings endings)
+    private Tag LastNS(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, TagEndings endings)
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
 
@@ -677,7 +453,7 @@ public class ByteTagFinder : ITagFinder<byte>
         int index = data.Length;
         do
         {
-            index = data.Slice(0, index).LastIndexOf(name);
+            index = LastIndexOf(data.Slice(0, index), name);
             if (index < min) break;
 
             var tag = GetTag(data, index - min, index + namelen, endings, ns);
@@ -690,7 +466,7 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    private TagClosing FirstClosingNS(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
+    private TagClosing FirstClosingNS(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns)
     {
         var namelen = name.Length;
         var nslen = ns.Length;
@@ -702,7 +478,7 @@ public class ByteTagFinder : ITagFinder<byte>
         var min = nslen + LtSlashColonLength;//</ns:
         do
         {
-            var index = data.IndexOf(name);
+            var index = IndexOf(data, name);
             if (index < 0) break;
 
             var end = index + namelen;
@@ -720,7 +496,7 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    private TagClosing LastClosingNS(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
+    private TagClosing LastClosingNS(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns)
     {
         var namelen = name.Length;
         var nslen = ns.Length;
@@ -731,7 +507,7 @@ public class ByteTagFinder : ITagFinder<byte>
         var min = nslen + LtSlashColonLength;//</ns:
         do
         {
-            var index = data.LastIndexOf(name);
+            var index = LastIndexOf(data, name);
             if (index < min) break;
 
             var closing = GetClosing(data, index - min, index + namelen, ns);
@@ -746,7 +522,7 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    private Tag GetTag(ReadOnlySpan<byte> data, int start, int end, TagEndings endings)
+    private Tag GetTag(ReadOnlySpan<T> data, int start, int end, TagEndings endings)
     {
         Debug.Assert(start >= 0);
         Debug.Assert(end > 0 && start < end);
@@ -764,7 +540,7 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    private Tag GetTag(ReadOnlySpan<byte> data, int start, int end, TagEndings endings, ReadOnlySpan<byte> ns)
+    private Tag GetTag(ReadOnlySpan<T> data, int start, int end, TagEndings endings, ReadOnlySpan<T> ns)
     {
         Debug.Assert(end > 0 && start < end);
 
@@ -781,7 +557,7 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    private Tag GetTag(ReadOnlySpan<byte> data, int start, int end, TagEndings endings, out Range ns)
+    private Tag GetTag(ReadOnlySpan<T> data, int start, int end, TagEndings endings, out Range ns)
     {
         Debug.Assert(end > 0 && start < end);
 
@@ -799,7 +575,7 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    private TagClosing GetClosing(ReadOnlySpan<byte> data, int start, int end, out Range ns)
+    private TagClosing GetClosing(ReadOnlySpan<T> data, int start, int end, out Range ns)
     {
         Debug.Assert(start > 0 && end > 0);
         Debug.Assert(start < end);
@@ -813,7 +589,7 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    private TagClosing GetClosing(ReadOnlySpan<byte> data, int start, int end)
+    private TagClosing GetClosing(ReadOnlySpan<T> data, int start, int end)
     {
         Debug.Assert(start >= 0 && start + 1 < data.Length);
         Debug.Assert(end > 0 && start < end);
@@ -826,7 +602,7 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    private TagClosing GetClosing(ReadOnlySpan<byte> data, int start, int end, ReadOnlySpan<byte> ns)
+    private TagClosing GetClosing(ReadOnlySpan<T> data, int start, int end, ReadOnlySpan<T> ns)
     {
         Debug.Assert(start >= 0 && end > 0);
         Debug.Assert(start < end);
@@ -839,7 +615,7 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    private TagEnding GetEndingAnyClosing(ReadOnlySpan<byte> data, ref int end)
+    private TagEnding GetEndingAnyClosing(ReadOnlySpan<T> data, ref int end)
     {
         var ending = GetEndingName(data, ref end);
         if (ending == TagEnding.Name)
@@ -852,7 +628,7 @@ public class ByteTagFinder : ITagFinder<byte>
         return ending;
     }
 
-    private TagEnding GetEnding(ReadOnlySpan<byte> data, ref int end, TagEndings endings)
+    private TagEnding GetEnding(ReadOnlySpan<T> data, ref int end, TagEndings endings)
     {
         var ending = GetEndingName(data, ref end);
         if (endings == TagEndings.HasNoAttributes)
@@ -903,35 +679,4 @@ public class ByteTagFinder : ITagFinder<byte>
     }
 
     #endregion Private Methods
-
-    public static bool TryGet(int codePage, [MaybeNullWhen(false)] out ByteTagFinder byteTagFinder)
-    {
-        if (Array.IndexOf(ByteEncoding.Utf8_CodePages, codePage) > -1)
-        {
-            byteTagFinder = Utf8;
-            return true;
-        }
-        if (codePage == 29001)
-        {
-            byteTagFinder = Europa;
-            return true;
-        }
-        if (Array.IndexOf(ByteEncoding.EBCDIC_CodePages, codePage) > -1)
-        {
-            byteTagFinder = EBCDIC;
-            return true;
-        }
-        if (codePage == 1026 || codePage == 20905)
-        {
-            byteTagFinder = EBCDIC_Turkish;
-            return true;
-        }
-        if (codePage == 1047 || codePage == 20924)
-        {
-            byteTagFinder = IBM_Latin1;
-            return true;
-        }
-        byteTagFinder = null;
-        return false;
-    }
 }
