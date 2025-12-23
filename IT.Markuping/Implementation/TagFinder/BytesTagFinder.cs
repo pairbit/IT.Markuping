@@ -46,13 +46,13 @@ public class BytesTagFinder : ITagFinder<byte>
 
     public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out Range ns)
     {
-        var opening = (TagOpening)First(data, name, out ns, TagEndings.Closing);
+        var opening = First(data, name, out ns, TagEndings.Closing);
         if (!opening.IsEmpty)
         {
-            var closing = FirstClosing(data, name, data[ns], opening);
+            var closing = FirstClosing(data, name, data[ns], opening.End);
             if (!closing.IsEmpty)
             {
-                return new(opening, closing);
+                return new((TagOpening)opening, closing);
             }
         }
         return default;
@@ -60,13 +60,13 @@ public class BytesTagFinder : ITagFinder<byte>
 
     public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
     {
-        var opening = (TagOpening)First(data, name, ns, TagEndings.Closing);
+        var opening = First(data, name, ns, TagEndings.Closing);
         if (!opening.IsEmpty)
         {
-            var closing = FirstClosing(data, name, ns, opening);
+            var closing = FirstClosing(data, name, ns, opening.End);
             if (!closing.IsEmpty)
             {
-                return new(opening, closing);
+                return new((TagOpening)opening, closing);
             }
         }
         return default;
@@ -74,13 +74,13 @@ public class BytesTagFinder : ITagFinder<byte>
 
     public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name)
     {
-        var opening = (TagOpening)First(data, name, TagEndings.Closing);
+        var opening = First(data, name, TagEndings.Closing);
         if (!opening.IsEmpty)
         {
-            var closing = FirstClosing(data, name, default, opening);
+            var closing = FirstClosing(data, name, default, opening.End);
             if (!closing.IsEmpty)
             {
-                return new(opening, closing);
+                return new((TagOpening)opening, closing);
             }
         }
         return default;
@@ -306,13 +306,11 @@ public class BytesTagFinder : ITagFinder<byte>
 
     #region Private Methods
 
-    private TagClosing FirstClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, TagOpening opening)
+    private TagClosing FirstClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, int offset)
     {
-        Debug.Assert(!opening.IsSelfClosing);
-        Debug.Assert(data.Length >= opening.End);
+        Debug.Assert(data.Length >= offset);
 
         int count = 1;
-        var offset = opening.End;
         data = data.Slice(offset);
         bool isTree = false;
         do
