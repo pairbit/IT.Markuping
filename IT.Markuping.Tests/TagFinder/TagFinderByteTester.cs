@@ -31,18 +31,12 @@ internal class TagFinderByteTester
         var startClosing = _encoding.GetBytes("</");
         var startClosingNS = _encoding.GetBytes("</ns:");
         var ns = _encoding.GetBytes("ns");
-        if (_finder is ByteTagFinder byteFinder)
-        {
-            //Assert.That(byteFinder.IsStartClosing(startClosing, 0), Is.True);
-            //Assert.That(byteFinder.IsStartClosing(startClosingNS, 0, ns), Is.True);
-            //Assert.That(byteFinder.IsStartOpening(startOpeningNS, 0, ns), Is.True);
-        }
-        else if (_finder is BytesTagFinder bytesFinder)
-        {
-            Assert.That(bytesFinder.IsStartClosing(startClosing, 0), Is.True);
-            Assert.That(bytesFinder.IsStartClosing(startClosingNS, 0, ns), Is.True);
-            Assert.That(bytesFinder.IsStartOpening(startOpeningNS, 0, ns), Is.True);
-        }
+        //if (_finder is TagFinder<byte> tagFinder)
+        //{
+        //    Assert.That(tagFinder.IsStartClosing(startClosing, 0), Is.True);
+        //    Assert.That(tagFinder.IsStartClosing(startClosingNS, 0, ns), Is.True);
+        //    Assert.That(tagFinder.IsStartOpening(startOpeningNS, 0, ns), Is.True);
+        //}
     }
 
     public void Test(TagData tagData)

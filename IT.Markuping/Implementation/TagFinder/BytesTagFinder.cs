@@ -1,15 +1,25 @@
 ﻿using IT.Markuping.Encodings;
-using IT.Markuping.Extensions;
-using IT.Markuping.Interfaces;
-using System;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 
 namespace IT.Markuping.Implementation;
 
-public class BytesTagFinder : ITagFinder<byte>
+public class BytesTagFinder : SeqTagFinder<byte>
 {
+    public static readonly BytesTagFinder Utf16 = new(BytesEncoding.Utf16);
+    public static readonly BytesTagFinder Utf16BE = new(BytesEncoding.Utf16BE);
+    public static readonly BytesTagFinder Utf32 = new(BytesEncoding.Utf32);
+    public static readonly BytesTagFinder Utf32BE = new(BytesEncoding.Utf32BE);
+
+    public BytesTagFinder(BytesEncoding bytesEncoding)
+        :base(bytesEncoding._minLength, bytesEncoding._lt, bytesEncoding._gt, 
+            bytesEncoding._slash, bytesEncoding._colon, bytesEncoding._space,
+            bytesEncoding._quot, bytesEncoding._apos, bytesEncoding._eq, 
+            bytesEncoding._otherSpaces
+            )
+    {
+
+    }
+    /*
     private readonly byte[] _lt;
     private readonly byte[] _gt;
     private readonly byte[] _slash;
@@ -20,27 +30,6 @@ public class BytesTagFinder : ITagFinder<byte>
     private readonly byte[] _eq;
     private readonly byte[][] _otherSpaces;
     private readonly int _minLength;
-
-    public static readonly BytesTagFinder Utf16 = new(BytesEncoding.Utf16);
-    public static readonly BytesTagFinder Utf16BE = new(BytesEncoding.Utf16BE);
-    public static readonly BytesTagFinder Utf32 = new(BytesEncoding.Utf32);
-    public static readonly BytesTagFinder Utf32BE = new(BytesEncoding.Utf32BE);
-
-    public BytesTagFinder(BytesEncoding bytesEncoding)
-    {
-        if (bytesEncoding == null) throw new ArgumentNullException(nameof(bytesEncoding));
-
-        _lt = bytesEncoding._lt;
-        _gt = bytesEncoding._gt;
-        _slash = bytesEncoding._slash;
-        _colon = bytesEncoding._colon;
-        _space = bytesEncoding._space;
-        _quot = bytesEncoding._quot;
-        _apos = bytesEncoding._apos;
-        _eq = bytesEncoding._eq;
-        _otherSpaces = bytesEncoding._otherSpaces;
-        _minLength = bytesEncoding._minLength;
-    }
 
     private int LtLength => _lt.Length;
 
@@ -978,7 +967,7 @@ public class BytesTagFinder : ITagFinder<byte>
     }
 
     #endregion Private Methods
-
+    */
     public static bool TryGet(int codePage, [MaybeNullWhen(false)] out BytesTagFinder bytesTagFinder)
     {
         if (codePage == 1200)
