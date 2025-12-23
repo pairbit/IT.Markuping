@@ -89,6 +89,17 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
         return start < 0 ? this : new(~start, _end);
     }
 
+    internal TagClosing AddOffset(int offset, bool isTree)
+    {
+        var start = _start;
+        if (isTree)
+        {
+            Debug.Assert(start >= 0);
+            start = ~start;
+        }
+        return new(start, _end, offset);
+    }
+
     public TagClosing AddOffset(int offset) => new(_start, _end, offset);
 
     #region Comparison
