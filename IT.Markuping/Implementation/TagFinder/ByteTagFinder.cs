@@ -35,88 +35,94 @@ public class ByteTagFinder : ITagFinder<byte>
 
     #region ITagFinder
 
-    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out Range ns)
+    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes, out Range ns)
     {
         var opening = First(data, name, out ns, TagEndings.Closing);
         if (!opening.IsEmpty)
         {
-            var closing = FirstClosing(data, name, data[ns], opening.End);
+            var closing = FirstClosing(data, name, data[ns], opening.End, out nodes);
             if (!closing.IsEmpty)
             {
                 return new((TagOpening)opening, closing);
             }
         }
+        nodes = default;
         return default;
     }
 
-    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
+    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes, ReadOnlySpan<byte> ns)
     {
         var opening = First(data, name, ns, TagEndings.Closing);
         if (!opening.IsEmpty)
         {
-            var closing = FirstClosing(data, name, ns, opening.End);
+            var closing = FirstClosing(data, name, ns, opening.End, out nodes);
             if (!closing.IsEmpty)
             {
                 return new((TagOpening)opening, closing);
             }
         }
+        nodes = default;
         return default;
     }
 
-    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name)
+    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes)
     {
         var opening = First(data, name, TagEndings.Closing);
         if (!opening.IsEmpty)
         {
-            var closing = FirstClosing(data, name, default, opening.End);
+            var closing = FirstClosing(data, name, default, opening.End, out nodes);
             if (!closing.IsEmpty)
             {
                 return new((TagOpening)opening, closing);
             }
         }
+        nodes = default;
         return default;
     }
 
-    public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out Range ns)
+    public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes, out Range ns)
     {
         var closing = LastClosing(data, name, out ns);
         if (!closing.IsEmpty)
         {
-            var opening = LastOpening(data.Slice(0, closing.Start), name, data[ns], out var isTree);
+            var opening = LastOpening(data.Slice(0, closing.Start), name, data[ns], out nodes);
             if (!opening.IsEmpty)
             {
-                return new(opening, closing, isTree);
+                return new(opening, closing, nodes > 0);
             }
         }
+        nodes = default;
         ns = default;
         return default;
     }
 
-    public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
+    public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes, ReadOnlySpan<byte> ns)
     {
         var closing = LastClosing(data, name, ns);
         if (!closing.IsEmpty)
         {
-            var opening = LastOpening(data.Slice(0, closing.Start), name, ns, out var isTree);
+            var opening = LastOpening(data.Slice(0, closing.Start), name, ns, out nodes);
             if (!opening.IsEmpty)
             {
-                return new(opening, closing, isTree);
+                return new(opening, closing, nodes > 0);
             }
         }
+        nodes = default;
         return default;
     }
 
-    public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name)
+    public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes)
     {
         var closing = LastClosing(data, name);
         if (!closing.IsEmpty)
         {
-            var opening = LastOpening(data.Slice(0, closing.Start), name, default, out var isTree);
+            var opening = LastOpening(data.Slice(0, closing.Start), name, default, out nodes);
             if (!opening.IsEmpty)
             {
-                return new(opening, closing, isTree);
+                return new(opening, closing, nodes > 0);
             }
         }
+        nodes = default;
         return default;
     }
 
@@ -291,13 +297,13 @@ public class ByteTagFinder : ITagFinder<byte>
 
     #region Private Methods
 
-    private TagClosing FirstClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, int offset)
+    private TagClosing FirstClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, int offset, out int nodes)
     {
         Debug.Assert(data.Length >= offset);
 
+        nodes = 0;
         int count = 1;
         data = data.Slice(offset);
-        bool isTree = false;
         do
         {
 #if DEBUG
@@ -309,11 +315,11 @@ public class ByteTagFinder : ITagFinder<byte>
 
             count += CountFirst(data.Slice(0, closing.Start), name, ns) - 1;
             if (count == 0)
-                return closing.AddOffset(offset, isTree);
+                return closing.AddOffset(offset, nodes > 0);
 
+            nodes++;
             data = data.Slice(closing.End);
             offset += closing.End;
-            isTree = true;
         } while (true);
 
         return default;
@@ -337,10 +343,10 @@ public class ByteTagFinder : ITagFinder<byte>
         return count;
     }
 
-    private TagOpening LastOpening(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, out bool isTree)
+    private TagOpening LastOpening(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, out int nodes)
     {
         int count = 1;
-        isTree = false;
+        nodes = 0;
         do
         {
 #if DEBUG
@@ -354,8 +360,8 @@ public class ByteTagFinder : ITagFinder<byte>
             if (count == 0)
                 return (TagOpening)opening;
 
+            nodes++;
             data = data.Slice(0, opening.Start);
-            isTree = true;
         } while (true);
 
         return default;

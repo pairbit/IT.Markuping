@@ -4,17 +4,17 @@ namespace IT.Markuping.Interfaces;
 
 public interface ITagFinder<T> where T : unmanaged
 {
-    Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out Range ns);
+    Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes, out Range ns);
 
-    Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns);
+    Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes, ReadOnlySpan<T> ns);
 
-    Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name);
+    Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes);
 
-    Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out Range ns);
+    Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes, out Range ns);
 
-    Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns);
+    Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes, ReadOnlySpan<T> ns);
 
-    Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name);
+    Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes);
 
     Tag First(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out Range ns, TagEndings endings = default);
 

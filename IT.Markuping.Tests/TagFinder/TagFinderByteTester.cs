@@ -111,14 +111,18 @@ internal class TagFinderByteTester
 
     private Tags FirstPair(ReadOnlySpan<byte> data, TagData tagData, int nodesCount = 0)
     {
-        var tags = _finder.FirstPair(data, tagData.FullName);
-        Assert.That(_finder.FirstPair(data, tagData.Name, tagData.Namespace), Is.EqualTo(tags));
-        Assert.That(_finder.FirstPair(data, tagData.Name, out var ns), Is.EqualTo(tags));
+        var tags = _finder.FirstPair(data, tagData.FullName, out var nodes);
+        Assert.That(nodes, Is.EqualTo(nodesCount));
+        Assert.That(_finder.FirstPair(data, tagData.Name, out nodes, tagData.Namespace), Is.EqualTo(tags));
+        Assert.That(nodes, Is.EqualTo(nodesCount));
+        Assert.That(_finder.FirstPair(data, tagData.Name, out nodes, out var ns), Is.EqualTo(tags));
+        Assert.That(nodes, Is.EqualTo(nodesCount));
         Assert.That(data[ns].SequenceEqual(tagData.Namespace), Is.True);
         if (tagData.HasNamespace)
         {
-            Assert.That(_finder.FirstPair(data, tagData.FullName, out ns), Is.EqualTo(tags));
+            Assert.That(_finder.FirstPair(data, tagData.FullName, out nodes, out ns), Is.EqualTo(tags));
             Assert.That(ns.IsZero(), Is.True);
+            Assert.That(nodes, Is.EqualTo(nodesCount));
         }
         Assert.That(tags.IsTree, Is.EqualTo(nodesCount > 0));
         return tags;
@@ -126,14 +130,18 @@ internal class TagFinderByteTester
 
     private Tags LastPair(ReadOnlySpan<byte> data, TagData tagData, int nodesCount = 0)
     {
-        var tags = _finder.LastPair(data, tagData.FullName);
-        Assert.That(_finder.LastPair(data, tagData.Name, tagData.Namespace), Is.EqualTo(tags));
-        Assert.That(_finder.LastPair(data, tagData.Name, out var ns), Is.EqualTo(tags));
+        var tags = _finder.LastPair(data, tagData.FullName, out var nodes);
+        Assert.That(nodes, Is.EqualTo(nodesCount));
+        Assert.That(_finder.LastPair(data, tagData.Name, out nodes, tagData.Namespace), Is.EqualTo(tags));
+        Assert.That(nodes, Is.EqualTo(nodesCount));
+        Assert.That(_finder.LastPair(data, tagData.Name, out nodes, out var ns), Is.EqualTo(tags));
+        Assert.That(nodes, Is.EqualTo(nodesCount));
         Assert.That(data[ns].SequenceEqual(tagData.Namespace), Is.True);
         if (tagData.HasNamespace)
         {
-            Assert.That(_finder.LastPair(data, tagData.FullName, out ns), Is.EqualTo(tags));
+            Assert.That(_finder.LastPair(data, tagData.FullName, out nodes, out ns), Is.EqualTo(tags));
             Assert.That(ns.IsZero(), Is.True);
+            Assert.That(nodes, Is.EqualTo(nodesCount));
         }
         Assert.That(tags.IsTree, Is.EqualTo(nodesCount > 0));
         return tags;
