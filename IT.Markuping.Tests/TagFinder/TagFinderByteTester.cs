@@ -80,30 +80,36 @@ internal class TagFinderByteTester
         Assert.That(first, Is.Not.EqualTo(last));
 
         FirstLastPair($"<{tagData}><{tagData}>1</{tagData}></{tagData}>", tagData,
-            $"<{tagData}>1</{tagData}>", isTree: true);
+            $"<{tagData}>1</{tagData}>", nodesCount: 1);
+
+        FirstLastPair($"<{tagData}><{tagData}>1</{tagData}><{tagData}>2</{tagData}></{tagData}>", tagData,
+            $"<{tagData}>1</{tagData}><{tagData}>2</{tagData}>", nodesCount: 2);
+
+        FirstLastPair($"<{tagData}><{tagData}><{tagData}>2</{tagData}></{tagData}></{tagData}>", tagData,
+            $"<{tagData}><{tagData}>2</{tagData}></{tagData}>", nodesCount: 2);
 
         FirstLastPair($"<{tagData}><{tagData}><{tagData}>1</{tagData}><{tagData}>2</{tagData}></{tagData}><{tagData}><{tagData}>3</{tagData}><{tagData}>4</{tagData}></{tagData}></{tagData}>", tagData,
-            $"<{tagData}><{tagData}>1</{tagData}><{tagData}>2</{tagData}></{tagData}><{tagData}><{tagData}>3</{tagData}><{tagData}>4</{tagData}></{tagData}>", isTree: true);
+            $"<{tagData}><{tagData}>1</{tagData}><{tagData}>2</{tagData}></{tagData}><{tagData}><{tagData}>3</{tagData}><{tagData}>4</{tagData}></{tagData}>", nodesCount: 6);
     }
 
-    private void FirstLastPair(string data, TagData tagData, string inner, string? outer = null, bool isTree = false)
+    private void FirstLastPair(string data, TagData tagData, string inner, string? outer = null, int nodesCount = 0)
     {
         FirstLastPair(_encoding.GetBytes(data), tagData, _encoding.GetBytes(inner),
-            outer == null ? [] : _encoding.GetBytes(outer), isTree);
+            outer == null ? [] : _encoding.GetBytes(outer), nodesCount);
     }
 
     private void FirstLastPair(ReadOnlySpan<byte> data, TagData tagData, ReadOnlySpan<byte> inner,
-        ReadOnlySpan<byte> outer = default, bool isTree = false)
+        ReadOnlySpan<byte> outer = default, int nodesCount = 0)
     {
-        var tags = FirstPair(data, tagData, isTree);
-        Assert.That(LastPair(data, tagData, isTree), Is.EqualTo(tags));
+        var tags = FirstPair(data, tagData, nodesCount);
+        Assert.That(LastPair(data, tagData, nodesCount), Is.EqualTo(tags));
 
         if (outer.IsEmpty) outer = data;
         Assert.That(data[tags.Outer].SequenceEqual(outer), Is.True);
         Assert.That(data[tags.Inner].SequenceEqual(inner), Is.True);
     }
 
-    private Tags FirstPair(ReadOnlySpan<byte> data, TagData tagData, bool isTree = false)
+    private Tags FirstPair(ReadOnlySpan<byte> data, TagData tagData, int nodesCount = 0)
     {
         var tags = _finder.FirstPair(data, tagData.FullName);
         Assert.That(_finder.FirstPair(data, tagData.Name, tagData.Namespace), Is.EqualTo(tags));
@@ -114,11 +120,11 @@ internal class TagFinderByteTester
             Assert.That(_finder.FirstPair(data, tagData.FullName, out ns), Is.EqualTo(tags));
             Assert.That(ns.IsZero(), Is.True);
         }
-        Assert.That(tags.IsTree, Is.EqualTo(isTree));
+        Assert.That(tags.IsTree, Is.EqualTo(nodesCount > 0));
         return tags;
     }
 
-    private Tags LastPair(ReadOnlySpan<byte> data, TagData tagData, bool isTree = false)
+    private Tags LastPair(ReadOnlySpan<byte> data, TagData tagData, int nodesCount = 0)
     {
         var tags = _finder.LastPair(data, tagData.FullName);
         Assert.That(_finder.LastPair(data, tagData.Name, tagData.Namespace), Is.EqualTo(tags));
@@ -129,7 +135,7 @@ internal class TagFinderByteTester
             Assert.That(_finder.LastPair(data, tagData.FullName, out ns), Is.EqualTo(tags));
             Assert.That(ns.IsZero(), Is.True);
         }
-        Assert.That(tags.IsTree, Is.EqualTo(isTree));
+        Assert.That(tags.IsTree, Is.EqualTo(nodesCount > 0));
         return tags;
     }
 
