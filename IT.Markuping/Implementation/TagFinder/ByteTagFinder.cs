@@ -4,6 +4,7 @@ using IT.Markuping.Interfaces;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Text;
 
 namespace IT.Markuping.Implementation;
@@ -32,6 +33,14 @@ public class ByteTagFinder : ITagFinder<byte>
         _otherSpaces = byteEncoding._otherSpaces;
         _tokens = byteEncoding._tokens;
     }
+
+    private int LtLength => 1;
+
+    private int LtColonLength => 2;
+
+    private int LtSlashLength => 2;
+
+    private int LtSlashColonLength => 3;
 
     #region ITagFinder
 
@@ -134,15 +143,16 @@ public class ByteTagFinder : ITagFinder<byte>
         Debug.Assert(namelen > 0);
 
         var len = data.Length;
+        var min = LtLength;
         do
         {
             var index = data.IndexOf(name);
             if (index < 0) break;
 
             var end = index + namelen;
-            if (index > 0)
+            if (index >= min)
             {
-                var tag = GetTag(data, index - 1, end, endings, out ns);
+                var tag = GetTag(data, index, end, endings, out ns);
                 if (!tag.IsEmpty)
                 {
                     var offset = len - data.Length;
@@ -225,15 +235,16 @@ public class ByteTagFinder : ITagFinder<byte>
         Debug.Assert(namelen > 0);
 
         var len = data.Length;
+        var min = LtSlashLength;
         do
         {
             var index = data.IndexOf(name);
             if (index < 0) break;
 
             var end = index + namelen;
-            if (index > 1)
+            if (index >= min)
             {
-                var closing = GetClosing(data, index - 2, end);
+                var closing = GetClosing(data, index - min, end);
                 if (!closing.IsEmpty)
                 {
                     return closing.AddOffset(len - data.Length);
@@ -250,12 +261,13 @@ public class ByteTagFinder : ITagFinder<byte>
         var namelen = name.Length;
         Debug.Assert(namelen > 0);
 
+        var min = LtSlashLength;
         do
         {
             var index = data.LastIndexOf(name);
-            if (index < 2) break;
+            if (index < min) break;
 
-            var closing = GetClosing(data, index - 1, index + namelen, out ns);
+            var closing = GetClosing(data, index, index + namelen, out ns);
             if (!closing.IsEmpty)
             {
                 return closing;
@@ -276,12 +288,13 @@ public class ByteTagFinder : ITagFinder<byte>
         var namelen = name.Length;
         Debug.Assert(namelen > 0);
 
+        var min = LtSlashLength;
         do
         {
             var index = data.LastIndexOf(name);
-            if (index < 2) break;
+            if (index < min) break;
 
-            var closing = GetClosing(data, index - 2, index + namelen);
+            var closing = GetClosing(data, index - min, index + namelen);
             if (!closing.IsEmpty)
             {
                 return closing;
@@ -294,6 +307,236 @@ public class ByteTagFinder : ITagFinder<byte>
     }
 
     #endregion ITagFinder
+
+    #region Internal
+
+    internal bool IsStartOpening(ReadOnlySpan<byte> data, int start)
+    {
+        Debug.Assert(start >= 0);
+        Debug.Assert(start < data.Length);
+
+        return data[start] == _tokens._lt;
+    }
+
+    internal bool IsStartOpening(ReadOnlySpan<byte> data, int start, ReadOnlySpan<byte> ns)
+    {
+        Debug.Assert(start >= 0);
+        Debug.Assert(start + ns.Length + 1 < data.Length);
+
+        return data[start++] == _tokens._lt &&
+               data[start + ns.Length] == _tokens._colon &&
+               data.Slice(start, ns.Length).SequenceEqual(ns);
+    }
+
+    internal bool IsStartOpening(ReadOnlySpan<byte> data, ref int start, out Range ns)
+    {
+        Debug.Assert(start < data.Length);
+        Debug.Assert(start >= 1);
+
+        var token = data[--start];
+        if (token == _tokens._lt)
+        {
+            ns = default;
+            return true;
+        }
+        else if (token == _tokens._colon && start > 1)
+        {
+            var endNS = start;
+            do
+            {
+                token = data[--start];
+                if (token == _tokens._lt)
+                {
+                    Debug.Assert(endNS > start + 1);
+
+                    ns = (start + 1)..endNS;
+                    return true;
+                }
+                else if (token == _tokens._quot || token == _tokens._apos)
+                {
+                    break;
+                }
+            } while (start > 0);
+        }
+        ns = default;
+        return false;
+    }
+
+    internal bool IsStartClosing(ReadOnlySpan<byte> data, int start)
+    {
+        Debug.Assert(start >= 0 && start + 1 < data.Length);
+
+        return data[start++] == _tokens._lt && data[start] == _tokens._slash;
+    }
+
+    internal bool IsStartClosing(ReadOnlySpan<byte> data, int start, ReadOnlySpan<byte> ns)
+    {
+        Debug.Assert(start >= 0 && start + ns.Length + 2 < data.Length);
+
+        return data[start++] == _tokens._lt &&
+               data[start++] == _tokens._slash &&
+               data[start + ns.Length] == _tokens._colon &&
+               data.Slice(start, ns.Length).SequenceEqual(ns);
+    }
+
+    internal bool IsStartClosing(ReadOnlySpan<byte> data, ref int start, out Range ns)
+    {
+        Debug.Assert(start < data.Length);
+        Debug.Assert(start >= 2);
+
+        var token = data[--start];
+
+        //</
+        if (token == _tokens._slash)
+        {
+            ns = default;
+            return data[--start] == _tokens._lt;
+        }
+        //</*:
+        else if (token == _tokens._colon && start > 2)
+        {
+            var endNS = start;
+            //</
+            do
+            {
+                token = data[--start];
+                if (token == _tokens._slash)
+                {
+                    if (data[--start] == _tokens._lt)
+                    {
+                        Debug.Assert(endNS > start + 2);
+
+                        ns = (start + 2)..endNS;
+                        return true;
+                    }
+                    break;
+                }
+                else if (token == _tokens._quot || token == _tokens._apos)
+                {
+                    break;
+                }
+            } while (start > 1);
+        }
+        ns = default;
+        return false;
+    }
+
+    internal bool IsEndClosing(ReadOnlySpan<byte> data, ref int end, out bool hasSpace)
+    {
+        Debug.Assert(end >= 0 && end < data.Length);
+
+        hasSpace = false;
+
+        do
+        {
+            var token = data[end++];
+            if (token == _tokens._gt) return true;
+            if (token == _tokens._space || _otherSpaces != null && _otherSpaces[token])
+            {
+                hasSpace = true;
+                continue;
+            }
+            break;
+        } while (end < data.Length);
+
+        return false;
+    }
+
+    internal TagEnding GetEndingName(ReadOnlySpan<byte> data, ref int end)
+    {
+        Debug.Assert(end >= 0);
+        Debug.Assert(end < data.Length);
+
+        var token = data[end++];
+        if (token == _tokens._gt)
+            return TagEnding.Closing;
+
+        if (token == _tokens._slash)
+            return end < data.Length && data[end++] == _tokens._gt
+                ? TagEnding.SelfClosing : TagEnding.None;
+
+        if (token == _tokens._space || _otherSpaces != null && _otherSpaces[token])
+            return TagEnding.Name;
+
+        return TagEnding.None;
+    }
+
+    internal TagEnding GetEndingAttributeStart(ReadOnlySpan<byte> data, ref int end)
+    {
+        Debug.Assert(end >= 0);
+
+        while (end < data.Length)
+        {
+            var token = data[end];
+            if (token == _tokens._gt)
+            {
+                end++;
+                return TagEnding.Closing;
+            }
+            else if (token == _tokens._slash)
+            {
+                end++;
+                return end < data.Length && data[end++] == _tokens._gt
+                    ? TagEnding.SelfClosing : TagEnding.None;
+            }
+            else if (token == _tokens._space || _otherSpaces != null && _otherSpaces[token])
+            {
+                end++;
+            }
+            else
+            {
+                return TagEnding.AttributeStart;
+            }
+        }
+
+        return TagEnding.None;
+    }
+
+    internal TagEnding GetEndingHasAttributes(ReadOnlySpan<byte> data, ref int end)
+    {
+        Debug.Assert(end < data.Length);
+        Debug.Assert(end >= 0);
+
+        //TODO: _gt, _slash и space был проверен ранее
+        //стоит пропустить этот символ?
+        Debug.Assert(data[end] != _tokens._gt);
+        Debug.Assert(data[end] != _tokens._slash);
+
+        do
+        {
+            var token = data[end++];
+            if (token == _tokens._gt)
+            {
+                return TagEnding.ClosingHasAttributes;
+            }
+            else if (token == _tokens._slash)
+            {
+                return end < data.Length && data[end++] == _tokens._gt ? TagEnding.SelfClosingHasAttributes : TagEnding.None;
+            }
+            else if (token == _tokens._quot)
+            {
+                //Добавляем еще длину gt
+                if (end + 1 >= data.Length) break;
+
+                var index = data.Slice(end).IndexOf(_tokens._quot);
+                if (index < 0) break;
+                end += index + 1;
+            }
+            else if (token == _tokens._apos)
+            {
+                //Добавляем еще длину gt
+                if (end + 1 >= data.Length) break;
+
+                var index = data.Slice(end).IndexOf(_tokens._apos);
+                if (index < 0) break;
+                end += index + 1;
+            }
+        } while (end < data.Length);
+
+        return TagEnding.None;
+    }
+
+    #endregion
 
     #region Private Methods
 
@@ -397,7 +640,7 @@ public class ByteTagFinder : ITagFinder<byte>
 
         var len = data.Length;
         //"<ns:"
-        var min = nslen + 2;
+        var min = nslen + LtColonLength;
         do
         {
             var index = data.IndexOf(name);
@@ -429,7 +672,7 @@ public class ByteTagFinder : ITagFinder<byte>
         Debug.Assert(namelen > 0);
         Debug.Assert(nslen > 0);
 
-        var min = nslen + 2;
+        var min = nslen + LtColonLength;
         int index = data.Length;
         do
         {
@@ -455,7 +698,7 @@ public class ByteTagFinder : ITagFinder<byte>
         Debug.Assert(nslen > 0);
 
         var len = data.Length;
-        var min = nslen + 3;//</ns:
+        var min = nslen + LtSlashColonLength;//</ns:
         do
         {
             var index = data.IndexOf(name);
@@ -484,7 +727,7 @@ public class ByteTagFinder : ITagFinder<byte>
         Debug.Assert(namelen > 0);
         Debug.Assert(nslen > 0);
 
-        var min = nslen + 3;//</ns:
+        var min = nslen + LtSlashColonLength;//</ns:
         do
         {
             var index = data.LastIndexOf(name);
@@ -504,10 +747,10 @@ public class ByteTagFinder : ITagFinder<byte>
 
     private Tag GetTag(ReadOnlySpan<byte> data, int start, int end, TagEndings endings)
     {
-        Debug.Assert(start >= 0 && start < data.Length);
+        Debug.Assert(start >= 0);
         Debug.Assert(end > 0 && start < end);
 
-        if (end < data.Length && data[start] == _tokens._lt)
+        if (end < data.Length && IsStartOpening(data, start))
         {
             var ending = endings.IsAnyClosing() ?
                 GetEndingAnyClosing(data, ref end) :
@@ -555,50 +798,6 @@ public class ByteTagFinder : ITagFinder<byte>
         return default;
     }
 
-    internal bool IsStartOpening(ReadOnlySpan<byte> data, int start, ReadOnlySpan<byte> ns)
-    {
-        Debug.Assert(start >= 0);
-        Debug.Assert(start + ns.Length + 1 < data.Length);
-
-        return data[start++] == _tokens._lt &&
-               data[start + ns.Length] == _tokens._colon &&
-               data.Slice(start, ns.Length).SequenceEqual(ns);
-    }
-
-    internal bool IsStartOpening(ReadOnlySpan<byte> data, ref int start, out Range ns)
-    {
-        Debug.Assert(start < data.Length);
-        Debug.Assert(start >= 0);
-
-        var token = data[start];
-        if (token == _tokens._lt)
-        {
-            ns = default;
-            return true;
-        }
-        else if (token == _tokens._colon && start > 1)
-        {
-            var endNS = start;
-            do
-            {
-                token = data[--start];
-                if (token == _tokens._lt)
-                {
-                    Debug.Assert(endNS > start + 1);
-
-                    ns = (start + 1)..endNS;
-                    return true;
-                }
-                else if (token == _tokens._quot || token == _tokens._apos)
-                {
-                    break;
-                }
-            } while (start > 0);
-        }
-        ns = default;
-        return false;
-    }
-
     private TagClosing GetClosing(ReadOnlySpan<byte> data, int start, int end, out Range ns)
     {
         Debug.Assert(start > 0 && end > 0);
@@ -637,86 +836,6 @@ public class ByteTagFinder : ITagFinder<byte>
             return new(start, end, hasSpace: hasSpace);
         }
         return default;
-    }
-
-    internal bool IsStartClosing(ReadOnlySpan<byte> data, int start)
-    {
-        Debug.Assert(start >= 0 && start + 1 < data.Length);
-
-        return data[start++] == _tokens._lt && data[start] == _tokens._slash;
-    }
-
-    internal bool IsStartClosing(ReadOnlySpan<byte> data, int start, ReadOnlySpan<byte> ns)
-    {
-        Debug.Assert(start >= 0 && start + ns.Length + 2 < data.Length);
-
-        return data[start++] == _tokens._lt &&
-               data[start++] == _tokens._slash &&
-               data[start + ns.Length] == _tokens._colon &&
-               data.Slice(start, ns.Length).SequenceEqual(ns);
-    }
-
-    internal bool IsStartClosing(ReadOnlySpan<byte> data, ref int start, out Range ns)
-    {
-        Debug.Assert(start < data.Length);
-        Debug.Assert(start > 0);
-
-        var token = data[start];
-
-        //</
-        if (token == _tokens._slash)
-        {
-            ns = default;
-            return data[--start] == _tokens._lt;
-        }
-        //</*:
-        else if (token == _tokens._colon && start > 2)
-        {
-            var endNS = start;
-            //</
-            do
-            {
-                token = data[--start];
-                if (token == _tokens._slash)
-                {
-                    if (data[--start] == _tokens._lt)
-                    {
-                        Debug.Assert(endNS > start + 2);
-
-                        ns = (start + 2)..endNS;
-                        return true;
-                    }
-                    break;
-                }
-                else if (token == _tokens._quot || token == _tokens._apos)
-                {
-                    break;
-                }
-            } while (start > 1);
-        }
-        ns = default;
-        return false;
-    }
-
-    internal bool IsEndClosing(ReadOnlySpan<byte> data, ref int end, out bool hasSpace)
-    {
-        Debug.Assert(end >= 0 && end < data.Length);
-
-        hasSpace = false;
-
-        do
-        {
-            var token = data[end++];
-            if (token == _tokens._gt) return true;
-            if (token == _tokens._space || _otherSpaces != null && _otherSpaces[token])
-            {
-                hasSpace = true;
-                continue;
-            }
-            break;
-        } while (end < data.Length);
-
-        return false;
     }
 
     private TagEnding GetEndingAnyClosing(ReadOnlySpan<byte> data, ref int end)
@@ -778,100 +897,6 @@ public class ByteTagFinder : ITagFinder<byte>
                     return TagEnding.SelfClosing;
             }
         }
-
-        return TagEnding.None;
-    }
-
-    private TagEnding GetEndingName(ReadOnlySpan<byte> data, ref int end)
-    {
-        Debug.Assert(end >= 0);
-        Debug.Assert(end < data.Length);
-
-        var token = data[end++];
-        if (token == _tokens._gt)
-            return TagEnding.Closing;
-
-        if (token == _tokens._slash)
-            return end < data.Length && data[end++] == _tokens._gt
-                ? TagEnding.SelfClosing : TagEnding.None;
-
-        if (token == _tokens._space || _otherSpaces != null && _otherSpaces[token])
-            return TagEnding.Name;
-
-        return TagEnding.None;
-    }
-
-    private TagEnding GetEndingAttributeStart(ReadOnlySpan<byte> data, ref int end)
-    {
-        Debug.Assert(end >= 0);
-
-        while (end < data.Length)
-        {
-            var token = data[end];
-            if (token == _tokens._gt)
-            {
-                end++;
-                return TagEnding.Closing;
-            }
-            else if (token == _tokens._slash)
-            {
-                end++;
-                return end < data.Length && data[end++] == _tokens._gt
-                    ? TagEnding.SelfClosing : TagEnding.None;
-            }
-            else if (token == _tokens._space || _otherSpaces != null && _otherSpaces[token])
-            {
-                end++;
-            }
-            else
-            {
-                return TagEnding.AttributeStart;
-            }
-        }
-
-        return TagEnding.None;
-    }
-
-    private TagEnding GetEndingHasAttributes(ReadOnlySpan<byte> data, ref int end)
-    {
-        Debug.Assert(end < data.Length);
-        Debug.Assert(end >= 0);
-
-        //TODO: _gt, _slash и space был проверен ранее
-        //стоит пропустить этот символ?
-        Debug.Assert(data[end] != _tokens._gt);
-        Debug.Assert(data[end] != _tokens._slash);
-
-        do
-        {
-            var token = data[end++];
-            if (token == _tokens._gt)
-            {
-                return TagEnding.ClosingHasAttributes;
-            }
-            else if (token == _tokens._slash)
-            {
-                return end < data.Length && data[end++] == _tokens._gt ? TagEnding.SelfClosingHasAttributes : TagEnding.None;
-            }
-            else if (token == _tokens._quot)
-            {
-                //Добавляем еще длину gt
-                if (end + 1 >= data.Length) break;
-
-                var index = data.Slice(end).IndexOf(_tokens._quot);
-                if (index < 0) break;
-                end += index + 1;
-            }
-            else if (token == _tokens._apos)
-            {
-                //Добавляем еще длину gt
-                if (end + 1 >= data.Length) break;
-
-                var index = data.Slice(end).IndexOf(_tokens._apos);
-                if (index < 0) break;
-                end += index + 1;
-            }
-        } while (end < data.Length);
 
         return TagEnding.None;
     }

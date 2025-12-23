@@ -42,6 +42,14 @@ public class BytesTagFinder : ITagFinder<byte>
         _minLength = bytesEncoding._minLength;
     }
 
+    private int LtLength => _lt.Length;
+
+    private int LtColonLength => _lt.Length + _colon.Length;
+
+    private int LtSlashLength => _lt.Length + _slash.Length;
+
+    private int LtSlashColonLength => _lt.Length + _slash.Length + _colon.Length;
+
     #region ITagFinder
 
     public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes, out Range ns)
@@ -143,7 +151,7 @@ public class BytesTagFinder : ITagFinder<byte>
         Debug.Assert(namelen > 0);
 
         var len = data.Length;
-        var min = _lt.Length;
+        var min = LtLength;
         do
         {
             var index = data.IndexOf(name);
@@ -179,7 +187,7 @@ public class BytesTagFinder : ITagFinder<byte>
         Debug.Assert(namelen > 0);
 
         var len = data.Length;
-        var min = _lt.Length;
+        var min = LtLength;
         do
         {
             var index = data.IndexOf(name);
@@ -211,7 +219,7 @@ public class BytesTagFinder : ITagFinder<byte>
         var namelen = name.Length;
         Debug.Assert(namelen > 0);
 
-        var min = _lt.Length;
+        var min = LtLength;
         int index = data.Length;
         do
         {
@@ -237,7 +245,7 @@ public class BytesTagFinder : ITagFinder<byte>
         Debug.Assert(namelen > 0);
 
         var len = data.Length;
-        var min = _lt.Length + _slash.Length;
+        var min = LtSlashLength;
         do
         {
             var index = data.IndexOf(name);
@@ -262,8 +270,8 @@ public class BytesTagFinder : ITagFinder<byte>
     {
         var namelen = name.Length;
         Debug.Assert(namelen > 0);
-        //</
-        var min = _lt.Length + _slash.Length;
+
+        var min = LtSlashLength;
         do
         {
             var index = data.LastIndexOf(name);
@@ -290,7 +298,7 @@ public class BytesTagFinder : ITagFinder<byte>
         var namelen = name.Length;
         Debug.Assert(namelen > 0);
 
-        var min = _lt.Length + _slash.Length;
+        var min = LtSlashLength;
         do
         {
             var index = data.LastIndexOf(name);
@@ -306,6 +314,267 @@ public class BytesTagFinder : ITagFinder<byte>
         } while (true);
 
         return default;
+    }
+
+    #endregion
+
+    #region Internal
+
+    internal bool IsStartOpening(ReadOnlySpan<byte> data, int start)
+    {
+        Debug.Assert(start >= 0);
+        Debug.Assert(start + _lt.Length <= data.Length);
+
+        return data.Slice(start, _lt.Length).SequenceEqual(_lt);
+    }
+
+    internal bool IsStartOpening(ReadOnlySpan<byte> data, int start, ReadOnlySpan<byte> ns)
+    {
+        Debug.Assert(start >= 0);
+        Debug.Assert(start + _lt.Length + ns.Length + _colon.Length <= data.Length);
+
+        if (!data.Slice(start, _lt.Length).SequenceEqual(_lt)) return false;
+
+        start += _lt.Length;
+
+        if (!data.Slice(start, ns.Length).SequenceEqual(ns)) return false;
+
+        start += ns.Length;
+
+        return data.Slice(start, _colon.Length).SequenceEqual(_colon);
+    }
+
+    internal bool IsStartOpening(ReadOnlySpan<byte> data, ref int start, out Range ns)
+    {
+        Debug.Assert(start < data.Length);
+        Debug.Assert(start >= _lt.Length);
+
+        if (data.Slice(start - _lt.Length, _lt.Length).SequenceEqual(_lt))
+        {
+            start -= _lt.Length;
+            ns = default;
+            return true;
+        }
+
+        start -= _colon.Length;
+        if (start > _lt.Length && data.Slice(start, _colon.Length).SequenceEqual(_colon))
+        {
+            var endNS = start;
+            do
+            {
+                if (data.Slice(start - _lt.Length, _lt.Length).SequenceEqual(_lt))
+                {
+                    Debug.Assert(endNS > start);
+
+                    ns = start..endNS;
+                    start -= _lt.Length;
+                    return true;
+                }
+                else if (start >= _quot.Length && data.Slice(start - _quot.Length, _quot.Length).SequenceEqual(_quot))
+                {
+                    break;
+                }
+                else if (start >= _apos.Length && data.Slice(start - _apos.Length, _apos.Length).SequenceEqual(_apos))
+                {
+                    break;
+                }
+                else
+                {
+                    //TODO: спорное решение для байтов переменной длины
+                    start -= _minLength;
+                }
+            } while (start >= _lt.Length);
+        }
+        ns = default;
+        return false;
+    }
+
+    internal bool IsStartClosing(ReadOnlySpan<byte> data, int start)
+    {
+        Debug.Assert(start >= 0);
+        Debug.Assert(start + _lt.Length + _slash.Length <= data.Length);
+
+        return data.Slice(start, _lt.Length).SequenceEqual(_lt) &&
+               data.Slice(start + _lt.Length, _slash.Length).SequenceEqual(_slash);
+    }
+
+    internal bool IsStartClosing(ReadOnlySpan<byte> data, int start, ReadOnlySpan<byte> ns)
+    {
+        Debug.Assert(start >= 0);
+        Debug.Assert(start + _lt.Length + _slash.Length + ns.Length + _colon.Length <= data.Length);
+
+        if (!data.Slice(start, _lt.Length).SequenceEqual(_lt)) return false;
+
+        start += _lt.Length;
+
+        if (!data.Slice(start, _slash.Length).SequenceEqual(_slash)) return false;
+
+        start += _slash.Length;
+
+        if (!data.Slice(start, ns.Length).SequenceEqual(ns)) return false;
+
+        start += ns.Length;
+
+        return data.Slice(start, _colon.Length).SequenceEqual(_colon);
+    }
+
+    internal bool IsStartClosing(ReadOnlySpan<byte> data, ref int start, out Range ns)
+    {
+        var startClosingLength = _lt.Length + _slash.Length;
+
+        Debug.Assert(start < data.Length);
+        Debug.Assert(start >= startClosingLength);
+
+        if (data.Slice(start - _slash.Length, _slash.Length).SequenceEqual(_slash))
+        {
+            start -= startClosingLength;
+            ns = default;
+            return data.Slice(start, _lt.Length).SequenceEqual(_lt);
+        }
+
+        start -= _colon.Length;
+        if (start > startClosingLength && data.Slice(start, _colon.Length).SequenceEqual(_colon))
+        {
+            var endNS = start;
+            do
+            {
+                if (data.Slice(start - _slash.Length, _slash.Length).SequenceEqual(_slash))
+                {
+                    if (data.Slice(start - startClosingLength, _lt.Length).SequenceEqual(_lt))
+                    {
+                        Debug.Assert(endNS > start);
+
+                        ns = start..endNS;
+                        start -= startClosingLength;
+                        return true;
+                    }
+                    break;
+                }
+                else if (start >= _quot.Length && data.Slice(start - _quot.Length, _quot.Length).SequenceEqual(_quot))
+                {
+                    break;
+                }
+                else if (start >= _apos.Length && data.Slice(start - _apos.Length, _apos.Length).SequenceEqual(_apos))
+                {
+                    break;
+                }
+                else
+                {
+                    //TODO: спорное решение для байтов переменной длины
+                    start -= _minLength;
+                }
+            } while (start >= startClosingLength);
+        }
+        ns = default;
+        return false;
+    }
+
+    internal bool IsEndClosing(ReadOnlySpan<byte> data, ref int end, out bool hasSpace)
+    {
+        Debug.Assert(end >= 0 && end < data.Length);
+
+        hasSpace = false;
+
+        do
+        {
+            if (IsSeq(data, _gt, ref end)) return true;
+            if (IsSeq(data, _space, ref end) || IsOtherSpace(data, ref end))
+            {
+                hasSpace = true;
+                continue;
+            }
+            break;
+        } while (end < data.Length);
+        return false;
+    }
+
+    internal TagEnding GetEndingName(ReadOnlySpan<byte> data, ref int end)
+    {
+        Debug.Assert(end >= 0);
+
+        if (IsSeq(data, _gt, ref end))
+            return TagEnding.Closing;
+
+        if (IsSeq(data, _slash, ref end))
+            return IsSeq(data, _gt, ref end) ? TagEnding.SelfClosing : TagEnding.None;
+
+        if (IsSeq(data, _space, ref end) || IsOtherSpace(data, ref end))
+            return TagEnding.Name;
+
+        return TagEnding.None;
+    }
+
+    internal TagEnding GetEndingAttributeStart(ReadOnlySpan<byte> data, ref int end)
+    {
+        Debug.Assert(end >= 0);
+
+        while (end < data.Length)
+        {
+            if (IsSeq(data, _gt, ref end))
+            {
+                return TagEnding.Closing;
+            }
+            else if (IsSeq(data, _slash, ref end))
+            {
+                return IsSeq(data, _gt, ref end) ? TagEnding.SelfClosing : TagEnding.None;
+            }
+            else if (IsSeq(data, _space, ref end) || IsOtherSpace(data, ref end))
+            {
+                continue;
+            }
+            else
+            {
+                return TagEnding.AttributeStart;
+            }
+        }
+
+        return TagEnding.None;
+    }
+
+    internal TagEnding GetEndingHasAttributes(ReadOnlySpan<byte> data, ref int end)
+    {
+        Debug.Assert(end < data.Length);
+        Debug.Assert(end >= 0);
+
+        //TODO: _gt, _slash и space был проверен ранее
+        //стоит пропустить этот символ?
+        Debug.Assert(!IsSeq(data, _gt, end));
+        Debug.Assert(!IsSeq(data, _slash, end));
+
+        do
+        {
+            if (IsSeq(data, _gt, ref end))
+            {
+                return TagEnding.ClosingHasAttributes;
+            }
+            else if (IsSeq(data, _slash, ref end))
+            {
+                return IsSeq(data, _gt, ref end) ? TagEnding.SelfClosingHasAttributes : TagEnding.None;
+            }
+            else if (IsSeq(data, _quot, ref end))
+            {
+                if (end + _quot.Length >= data.Length) break;
+
+                var index = data.Slice(end).IndexOf(_quot);
+                if (index < 0) break;
+                end += index + _quot.Length;
+            }
+            else if (IsSeq(data, _apos, ref end))
+            {
+                if (end + _apos.Length >= data.Length) break;
+
+                var index = data.Slice(end).IndexOf(_apos);
+                if (index < 0) break;
+                end += index + _apos.Length;
+            }
+            else
+            {
+                //TODO: спорное решение для байтов переменной длины
+                end += _minLength;
+            }
+        } while (end < data.Length);
+
+        return TagEnding.None;
     }
 
     #endregion
@@ -412,7 +681,7 @@ public class BytesTagFinder : ITagFinder<byte>
 
         var len = data.Length;
         //"<ns:"
-        var min = nslen + _lt.Length + _colon.Length;
+        var min = nslen + LtColonLength;
         do
         {
             var index = data.IndexOf(name);
@@ -444,7 +713,7 @@ public class BytesTagFinder : ITagFinder<byte>
         Debug.Assert(namelen > 0);
         Debug.Assert(nslen > 0);
 
-        var min = nslen + _lt.Length + _colon.Length;
+        var min = nslen + LtColonLength;
         int index = data.Length;
         do
         {
@@ -470,7 +739,7 @@ public class BytesTagFinder : ITagFinder<byte>
         Debug.Assert(nslen > 0);
 
         var len = data.Length;
-        var min = nslen + _lt.Length + _slash.Length + _colon.Length;//</ns:
+        var min = nslen + LtSlashColonLength;//</ns:
         do
         {
             var index = data.IndexOf(name);
@@ -499,7 +768,7 @@ public class BytesTagFinder : ITagFinder<byte>
         Debug.Assert(namelen > 0);
         Debug.Assert(nslen > 0);
 
-        var min = nslen + _lt.Length + _slash.Length + _colon.Length;//</ns:
+        var min = nslen + LtSlashColonLength;//</ns:
         do
         {
             var index = data.LastIndexOf(name);
@@ -519,10 +788,10 @@ public class BytesTagFinder : ITagFinder<byte>
 
     private Tag GetTag(ReadOnlySpan<byte> data, int start, int end, TagEndings endings)
     {
-        Debug.Assert(start >= 0 && start + _lt.Length <= data.Length);
+        Debug.Assert(start >= 0);
         Debug.Assert(end > 0 && start < end);
 
-        if (end < data.Length && data.Slice(start, _lt.Length).SequenceEqual(_lt))
+        if (end < data.Length && IsStartOpening(data, start))
         {
             var ending = endings.IsAnyClosing() ?
                 GetEndingAnyClosing(data, ref end) :
@@ -570,67 +839,6 @@ public class BytesTagFinder : ITagFinder<byte>
         return default;
     }
 
-    internal bool IsStartOpening(ReadOnlySpan<byte> data, int start, ReadOnlySpan<byte> ns)
-    {
-        Debug.Assert(start >= 0);
-        Debug.Assert(start + _lt.Length + ns.Length + _colon.Length <= data.Length);
-
-        if (!data.Slice(start, _lt.Length).SequenceEqual(_lt)) return false;
-
-        start += _lt.Length;
-
-        if (!data.Slice(start, ns.Length).SequenceEqual(ns)) return false;
-
-        start += ns.Length;
-
-        return data.Slice(start, _colon.Length).SequenceEqual(_colon);
-    }
-
-    internal bool IsStartOpening(ReadOnlySpan<byte> data, ref int start, out Range ns)
-    {
-        Debug.Assert(start < data.Length);
-        Debug.Assert(start >= _lt.Length);
-
-        if (data.Slice(start - _lt.Length, _lt.Length).SequenceEqual(_lt))
-        {
-            start -= _lt.Length;
-            ns = default;
-            return true;
-        }
-
-        start -= _colon.Length;
-        if (start > _lt.Length && data.Slice(start, _colon.Length).SequenceEqual(_colon))
-        {
-            var endNS = start;
-            do
-            {
-                if (data.Slice(start - _lt.Length, _lt.Length).SequenceEqual(_lt))
-                {
-                    Debug.Assert(endNS > start);
-
-                    ns = start..endNS;
-                    start -= _lt.Length;
-                    return true;
-                }
-                else if (start >= _quot.Length && data.Slice(start - _quot.Length, _quot.Length).SequenceEqual(_quot))
-                {
-                    break;
-                }
-                else if (start >= _apos.Length && data.Slice(start - _apos.Length, _apos.Length).SequenceEqual(_apos))
-                {
-                    break;
-                }
-                else
-                {
-                    //TODO: спорное решение для байтов переменной длины
-                    start -= _minLength;
-                }
-            } while (start >= _lt.Length);
-        }
-        ns = default;
-        return false;
-    }
-
     private TagClosing GetClosing(ReadOnlySpan<byte> data, int start, int end, out Range ns)
     {
         Debug.Assert(start > 0 && end > 0);
@@ -669,105 +877,6 @@ public class BytesTagFinder : ITagFinder<byte>
             return new(start, end, hasSpace: hasSpace);
         }
         return default;
-    }
-
-    internal bool IsStartClosing(ReadOnlySpan<byte> data, int start)
-    {
-        Debug.Assert(start >= 0);
-        Debug.Assert(start + _lt.Length + _slash.Length <= data.Length);
-
-        return data.Slice(start, _lt.Length).SequenceEqual(_lt) &&
-               data.Slice(start + _lt.Length, _slash.Length).SequenceEqual(_slash);
-    }
-
-    internal bool IsStartClosing(ReadOnlySpan<byte> data, int start, ReadOnlySpan<byte> ns)
-    {
-        Debug.Assert(start >= 0);
-        Debug.Assert(start + _lt.Length + _slash.Length + ns.Length + _colon.Length <= data.Length);
-
-        if (!data.Slice(start, _lt.Length).SequenceEqual(_lt)) return false;
-
-        start += _lt.Length;
-
-        if (!data.Slice(start, _slash.Length).SequenceEqual(_slash)) return false;
-
-        start += _slash.Length;
-
-        if (!data.Slice(start, ns.Length).SequenceEqual(ns)) return false;
-
-        start += ns.Length;
-
-        return data.Slice(start, _colon.Length).SequenceEqual(_colon);
-    }
-
-    private bool IsStartClosing(ReadOnlySpan<byte> data, ref int start, out Range ns)
-    {
-        var startClosingLength = _lt.Length + _slash.Length;
-
-        Debug.Assert(start < data.Length);
-        Debug.Assert(start >= startClosingLength);
-
-        if (data.Slice(start - _slash.Length, _slash.Length).SequenceEqual(_slash))
-        {
-            start -= startClosingLength;
-            ns = default;
-            return data.Slice(start, _lt.Length).SequenceEqual(_lt);
-        }
-
-        start -= _colon.Length;
-        if (start > startClosingLength && data.Slice(start, _colon.Length).SequenceEqual(_colon))
-        {
-            var endNS = start;
-            do
-            {
-                if (data.Slice(start - _slash.Length, _slash.Length).SequenceEqual(_slash))
-                {
-                    if (data.Slice(start - startClosingLength, _lt.Length).SequenceEqual(_lt))
-                    {
-                        Debug.Assert(endNS > start);
-
-                        ns = start..endNS;
-                        start -= startClosingLength;
-                        return true;
-                    }
-                    break;
-                }
-                else if (start >= _quot.Length && data.Slice(start - _quot.Length, _quot.Length).SequenceEqual(_quot))
-                {
-                    break;
-                }
-                else if (start >= _apos.Length && data.Slice(start - _apos.Length, _apos.Length).SequenceEqual(_apos))
-                {
-                    break;
-                }
-                else
-                {
-                    //TODO: спорное решение для байтов переменной длины
-                    start -= _minLength;
-                }
-            } while (start >= startClosingLength);
-        }
-        ns = default;
-        return false;
-    }
-
-    private bool IsEndClosing(ReadOnlySpan<byte> data, ref int end, out bool hasSpace)
-    {
-        Debug.Assert(end >= 0 && end < data.Length);
-
-        hasSpace = false;
-
-        do
-        {
-            if (IsSeq(data, _gt, ref end)) return true;
-            if (IsSeq(data, _space, ref end) || IsOtherSpace(data, ref end))
-            {
-                hasSpace = true;
-                continue;
-            }
-            break;
-        } while (end < data.Length);
-        return false;
     }
 
     private TagEnding GetEndingAnyClosing(ReadOnlySpan<byte> data, ref int end)
@@ -829,95 +938,6 @@ public class BytesTagFinder : ITagFinder<byte>
                     return TagEnding.SelfClosing;
             }
         }
-
-        return TagEnding.None;
-    }
-
-    private TagEnding GetEndingName(ReadOnlySpan<byte> data, ref int end)
-    {
-        Debug.Assert(end >= 0);
-
-        if (IsSeq(data, _gt, ref end))
-            return TagEnding.Closing;
-
-        if (IsSeq(data, _slash, ref end))
-            return IsSeq(data, _gt, ref end) ? TagEnding.SelfClosing : TagEnding.None;
-
-        if (IsSeq(data, _space, ref end) || IsOtherSpace(data, ref end))
-            return TagEnding.Name;
-
-        return TagEnding.None;
-    }
-
-    private TagEnding GetEndingAttributeStart(ReadOnlySpan<byte> data, ref int end)
-    {
-        Debug.Assert(end >= 0);
-
-        while (end < data.Length)
-        {
-            if (IsSeq(data, _gt, ref end))
-            {
-                return TagEnding.Closing;
-            }
-            else if (IsSeq(data, _slash, ref end))
-            {
-                return IsSeq(data, _gt, ref end) ? TagEnding.SelfClosing : TagEnding.None;
-            }
-            else if (IsSeq(data, _space, ref end) || IsOtherSpace(data, ref end))
-            {
-                continue;
-            }
-            else
-            {
-                return TagEnding.AttributeStart;
-            }
-        }
-
-        return TagEnding.None;
-    }
-
-    private TagEnding GetEndingHasAttributes(ReadOnlySpan<byte> data, ref int end)
-    {
-        Debug.Assert(end < data.Length);
-        Debug.Assert(end >= 0);
-
-        //TODO: _gt, _slash и space был проверен ранее
-        //стоит пропустить этот символ?
-        Debug.Assert(!IsSeq(data, _gt, end));
-        Debug.Assert(!IsSeq(data, _slash, end));
-
-        do
-        {
-            if (IsSeq(data, _gt, ref end))
-            {
-                return TagEnding.ClosingHasAttributes;
-            }
-            else if (IsSeq(data, _slash, ref end))
-            {
-                return IsSeq(data, _gt, ref end) ? TagEnding.SelfClosingHasAttributes : TagEnding.None;
-            }
-            else if (IsSeq(data, _quot, ref end))
-            {
-                if (end + _quot.Length >= data.Length) break;
-
-                var index = data.Slice(end).IndexOf(_quot);
-                if (index < 0) break;
-                end += index + _quot.Length;
-            }
-            else if (IsSeq(data, _apos, ref end))
-            {
-                if (end + _apos.Length >= data.Length) break;
-
-                var index = data.Slice(end).IndexOf(_apos);
-                if (index < 0) break;
-                end += index + _apos.Length;
-            }
-            else
-            {
-                //TODO: спорное решение для байтов переменной длины
-                end += _minLength;
-            }
-        } while (end < data.Length);
 
         return TagEnding.None;
     }
