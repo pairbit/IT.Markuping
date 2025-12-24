@@ -1,6 +1,7 @@
 ﻿namespace IT.Markuping;
 
-//<>/: "'=!-[]?\r\n\t
+//<>/: "='\r\n\t
+//<>/: "=!-[]?'\r\n\t
 public readonly struct MarkupEncodingTokens<T> where T : unmanaged//, IEquatable<T>
 {
     #region Fields
