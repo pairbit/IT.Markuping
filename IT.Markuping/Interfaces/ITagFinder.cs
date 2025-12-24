@@ -22,6 +22,8 @@ public interface ITagFinder<T> where T : unmanaged
 
     Tag First(ReadOnlySpan<T> data, ReadOnlySpan<T> name, TagEndings endings = default);
 
+    //Tag Last(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out Range ns, TagEndings endings = default);
+
     Tag Last(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, TagEndings endings = default);
 
     Tag Last(ReadOnlySpan<T> data, ReadOnlySpan<T> name, TagEndings endings = default);

@@ -1,6 +1,7 @@
 ﻿using IT.Markuping.Extensions;
 using IT.Markuping.Interfaces;
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace IT.Markuping.Implementation;
@@ -9,7 +10,7 @@ public class ProxyTagFinderByte<T> : ITagFinder<byte> where T : unmanaged
 {
     private readonly ITagFinder<T> _proxy;
 
-    private static int Size => 1;// Unsafe.SizeOf<T>();
+    private static int Size => Unsafe.SizeOf<T>();
 
     static ProxyTagFinderByte()
     {
