@@ -45,7 +45,6 @@ public class TagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
     }
 
     protected virtual bool IsSpace(T value) => value.Equals(_tokens._space);
-    //_otherSpaces != null && _otherSpaces[token]
 
     protected override int IndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.IndexOf(value);
