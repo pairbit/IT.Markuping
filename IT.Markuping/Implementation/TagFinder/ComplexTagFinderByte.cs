@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace IT.Markuping.Implementation;
 
-public class ComplexTagFinderByte : ComplexEquatableTagFinder<byte>
+public class ComplexTagFinderByte : ComplexTagFinder<byte>
 {
     public static readonly ComplexTagFinderByte Utf16 = new(BytesEncoding.Utf16);
     public static readonly ComplexTagFinderByte Utf16BE = new(BytesEncoding.Utf16BE);

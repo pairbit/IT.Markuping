@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace IT.Markuping.Implementation;
 
-public class EquatableTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
+public class TagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
 {
     public readonly struct Tokens
     {
@@ -39,7 +39,7 @@ public class EquatableTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEqua
 
     protected override int LtSlashColonLength => 3;
 
-    public EquatableTagFinder(Tokens tokens)
+    public TagFinder(Tokens tokens)
     {
         _tokens = tokens;
     }

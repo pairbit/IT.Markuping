@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace IT.Markuping.Implementation;
 
-public class TagFinderByte : EquatableTagFinder<byte>
+public class TagFinderByte : TagFinder<byte>
 {
     private readonly bool[]? _otherSpaces;
     //private readonly ByteEncoding.Tokens _tokens;

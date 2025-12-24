@@ -2,7 +2,7 @@
 
 namespace IT.Markuping.Implementation;
 
-public class TagFinderChar : EquatableTagFinder<char>
+public class TagFinderChar : TagFinder<char>
 {
 #if NET
     private readonly StringComparison _comparison;

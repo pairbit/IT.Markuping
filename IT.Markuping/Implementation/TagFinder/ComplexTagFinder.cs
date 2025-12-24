@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace IT.Markuping.Implementation;
 
-public class ComplexEquatableTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
+public class ComplexTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
 {
     private readonly T[] _lt;
     private readonly T[] _gt;
@@ -24,7 +24,7 @@ public class ComplexEquatableTagFinder<T> : BaseTagFinder<T> where T : unmanaged
 
     protected override int LtSlashColonLength => _lt.Length + _slash.Length + _colon.Length;
 
-    public ComplexEquatableTagFinder(int length, T[] lt, T[] gt, T[] slash, T[] colon,
+    public ComplexTagFinder(int length, T[] lt, T[] gt, T[] slash, T[] colon,
         T[] space, T[] quot, T[] apos, T[] eq, T[][] otherSpaces)
     {
         _minLength = length;
