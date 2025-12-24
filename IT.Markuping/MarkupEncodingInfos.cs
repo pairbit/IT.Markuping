@@ -37,4 +37,40 @@ public static class MarkupEncodingInfos
         new(new(1, [76, 110, 97, 122, 64, 127, 125, 126,
             13, 21, 5]),
             [1047, 20924]);
+
+    public static readonly MarkupEncodingInfo Utf16_Strict =
+        new(new(2, [(byte)'<', 0, (byte)'>', 0, (byte)'/', 0, (byte)':', 0, (byte)' ', 0, (byte)'"', 0, (byte)'\'', 0, (byte)'=', 0]),
+            [1200]);
+
+    public static readonly MarkupEncodingInfo Utf16BE_Strict =
+        new(new(2, [0, (byte)'<', 0, (byte)'>', 0, (byte)'/', 0, (byte)':', 0, (byte)' ', 0, (byte)'"', 0, (byte)'\'', 0, (byte)'=']),
+            [1201]);
+
+    public static readonly MarkupEncodingInfo Utf32_Strict =
+        new(new(4, [(byte)'<', 0, 0, 0, (byte)'>', 0, 0, 0, (byte)'/', 0, 0, 0, (byte)':', 0, 0, 0, (byte)' ', 0, 0, 0, (byte)'"', 0, 0, 0, (byte)'\'', 0, 0, 0, (byte)'=', 0, 0, 0]),
+            [12000]);
+
+    public static readonly MarkupEncodingInfo Utf32BE_Strict =
+        new(new(4, [0, 0, 0, (byte)'<', 0, 0, 0, (byte)'>', 0, 0, 0, (byte)'/', 0, 0, 0, (byte)':', 0, 0, 0, (byte)' ', 0, 0, 0, (byte)'"', 0, 0, 0, (byte)'\'', 0, 0, 0, (byte)'=']),
+            [12001]);
+
+    public static readonly MarkupEncodingInfo Utf16 =
+        new(new(2, [(byte)'<', 0, (byte)'>', 0, (byte)'/', 0, (byte)':', 0, (byte)' ', 0, (byte)'"', 0, (byte)'\'', 0, (byte)'=', 0,
+            (byte)'\r', 0, (byte)'\n', 0, (byte)'\t', 0]),
+            [1200]);
+
+    public static readonly MarkupEncodingInfo Utf16BE =
+        new(new(2, [0, (byte)'<', 0, (byte)'>', 0, (byte)'/', 0, (byte)':', 0, (byte)' ', 0, (byte)'"', 0, (byte)'\'', 0, (byte)'=',
+            0, (byte)'\r', 0, (byte)'\n', 0, (byte)'\t']),
+            [1201]);
+
+    public static readonly MarkupEncodingInfo Utf32 =
+        new(new(4, [(byte)'<', 0, 0, 0, (byte)'>', 0, 0, 0, (byte)'/', 0, 0, 0, (byte)':', 0, 0, 0, (byte)' ', 0, 0, 0, (byte)'"', 0, 0, 0, (byte)'\'', 0, 0, 0, (byte)'=', 0, 0, 0,
+            (byte)'\r', 0, 0, 0, (byte)'\n', 0, 0, 0, (byte)'\t', 0, 0, 0]),
+            [12000]);
+
+    public static readonly MarkupEncodingInfo Utf32BE =
+        new(new(4, [0, 0, 0, (byte)'<', 0, 0, 0, (byte)'>', 0, 0, 0, (byte)'/', 0, 0, 0, (byte)':', 0, 0, 0, (byte)' ', 0, 0, 0, (byte)'"', 0, 0, 0, (byte)'\'', 0, 0, 0, (byte)'=',
+            0, 0, 0, (byte)'\r', 0, 0, 0, (byte)'\n', 0, 0, 0, (byte)'\t']),
+            [12001]);
 }
