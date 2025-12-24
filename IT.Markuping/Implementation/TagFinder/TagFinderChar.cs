@@ -7,7 +7,7 @@ public class TagFinderChar : TagFinder<char>
 #if NET
     private readonly StringComparison _comparison;
 
-    public TagFinderChar(Tokens tokens, StringComparison comparison) : base(tokens)
+    public TagFinderChar(Tokens tokens, StringComparison comparison = StringComparison.Ordinal) : base(tokens)
     {
         _comparison = comparison;
     }
