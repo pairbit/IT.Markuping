@@ -11,6 +11,11 @@ public class OtherSpaceTagFinder<T> : TagFinder<T> where T : unmanaged, IEquatab
         _otherSpace = otherSpace;
     }
 
+    public OtherSpaceTagFinder(MarkupEncodingTokens<T> tokens) : base(new(tokens))
+    {
+        _otherSpace = tokens._cr;
+    }
+
     protected override bool IsSpace(T value)
         => value.Equals(_tokens._space) || value.Equals(_otherSpace);
 

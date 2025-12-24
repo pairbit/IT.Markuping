@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace IT.Markuping.Implementation;
 
@@ -13,10 +14,10 @@ public class TagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
         internal readonly T _colon;
         internal readonly T _space;//" "
         internal readonly T _quot;//"
-        internal readonly T _apos;//'
         internal readonly T _eq;//=
+        internal readonly T _apos;//'
 
-        public Tokens(T lt, T gt, T slash, T colon, T space, T quot, T apos, T eq)
+        public Tokens(T lt, T gt, T slash, T colon, T space, T quot, T eq, T apos)
         {
             _lt = lt;
             _gt = gt;
@@ -24,8 +25,16 @@ public class TagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
             _colon = colon;
             _space = space;
             _quot = quot;
-            _apos = apos;
             _eq = eq;
+            _apos = apos;
+        }
+
+        public Tokens(MarkupEncodingTokens<T> tokens)
+        {
+            if (Unsafe.SizeOf<MarkupEncodingTokens<T>>() < Unsafe.SizeOf<Tokens>())
+                throw new ArgumentException(nameof(tokens));
+
+            this = Unsafe.As<MarkupEncodingTokens<T>, Tokens>(ref tokens);
         }
     }
 

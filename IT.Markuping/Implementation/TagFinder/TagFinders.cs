@@ -1,36 +1,70 @@
-﻿//using IT.Markuping.Interfaces;
-//using System.Diagnostics.CodeAnalysis;
+﻿using IT.Markuping.Interfaces;
+using System;
+using System.Diagnostics.CodeAnalysis;
 
-//namespace IT.Markuping.Implementation;
+namespace IT.Markuping.Implementation;
 
-//public static class TagFinders
-//{
-//    public static readonly TagFinderByte Utf8 = TagFinderByte.Utf8;
-//    public static readonly OtherSpaceTagFinder Europa = new(new(), 63);
-//    public static readonly TagFinderByte EBCDIC = TagFinderByte.EBCDIC;
-//    public static readonly TagFinderByte EBCDIC_Turkish = TagFinderByte.EBCDIC_Turkish;
-//    public static readonly TagFinderByte IBM_Latin1 = TagFinderByte.IBM_Latin1;
+public static class TagFinders
+{
+    public static readonly OtherSpacesTagFinder<byte> Utf8 = new((MarkupEncodingTokens<byte>)MarkupEncodingInfos.Utf8.Encoding);
+    public static readonly OtherSpaceTagFinder<byte> Europa = new((MarkupEncodingTokens<byte>)MarkupEncodingInfos.Europa.Encoding);
+    public static readonly OtherSpacesTagFinder<byte> EBCDIC = new((MarkupEncodingTokens<byte>)MarkupEncodingInfos.EBCDIC.Encoding);
+    public static readonly OtherSpacesTagFinder<byte> EBCDIC_Turkish = new((MarkupEncodingTokens<byte>)MarkupEncodingInfos.EBCDIC_Turkish.Encoding);
+    public static readonly OtherSpacesTagFinder<byte> IBM_Latin1 = new((MarkupEncodingTokens<byte>)MarkupEncodingInfos.IBM_Latin1.Encoding);
 
-//    public static readonly ComplexTagFinderByte Utf16 = ComplexTagFinderByte.Utf16;
-//    public static readonly ComplexTagFinderByte Utf16BE = ComplexTagFinderByte.Utf16BE;
-//    public static readonly ComplexTagFinderByte Utf32 = ComplexTagFinderByte.Utf32;
-//    public static readonly ComplexTagFinderByte Utf32BE = ComplexTagFinderByte.Utf32BE;
+    public static readonly ComplexTagFinder<byte> Utf16 = new(MarkupEncodingInfos.Utf16.Encoding);
+    public static readonly ComplexTagFinder<byte> Utf16BE = new(MarkupEncodingInfos.Utf16BE.Encoding);
+    public static readonly ComplexTagFinder<byte> Utf32 = new(MarkupEncodingInfos.Utf32.Encoding);
+    public static readonly ComplexTagFinder<byte> Utf32BE = new(MarkupEncodingInfos.Utf32BE.Encoding);
 
-//    public static bool TryGet(int codePage, [MaybeNullWhen(false)] out ITagFinder<byte> tagFinder)
-//    {
-//        if (TagFinderByte.TryGet(codePage, out var tagFinderByte))
-//        {
-//            tagFinder = tagFinderByte;
-//            return true;
-//        }
-
-//        if (ComplexTagFinderByte.TryGet(codePage, out var complexTagFinderByte))
-//        {
-//            tagFinder = complexTagFinderByte;
-//            return true;
-//        }
-
-//        tagFinder = null;
-//        return false;
-//    }
-//}
+    public static bool TryGet(int codePage, [MaybeNullWhen(false)] out ITagFinder<byte> tagFinder)
+    {
+        if (MarkupEncodingInfos.Utf8.CodePages.IndexOf(codePage) > -1)
+        {
+            tagFinder = Utf8;
+            return true;
+        }
+        if (codePage == 29001)
+        {
+            tagFinder = Europa;
+            return true;
+        }
+        if (MarkupEncodingInfos.EBCDIC.CodePages.IndexOf(codePage) > -1)
+        {
+            tagFinder = EBCDIC;
+            return true;
+        }
+        if (codePage == 1026 || codePage == 20905)
+        {
+            tagFinder = EBCDIC_Turkish;
+            return true;
+        }
+        if (codePage == 1047 || codePage == 20924)
+        {
+            tagFinder = IBM_Latin1;
+            return true;
+        }
+        if (codePage == 1200)
+        {
+            tagFinder = Utf16;
+            return true;
+        }
+        if (codePage == 1201)
+        {
+            tagFinder = Utf16BE;
+            return true;
+        }
+        if (codePage == 12000)
+        {
+            tagFinder = Utf32;
+            return true;
+        }
+        if (codePage == 12001)
+        {
+            tagFinder = Utf32BE;
+            return true;
+        }
+        tagFinder = null;
+        return false;
+    }
+}

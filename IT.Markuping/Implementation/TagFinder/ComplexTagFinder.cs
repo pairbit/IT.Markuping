@@ -11,8 +11,8 @@ public class ComplexTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquata
     private readonly T[] _colon;
     private readonly T[] _space;
     private readonly T[] _quot;
-    private readonly T[] _apos;
     private readonly T[] _eq;
+    private readonly T[] _apos;
     private readonly T[][] _otherSpaces;
     private readonly int _minLength;
 
@@ -25,7 +25,7 @@ public class ComplexTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquata
     protected override int LtSlashColonLength => _lt.Length + _slash.Length + _colon.Length;
 
     public ComplexTagFinder(int length, T[] lt, T[] gt, T[] slash, T[] colon,
-        T[] space, T[] quot, T[] apos, T[] eq, T[][] otherSpaces)
+        T[] space, T[] quot, T[] eq, T[] apos, T[][] otherSpaces)
     {
         _minLength = length;
         _lt = lt;
@@ -34,9 +34,23 @@ public class ComplexTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquata
         _colon = colon;
         _space = space;
         _quot = quot;
-        _apos = apos;
         _eq = eq;
+        _apos = apos;
         _otherSpaces = otherSpaces;
+    }
+
+    public ComplexTagFinder(MarkupEncoding<T> encoding)
+    {
+        _minLength = encoding.Size;
+        _lt = encoding.LT.ToArray();
+        _gt = encoding.GT.ToArray();
+        _slash = encoding.Slash.ToArray();
+        _colon = encoding.Colon.ToArray();
+        _space = encoding.Space.ToArray();
+        _quot = encoding.Quot.ToArray();
+        _apos = encoding.Apos.ToArray();
+        _eq = encoding.Eq.ToArray();
+        _otherSpaces = encoding.IsStrict ? [] : [encoding.CR.ToArray(), encoding.LF.ToArray(), encoding.Tab.ToArray()];
     }
 
     protected override int IndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
