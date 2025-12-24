@@ -16,47 +16,42 @@ public readonly struct MarkupEncoding<T> where T : unmanaged
 
     public bool IsComplex => _size > 1;
 
-    public bool IsStrict => (_abc.Length / _size) == 7;
+    public bool IsStrict => _abc.Length == 7 * _size;
 
     /// <summary>
     /// &lt;
     /// </summary>
-    public ReadOnlySpan<T> Lt => _abc.AsSpan(0, _size);
+    public ReadOnlySpan<T> LT => GetByIndex(0);
 
     /// <summary>
     /// &gt;
     /// </summary>
-    public ReadOnlySpan<T> Gt => _abc.AsSpan(0, _size);
+    public ReadOnlySpan<T> GT => GetByIndex(1);
 
     /// <summary>
     /// /
     /// </summary>
-    public ReadOnlySpan<T> Slash => _abc.AsSpan(0, _size);
+    public ReadOnlySpan<T> Slash => GetByIndex(2);
 
     /// <summary>
     /// :
     /// </summary>
-    public ReadOnlySpan<T> Colon => _abc.AsSpan(0, _size);
+    public ReadOnlySpan<T> Colon => GetByIndex(3);
 
     /// <summary>
     /// ' '
     /// </summary>
-    public ReadOnlySpan<T> Space => _abc.AsSpan(0, _size);
+    public ReadOnlySpan<T> Space => GetByIndex(4);
 
     /// <summary>
     /// "
     /// </summary>
-    public ReadOnlySpan<T> Quot => _abc.AsSpan(0, _size);
-
-    /// <summary>
-    /// '
-    /// </summary>
-    public ReadOnlySpan<T> Apos => _abc.AsSpan(0, _size);
+    public ReadOnlySpan<T> Quot => GetByIndex(5);
 
     /// <summary>
     /// =
     /// </summary>
-    public ReadOnlySpan<T> Eq => _abc.AsSpan(0, _size);
+    public ReadOnlySpan<T> Eq => GetByIndex(6);
     /*
     /// <summary>
     /// !
@@ -83,20 +78,26 @@ public readonly struct MarkupEncoding<T> where T : unmanaged
     /// </summary>
     public ReadOnlySpan<T> Quest => _abc.AsSpan(0, _size);
     */
+
+    /// <summary>
+    /// '
+    /// </summary>
+    public ReadOnlySpan<T> Apos => GetByIndex(7);
+
     /// <summary>
     /// \r
     /// </summary>
-    public ReadOnlySpan<T> CR => _abc.AsSpan(0, _size);
+    public ReadOnlySpan<T> CR => GetByIndex(8);
 
     /// <summary>
     /// \n
     /// </summary>
-    public ReadOnlySpan<T> LF => _abc.AsSpan(0, _size);
+    public ReadOnlySpan<T> LF => GetByIndex(9);
 
     /// <summary>
     /// \t
     /// </summary>
-    public ReadOnlySpan<T> Tab => _abc.AsSpan(0, _size);
+    public ReadOnlySpan<T> Tab => GetByIndex(10);
 
     //public bool HasOtherSpaces => !_cr.Equals(default) && !_lf.Equals(default) && !_tab.Equals(default);
 
@@ -106,10 +107,19 @@ public readonly struct MarkupEncoding<T> where T : unmanaged
     {
         if (size < 1) throw new ArgumentOutOfRangeException(nameof(size));
         if (abc == null) throw new ArgumentNullException(nameof(abc));
-        if (abc.Length != 11 * size) throw new ArgumentNullException(nameof(abc));
+        var length = abc.Length;
+        if (length != 7 * size && length != 11 * size) throw new ArgumentOutOfRangeException(nameof(abc));
 
         _size = size;
         _abc = abc;
+    }
+
+    private ReadOnlySpan<T> GetByIndex(int index)
+    {
+        var start = _size * index;
+        if (_abc.Length < start + _size) return default;
+
+        return _abc.AsSpan(start, _size);
     }
 
     public static explicit operator MarkupEncodingTokens<T>(MarkupEncoding<T> encoding)
