@@ -1,10 +1,9 @@
-﻿using IT.Markuping.Interfaces;
-using System;
+﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace IT.Markuping.Encodings;
 
-public class BytesEncoding : IMarkupEncoding<byte>
+public class BytesEncoding //: IMarkupEncoding<byte>
 {
     private readonly struct Tokens
     {
