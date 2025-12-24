@@ -52,7 +52,7 @@ public readonly struct MarkupEncoding<T> where T : unmanaged
     /// =
     /// </summary>
     public ReadOnlySpan<T> Eq => _abc.AsSpan(0, _size);
-
+    /*
     /// <summary>
     /// !
     /// </summary>
@@ -77,7 +77,7 @@ public readonly struct MarkupEncoding<T> where T : unmanaged
     /// ?
     /// </summary>
     public ReadOnlySpan<T> Quest => _abc.AsSpan(0, _size);
-
+    */
     /// <summary>
     /// \r
     /// </summary>
@@ -101,7 +101,7 @@ public readonly struct MarkupEncoding<T> where T : unmanaged
     {
         if (size < 1) throw new ArgumentOutOfRangeException(nameof(size));
         if (abc == null) throw new ArgumentNullException(nameof(abc));
-        if (abc.Length != 16 * size) throw new ArgumentNullException(nameof(abc));
+        if (abc.Length != 11 * size) throw new ArgumentNullException(nameof(abc));
 
         _size = size;
         _abc = abc;
