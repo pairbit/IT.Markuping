@@ -11,22 +11,22 @@ public static class TagFinders
     public static readonly TagFinderByte EBCDIC_Turkish = TagFinderByte.EBCDIC_Turkish;
     public static readonly TagFinderByte IBM_Latin1 = TagFinderByte.IBM_Latin1;
 
-    public static readonly BytesTagFinder Utf16 = BytesTagFinder.Utf16;
-    public static readonly BytesTagFinder Utf16BE = BytesTagFinder.Utf16BE;
-    public static readonly BytesTagFinder Utf32 = BytesTagFinder.Utf32;
-    public static readonly BytesTagFinder Utf32BE = BytesTagFinder.Utf32BE;
+    public static readonly ComplexTagFinderByte Utf16 = ComplexTagFinderByte.Utf16;
+    public static readonly ComplexTagFinderByte Utf16BE = ComplexTagFinderByte.Utf16BE;
+    public static readonly ComplexTagFinderByte Utf32 = ComplexTagFinderByte.Utf32;
+    public static readonly ComplexTagFinderByte Utf32BE = ComplexTagFinderByte.Utf32BE;
 
     public static bool TryGet(int codePage, [MaybeNullWhen(false)] out ITagFinder<byte> tagFinder)
     {
-        if (TagFinderByte.TryGet(codePage, out var byteTagFinder))
+        if (TagFinderByte.TryGet(codePage, out var tagFinderByte))
         {
-            tagFinder = byteTagFinder;
+            tagFinder = tagFinderByte;
             return true;
         }
 
-        if (BytesTagFinder.TryGet(codePage, out var tagFinderBytes))
+        if (ComplexTagFinderByte.TryGet(codePage, out var complexTagFinderByte))
         {
-            tagFinder = tagFinderBytes;
+            tagFinder = complexTagFinderByte;
             return true;
         }
 
