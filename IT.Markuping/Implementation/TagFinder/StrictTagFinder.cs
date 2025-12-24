@@ -13,10 +13,9 @@ internal class StrictTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquat
         internal readonly T _colon;
         internal readonly T _space;//" "
         internal readonly T _quot;//"
-        internal readonly T _apos;//'
         internal readonly T _eq;//=
 
-        public Tokens(T lt, T gt, T slash, T colon, T space, T quot, T apos, T eq)
+        public Tokens(T lt, T gt, T slash, T colon, T space, T quot, T eq)
         {
             _lt = lt;
             _gt = gt;
@@ -24,7 +23,6 @@ internal class StrictTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquat
             _colon = colon;
             _space = space;
             _quot = quot;
-            _apos = apos;
             _eq = eq;
         }
     }
@@ -94,7 +92,7 @@ internal class StrictTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquat
                     ns = (start + 1)..endNS;
                     return true;
                 }
-                else if (token.Equals(_tokens._quot) || token.Equals(_tokens._apos))
+                else if (token.Equals(_tokens._quot))
                 {
                     break;
                 }
@@ -153,7 +151,7 @@ internal class StrictTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquat
                     }
                     break;
                 }
-                else if (token.Equals(_tokens._quot) || token.Equals(_tokens._apos))
+                else if (token.Equals(_tokens._quot))
                 {
                     break;
                 }
@@ -261,15 +259,6 @@ internal class StrictTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquat
                 if (end + 1 >= data.Length) break;
 
                 var index = data.Slice(end).IndexOf(_tokens._quot);
-                if (index < 0) break;
-                end += index + 1;
-            }
-            else if (token.Equals(_tokens._apos))
-            {
-                //Добавляем еще длину gt
-                if (end + 1 >= data.Length) break;
-
-                var index = data.Slice(end).IndexOf(_tokens._apos);
                 if (index < 0) break;
                 end += index + 1;
             }

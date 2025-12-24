@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace IT.Markuping;
 
@@ -9,9 +10,13 @@ public readonly struct MarkupEncoding<T> where T : unmanaged
 
     #region Props
 
+    public ReadOnlySpan<T> Abc => _abc;
+
     public int Size => _size;
 
     public bool IsComplex => _size > 1;
+
+    public bool IsStrict => _abc.Length == 7;
 
     /// <summary>
     /// &lt;
@@ -105,5 +110,20 @@ public readonly struct MarkupEncoding<T> where T : unmanaged
 
         _size = size;
         _abc = abc;
+    }
+
+    public static explicit operator MarkupEncodingTokens<T>(MarkupEncoding<T> encoding)
+    {
+        var abc = encoding._abc;
+        if (abc.Length == 7)
+        {
+            return new(abc[0], abc[1], abc[2], abc[3], abc[4], abc[5], abc[6], default, default, default, default);
+        }
+        if (abc.Length == Unsafe.SizeOf<MarkupEncodingTokens<T>>())
+        {
+            return Unsafe.As<T, MarkupEncodingTokens<T>>(ref abc[0]);
+        }
+
+        throw new InvalidCastException();
     }
 }

@@ -1,9 +1,7 @@
-﻿using System;
-
-namespace IT.Markuping;
+﻿namespace IT.Markuping;
 
 //<>/: "'=!-[]?\r\n\t
-public readonly struct MarkupEncodingTokens<T> where T : unmanaged, IEquatable<T>
+public readonly struct MarkupEncodingTokens<T> where T : unmanaged//, IEquatable<T>
 {
     #region Fields
 
@@ -15,8 +13,8 @@ public readonly struct MarkupEncodingTokens<T> where T : unmanaged, IEquatable<T
 
     //атрибуты
     internal readonly T _quot;//"
-    internal readonly T _apos;//'
     internal readonly T _eq;//=
+
     /*
     //comments <!-- -->
     internal readonly T _excl;//! exclamation mark
@@ -27,6 +25,10 @@ public readonly struct MarkupEncodingTokens<T> where T : unmanaged, IEquatable<T
     //декларация <? ?>
     internal readonly T _quest;//?
     */
+
+    //not strict
+    internal readonly T _apos;//'
+
     //other spaces
     internal readonly T _cr;//\r
     internal readonly T _lf;//\n
@@ -67,11 +69,6 @@ public readonly struct MarkupEncodingTokens<T> where T : unmanaged, IEquatable<T
     public T Quot => _quot;
 
     /// <summary>
-    /// '
-    /// </summary>
-    public T Apos => _apos;
-
-    /// <summary>
     /// =
     /// </summary>
     public T Eq => _eq;
@@ -101,6 +98,12 @@ public readonly struct MarkupEncodingTokens<T> where T : unmanaged, IEquatable<T
     /// </summary>
     public T Quest => _quest;
     */
+
+    /// <summary>
+    /// '
+    /// </summary>
+    public T Apos => _apos;
+
     /// <summary>
     /// \r
     /// </summary>
@@ -116,12 +119,12 @@ public readonly struct MarkupEncodingTokens<T> where T : unmanaged, IEquatable<T
     /// </summary>
     public T Tab => _tab;
 
-    public bool HasOtherSpaces => !_cr.Equals(default) && !_lf.Equals(default) && !_tab.Equals(default);
+    //public bool HasOtherSpaces => !_cr.Equals(default) && !_lf.Equals(default) && !_tab.Equals(default);
 
     #endregion Props
 
-    public MarkupEncodingTokens(T lt, T gt, T slash, T colon, T space, T quot, T apos, T eq,
-        /*T excl, T dash, T lsqb, T rsqb, T quest,*/ T cr, T lf, T tab)
+    public MarkupEncodingTokens(T lt, T gt, T slash, T colon, T space, T quot, T eq,
+        /*T excl, T dash, T lsqb, T rsqb, T quest,*/ T apos, T cr, T lf, T tab)
     {
         _lt = lt;
         _gt = gt;
@@ -129,13 +132,13 @@ public readonly struct MarkupEncodingTokens<T> where T : unmanaged, IEquatable<T
         _colon = colon;
         _space = space;
         _quot = quot;
-        _apos = apos;
         _eq = eq;/*
         _excl = excl;
         _dash = dash;
         _lsqb = lsqb;
         _rsqb = rsqb;
         _quest = quest;*/
+        _apos = apos;
         _cr = cr;
         _lf = lf;
         _tab = tab;
