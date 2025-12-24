@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace IT.Markuping.Implementation;
 
-public class ComplexEquatableTagFinder<T> : TagFinder<T> where T : unmanaged, IEquatable<T>
+public class ComplexEquatableTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
 {
     private readonly T[] _lt;
     private readonly T[] _gt;

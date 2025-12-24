@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace IT.Markuping.Implementation;
 
-public class EquatableTagFinder<T> : TagFinder<T> where T : unmanaged, IEquatable<T>
+public class EquatableTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
 {
     public readonly struct Tokens
     {
