@@ -72,6 +72,11 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
         _closing = isTree ? closing.WithTree() : closing;
     }
 
+    public Tags MultipleOffset(int offset)
+    {
+        throw new NotImplementedException();
+    }
+
     #region Comparison
 
     public int CompareTo(Tags other)

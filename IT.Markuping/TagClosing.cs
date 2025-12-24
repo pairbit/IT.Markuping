@@ -102,6 +102,11 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
 
     public TagClosing AddOffset(int offset) => new(_start, _end, offset);
 
+    public TagClosing MultipleOffset(int offset)
+    {
+        throw new NotImplementedException();
+    }
+
     #region Comparison
 
     public int CompareTo(TagClosing other)

@@ -6,6 +6,9 @@ internal static class xRange
 {
     public static bool IsZero(this Range range) => range.Start.Value == 0 && range.End.Value == 0;
 
+    public static Range MultipleOffset(this Range range, int offset)
+        => new(range.Start.Value * offset, range.End.Value * offset);
+
     public static Range AddOffset(this Range range, int offset)
         => new(offset + range.Start.Value, offset + range.End.Value);
 

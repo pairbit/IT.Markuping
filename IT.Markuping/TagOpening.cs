@@ -76,6 +76,11 @@ public readonly struct TagOpening : IComparable<TagOpening>, IEquatable<TagOpeni
 
     public TagOpening AddOffset(int offset) => new(_start, _end, offset);
 
+    public TagOpening MultipleOffset(int offset)
+    {
+        throw new NotImplementedException();
+    }
+
     #region Comparison
 
     public int CompareTo(TagOpening other)
