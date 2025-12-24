@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace IT.Markuping.Implementation;
 
-public static class TagFinders
+public static class OldTagFinders
 {
     public static readonly TagFinderByte Utf8 = TagFinderByte.Utf8;
     public static readonly TagFinderByte Europa = TagFinderByte.Europa;
