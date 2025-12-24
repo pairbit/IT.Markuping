@@ -1,6 +1,8 @@
-﻿namespace IT.Markuping;
+﻿using System;
 
-public readonly struct MarkupEncodingTokens<T> where T : unmanaged
+namespace IT.Markuping;
+
+public readonly struct MarkupEncodingTokens<T> where T : unmanaged, IEquatable<T>
 {
     #region Fields
 
@@ -112,6 +114,8 @@ public readonly struct MarkupEncodingTokens<T> where T : unmanaged
     /// \t
     /// </summary>
     public T Tab => _tab;
+
+    public bool HasOtherSpaces => !_cr.Equals(default) && !_lf.Equals(default) && !_tab.Equals(default);
 
     #endregion Props
 

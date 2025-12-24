@@ -93,6 +93,8 @@ public readonly struct MarkupEncoding<T> where T : unmanaged
     /// </summary>
     public ReadOnlySpan<T> Tab => _abc.AsSpan(0, _size);
 
+    //public bool HasOtherSpaces => !_cr.Equals(default) && !_lf.Equals(default) && !_tab.Equals(default);
+
     #endregion Props
 
     public MarkupEncoding(int size, T[] abc)
