@@ -11,7 +11,7 @@ namespace IT.Markuping.Benchmarks;
 [MemoryDiagnoser]
 [MinColumn, MaxColumn]
 [Orderer(SummaryOrderPolicy.FastestToSlowest, MethodOrderPolicy.Declared)]
-internal class TagFinderBenchmark
+public class TagFinderBenchmark
 {
     public readonly struct Data
     {
