@@ -39,6 +39,19 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
 
     #endregion Props
 
+    #region Ctors
+
+    internal Tags(Tag tag, TagClosing closing)
+    {
+        Debug.Assert(!((TagOpening)tag).IsSelfClosing);
+        Debug.Assert(tag.Start < tag.End);
+        Debug.Assert(tag.End <= closing.Start);
+        Debug.Assert(closing.Start < closing.End);
+
+        _opening = (TagOpening)tag;
+        _closing = closing;
+    }
+
     public Tags(TagOpening opening, TagClosing closing)
     {
         if (opening.IsSelfClosing) throw new ArgumentException("SelfClosing", nameof(opening));
@@ -71,6 +84,8 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
         _opening = opening;
         _closing = isTree ? closing.WithTree() : closing;
     }
+
+    #endregion Ctors
 
     public Tags MultipleOffset(int offset)
     {

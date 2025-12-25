@@ -55,7 +55,7 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
             var closing = FirstClosing(data, name, data[ns], opening.End, out nodes);
             if (!closing.IsEmpty)
             {
-                return new((TagOpening)opening, closing);
+                return new(opening, closing);
             }
         }
         nodes = default;
@@ -70,7 +70,7 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
             var closing = FirstClosing(data, name, ns, opening.End, out nodes);
             if (!closing.IsEmpty)
             {
-                return new((TagOpening)opening, closing);
+                return new(opening, closing);
             }
         }
         nodes = default;
@@ -85,7 +85,7 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
             var closing = FirstClosing(data, name, default, opening.End, out nodes);
             if (!closing.IsEmpty)
             {
-                return new((TagOpening)opening, closing);
+                return new(opening, closing);
             }
         }
         nodes = default;
