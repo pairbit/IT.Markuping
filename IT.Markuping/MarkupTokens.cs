@@ -2,7 +2,7 @@
 
 //<>/: "='\r\n\t
 //<>/: "=!-[]?'\r\n\t
-public readonly struct MarkupEncodingTokens<T> where T : unmanaged//, IEquatable<T>
+public readonly struct MarkupTokens<T> where T : unmanaged
 {
     #region Fields
 
@@ -124,7 +124,7 @@ public readonly struct MarkupEncodingTokens<T> where T : unmanaged//, IEquatable
 
     #endregion Props
 
-    public MarkupEncodingTokens(T lt, T gt, T slash, T colon, T space, T quot, T eq,
+    public MarkupTokens(T lt, T gt, T slash, T colon, T space, T quot, T eq,
         /*T excl, T dash, T lsqb, T rsqb, T quest,*/ T apos, T cr, T lf, T tab)
     {
         _lt = lt;

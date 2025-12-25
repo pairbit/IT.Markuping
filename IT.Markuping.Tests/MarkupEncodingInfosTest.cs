@@ -103,7 +103,7 @@ internal class MarkupEncodingInfosTest
         }
         else
         {
-            var tokens = (MarkupEncodingTokens<byte>)markupEncoding;
+            var tokens = (MarkupTokens<byte>)markupEncoding;
 
             Assert.That(tokens.LT, Is.EqualTo(lt[0]));
             Assert.That(tokens.GT, Is.EqualTo(gt[0]));

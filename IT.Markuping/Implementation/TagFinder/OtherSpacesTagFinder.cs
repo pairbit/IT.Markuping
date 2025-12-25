@@ -15,7 +15,7 @@ public class OtherSpacesTagFinder<T> : TagFinder<T> where T : unmanaged, IEquata
         _tab = ht;
     }
 
-    public OtherSpacesTagFinder(MarkupEncodingTokens<T> tokens) : base(new(tokens))
+    public OtherSpacesTagFinder(MarkupTokens<T> tokens) : base(new(tokens))
     {
         _cr = tokens._cr;
         _lf = tokens._lf;

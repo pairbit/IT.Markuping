@@ -29,12 +29,12 @@ public class TagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
             _apos = apos;
         }
 
-        public Tokens(MarkupEncodingTokens<T> tokens)
+        public Tokens(MarkupTokens<T> tokens)
         {
-            if (Unsafe.SizeOf<MarkupEncodingTokens<T>>() < Unsafe.SizeOf<Tokens>())
+            if (Unsafe.SizeOf<MarkupTokens<T>>() < Unsafe.SizeOf<Tokens>())
                 throw new ArgumentOutOfRangeException(nameof(tokens));
 
-            this = Unsafe.As<MarkupEncodingTokens<T>, Tokens>(ref tokens);
+            this = Unsafe.As<MarkupTokens<T>, Tokens>(ref tokens);
         }
     }
 

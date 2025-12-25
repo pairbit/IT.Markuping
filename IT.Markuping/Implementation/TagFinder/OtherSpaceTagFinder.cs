@@ -11,7 +11,7 @@ public class OtherSpaceTagFinder<T> : TagFinder<T> where T : unmanaged, IEquatab
         _otherSpace = otherSpace;
     }
 
-    public OtherSpaceTagFinder(MarkupEncodingTokens<T> tokens) : base(new(tokens))
+    public OtherSpaceTagFinder(MarkupTokens<T> tokens) : base(new(tokens))
     {
         if (!tokens._cr.Equals(tokens._lf) || !tokens._cr.Equals(tokens._tab)) throw new ArgumentOutOfRangeException(nameof(tokens));
 

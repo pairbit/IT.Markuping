@@ -122,7 +122,7 @@ public readonly struct MarkupEncoding<T> where T : unmanaged
         return _abc.AsSpan(start, _size);
     }
 
-    public static explicit operator MarkupEncodingTokens<T>(MarkupEncoding<T> encoding)
+    public static explicit operator MarkupTokens<T>(MarkupEncoding<T> encoding)
     {
         if (!encoding.IsComplex)
         {
@@ -131,9 +131,9 @@ public readonly struct MarkupEncoding<T> where T : unmanaged
             {
                 return new(abc[0], abc[1], abc[2], abc[3], abc[4], abc[5], abc[6], default, default, default, default);
             }
-            if (abc.Length == Unsafe.SizeOf<MarkupEncodingTokens<T>>())
+            if (abc.Length == Unsafe.SizeOf<MarkupTokens<T>>())
             {
-                return Unsafe.As<T, MarkupEncodingTokens<T>>(ref abc[0]);
+                return Unsafe.As<T, MarkupTokens<T>>(ref abc[0]);
             }
         }
         throw new InvalidCastException();

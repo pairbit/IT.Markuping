@@ -6,11 +6,11 @@ namespace IT.Markuping.Implementation;
 
 public static class TagFinders
 {
-    public static readonly OtherSpacesTagFinder<byte> Utf8 = new((MarkupEncodingTokens<byte>)MarkupEncodingInfos.Utf8.Encoding);
-    public static readonly OtherSpaceTagFinder<byte> Europa = new((MarkupEncodingTokens<byte>)MarkupEncodingInfos.Europa.Encoding);
-    public static readonly OtherSpacesTagFinder<byte> EBCDIC = new((MarkupEncodingTokens<byte>)MarkupEncodingInfos.EBCDIC.Encoding);
-    public static readonly OtherSpacesTagFinder<byte> EBCDIC_Turkish = new((MarkupEncodingTokens<byte>)MarkupEncodingInfos.EBCDIC_Turkish.Encoding);
-    public static readonly OtherSpacesTagFinder<byte> IBM_Latin1 = new((MarkupEncodingTokens<byte>)MarkupEncodingInfos.IBM_Latin1.Encoding);
+    public static readonly OtherSpacesTagFinder<byte> Utf8 = new((MarkupTokens<byte>)MarkupEncodingInfos.Utf8.Encoding);
+    public static readonly OtherSpaceTagFinder<byte> Europa = new((MarkupTokens<byte>)MarkupEncodingInfos.Europa.Encoding);
+    public static readonly OtherSpacesTagFinder<byte> EBCDIC = new((MarkupTokens<byte>)MarkupEncodingInfos.EBCDIC.Encoding);
+    public static readonly OtherSpacesTagFinder<byte> EBCDIC_Turkish = new((MarkupTokens<byte>)MarkupEncodingInfos.EBCDIC_Turkish.Encoding);
+    public static readonly OtherSpacesTagFinder<byte> IBM_Latin1 = new((MarkupTokens<byte>)MarkupEncodingInfos.IBM_Latin1.Encoding);
 
     public static readonly ComplexTagFinder<byte> Utf16 = new(MarkupEncodingInfos.Utf16.Encoding);
     public static readonly ComplexTagFinder<byte> Utf16BE = new(MarkupEncodingInfos.Utf16BE.Encoding);
