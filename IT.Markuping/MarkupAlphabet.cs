@@ -122,11 +122,11 @@ public readonly struct MarkupAlphabet<T> where T : unmanaged
         return _abc.AsSpan(start, _size);
     }
 
-    public static explicit operator MarkupTokens<T>(MarkupAlphabet<T> encoding)
+    public static explicit operator MarkupTokens<T>(MarkupAlphabet<T> alphabet)
     {
-        if (!encoding.IsComplex)
+        if (!alphabet.IsComplex)
         {
-            var abc = encoding._abc;
+            var abc = alphabet._abc;
             if (abc.Length == 7)
             {
                 return new(abc[0], abc[1], abc[2], abc[3], abc[4], abc[5], abc[6], default, default, default, default);

@@ -73,40 +73,40 @@ public static class TagFinders
     {
         if (Utf8_Strict.CodePages.IndexOf(codePage) > -1)
         {
-            encodingInfo = Utf8_Strict;
+            tagFinder = Utf8_Strict;
             return true;
         }
         if (EBCDIC_Strict.CodePages.IndexOf(codePage) > -1)
         {
-            encodingInfo = EBCDIC_Strict;
+            tagFinder = EBCDIC_Strict;
             return true;
         }
         if (codePage == 1026 || codePage == 20905)
         {
-            encodingInfo = EBCDIC_Turkish_Strict;
+            tagFinder = EBCDIC_Turkish_Strict;
             return true;
         }
         if (codePage == 1200)
         {
-            encodingInfo = Utf16_Strict;
+            tagFinder = Utf16_Strict;
             return true;
         }
         if (codePage == 1201)
         {
-            encodingInfo = Utf16BE_Strict;
+            tagFinder = Utf16BE_Strict;
             return true;
         }
         if (codePage == 12000)
         {
-            encodingInfo = Utf32_Strict;
+            tagFinder = Utf32_Strict;
             return true;
         }
         if (codePage == 12001)
         {
-            encodingInfo = Utf32BE_Strict;
+            tagFinder = Utf32BE_Strict;
             return true;
         }
-        encodingInfo = null;
+        tagFinder = null;
         return false;
     }
      */

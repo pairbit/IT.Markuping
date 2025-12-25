@@ -39,18 +39,18 @@ public class ComplexTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquata
         _otherSpaces = otherSpaces;
     }
 
-    public ComplexTagFinder(MarkupAlphabet<T> encoding)
+    public ComplexTagFinder(MarkupAlphabet<T> abc)
     {
-        _minLength = encoding.Size;
-        _lt = encoding.LT.ToArray();
-        _gt = encoding.GT.ToArray();
-        _slash = encoding.Slash.ToArray();
-        _colon = encoding.Colon.ToArray();
-        _space = encoding.Space.ToArray();
-        _quot = encoding.Quot.ToArray();
-        _apos = encoding.Apos.ToArray();
-        _eq = encoding.Eq.ToArray();
-        _otherSpaces = encoding.IsStrict ? [] : [encoding.CR.ToArray(), encoding.LF.ToArray(), encoding.Tab.ToArray()];
+        _minLength = abc.Size;
+        _lt = abc.LT.ToArray();
+        _gt = abc.GT.ToArray();
+        _slash = abc.Slash.ToArray();
+        _colon = abc.Colon.ToArray();
+        _space = abc.Space.ToArray();
+        _quot = abc.Quot.ToArray();
+        _apos = abc.Apos.ToArray();
+        _eq = abc.Eq.ToArray();
+        _otherSpaces = abc.IsStrict ? [] : [abc.CR.ToArray(), abc.LF.ToArray(), abc.Tab.ToArray()];
     }
 
     protected override int IndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)

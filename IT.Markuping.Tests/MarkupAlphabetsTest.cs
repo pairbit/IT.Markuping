@@ -5,7 +5,7 @@ using System.Text;
 
 namespace IT.Markuping.Tests;
 
-internal class MarkupEncodingInfosTest
+internal class MarkupAlphabetsTest
 {
     [Test]
     public void CastTest()
