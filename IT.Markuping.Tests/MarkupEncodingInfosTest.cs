@@ -34,18 +34,18 @@ internal class MarkupEncodingInfosTest
             var codePage = encodingInfo.CodePage;
             var encoding = encodingInfo.GetEncoding();
 
-            if (MarkupEncodingByteInfos.TryGet(codePage, out var markupEncodingInfo))
+            if (MarkupAlphabets.Byte.TryGet(codePage, out var alphabet))
             {
-                ByteTest(markupEncodingInfo, encoding);
+                ByteTest(alphabet, encoding);
             }
             else
             {
                 Assert.Fail($"CodePage {codePage,5} not supported");
             }
 
-            if (MarkupEncodingByteInfos.TryGetStrict(codePage, out markupEncodingInfo))
+            if (MarkupAlphabets.Byte.TryGetStrict(codePage, out alphabet))
             {
-                ByteTest(markupEncodingInfo, encoding);
+                ByteTest(alphabet, encoding);
             }
             else
             {
@@ -54,17 +54,9 @@ internal class MarkupEncodingInfosTest
         }
     }
 
-    private static void ByteTest(MarkupAlphabetInfo<byte> markupEncodingInfo, Encoding encoding)
+    private static void ByteTest(MarkupAlphabet<byte> alphabet, Encoding encoding)
     {
-        if (!encoding.IsSingleByte)
-        {
-            Console.WriteLine($"{encoding.CodePage} is not single byte");
-        }
-
-        Assert.That(markupEncodingInfo.CodePages.Contains(encoding.CodePage), Is.True);
-
-        var markupEncoding = markupEncodingInfo.Alphabet;
-        var size = markupEncoding.Size;
+        var size = alphabet.Size;
 
         var lt = encoding.GetBytes("<");
         var gt = encoding.GetBytes(">");
@@ -78,46 +70,46 @@ internal class MarkupEncodingInfosTest
         var lf = encoding.GetBytes("\n");
         var tab = encoding.GetBytes("\t");
 
-        Assert.That(markupEncoding.LT.SequenceEqual(lt), Is.True);
-        Assert.That(markupEncoding.GT.SequenceEqual(gt), Is.True);
-        Assert.That(markupEncoding.Slash.SequenceEqual(slash), Is.True);
-        Assert.That(markupEncoding.Colon.SequenceEqual(colon), Is.True);
-        Assert.That(markupEncoding.Space.SequenceEqual(space), Is.True);
-        Assert.That(markupEncoding.Quot.SequenceEqual(quot), Is.True);
-        Assert.That(markupEncoding.Eq.SequenceEqual(eq), Is.True);
+        Assert.That(alphabet.LT.SequenceEqual(lt), Is.True);
+        Assert.That(alphabet.GT.SequenceEqual(gt), Is.True);
+        Assert.That(alphabet.Slash.SequenceEqual(slash), Is.True);
+        Assert.That(alphabet.Colon.SequenceEqual(colon), Is.True);
+        Assert.That(alphabet.Space.SequenceEqual(space), Is.True);
+        Assert.That(alphabet.Quot.SequenceEqual(quot), Is.True);
+        Assert.That(alphabet.Eq.SequenceEqual(eq), Is.True);
 
-        if (markupEncoding.IsStrict)
+        if (alphabet.IsStrict)
         {
-            Assert.That(markupEncoding.Apos.IsEmpty, Is.True);
-            Assert.That(markupEncoding.CR.IsEmpty, Is.True);
-            Assert.That(markupEncoding.LF.IsEmpty, Is.True);
-            Assert.That(markupEncoding.Tab.IsEmpty, Is.True);
+            Assert.That(alphabet.Apos.IsEmpty, Is.True);
+            Assert.That(alphabet.CR.IsEmpty, Is.True);
+            Assert.That(alphabet.LF.IsEmpty, Is.True);
+            Assert.That(alphabet.Tab.IsEmpty, Is.True);
 
-            Assert.That(markupEncoding.Abc.Length, Is.EqualTo(size * 7));
+            Assert.That(alphabet.Abc.Length, Is.EqualTo(size * 7));
 
             var abc = encoding.GetBytes("<>/: \"=");
-            Assert.That(markupEncoding.Abc.SequenceEqual(abc), Is.True);
+            Assert.That(alphabet.Abc.SequenceEqual(abc), Is.True);
         }
         else
         {
-            Assert.That(markupEncoding.Apos.SequenceEqual(apos), Is.True);
-            Assert.That(markupEncoding.CR.SequenceEqual(cr), Is.True);
-            Assert.That(markupEncoding.LF.SequenceEqual(lf), Is.True);
-            Assert.That(markupEncoding.Tab.SequenceEqual(tab), Is.True);
+            Assert.That(alphabet.Apos.SequenceEqual(apos), Is.True);
+            Assert.That(alphabet.CR.SequenceEqual(cr), Is.True);
+            Assert.That(alphabet.LF.SequenceEqual(lf), Is.True);
+            Assert.That(alphabet.Tab.SequenceEqual(tab), Is.True);
 
-            Assert.That(markupEncoding.Abc.Length, Is.EqualTo(size * 11));
+            Assert.That(alphabet.Abc.Length, Is.EqualTo(size * 11));
 
             var abc = encoding.GetBytes("<>/: \"='\r\n\t");
-            Assert.That(markupEncoding.Abc.SequenceEqual(abc), Is.True);
+            Assert.That(alphabet.Abc.SequenceEqual(abc), Is.True);
         }
 
-        if (markupEncoding.IsComplex)
+        if (alphabet.IsComplex)
         {
             Console.WriteLine($"{encoding.CodePage} is complex");
         }
         else
         {
-            var tokens = (MarkupTokens<byte>)markupEncoding;
+            var tokens = (MarkupTokens<byte>)alphabet;
 
             Assert.That(tokens.LT, Is.EqualTo(lt[0]));
             Assert.That(tokens.GT, Is.EqualTo(gt[0]));
@@ -127,7 +119,7 @@ internal class MarkupEncodingInfosTest
             Assert.That(tokens.Quot, Is.EqualTo(quot[0]));
             Assert.That(tokens.Eq, Is.EqualTo(eq[0]));
 
-            if (markupEncoding.IsStrict)
+            if (alphabet.IsStrict)
             {
                 Assert.That(tokens.Apos, Is.Zero);
                 Assert.That(tokens.CR, Is.Zero);

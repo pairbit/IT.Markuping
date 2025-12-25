@@ -2,7 +2,7 @@
 
 namespace IT.Markuping;
 
-public class MarkupAlphabetInfo<T> where T : unmanaged
+internal class MarkupAlphabetInfo<T> where T : unmanaged
 {
     private readonly int[] _codePages = null!;
     private readonly MarkupAlphabet<T> _alphabet;

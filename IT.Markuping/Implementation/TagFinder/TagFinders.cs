@@ -19,7 +19,7 @@ public static class TagFinders
 
     public static bool TryGet(int codePage, [MaybeNullWhen(false)] out ITagFinder<byte> tagFinder)
     {
-        if (MarkupEncodingByteInfos.Utf8.CodePages.IndexOf(codePage) > -1)
+        if (MarkupCodePages.Utf8.AsSpan().IndexOf(codePage) > -1)
         {
             tagFinder = Utf8;
             return true;
@@ -29,7 +29,7 @@ public static class TagFinders
             tagFinder = Europa;
             return true;
         }
-        if (MarkupEncodingByteInfos.EBCDIC.CodePages.IndexOf(codePage) > -1)
+        if (MarkupCodePages.EBCDIC.AsSpan().IndexOf(codePage) > -1)
         {
             tagFinder = EBCDIC;
             return true;
@@ -67,4 +67,47 @@ public static class TagFinders
         tagFinder = null;
         return false;
     }
+
+    /*
+     public static bool TryGetStrict(int codePage, [MaybeNullWhen(false)] out ITagFinder<byte> tagFinder)
+    {
+        if (Utf8_Strict.CodePages.IndexOf(codePage) > -1)
+        {
+            encodingInfo = Utf8_Strict;
+            return true;
+        }
+        if (EBCDIC_Strict.CodePages.IndexOf(codePage) > -1)
+        {
+            encodingInfo = EBCDIC_Strict;
+            return true;
+        }
+        if (codePage == 1026 || codePage == 20905)
+        {
+            encodingInfo = EBCDIC_Turkish_Strict;
+            return true;
+        }
+        if (codePage == 1200)
+        {
+            encodingInfo = Utf16_Strict;
+            return true;
+        }
+        if (codePage == 1201)
+        {
+            encodingInfo = Utf16BE_Strict;
+            return true;
+        }
+        if (codePage == 12000)
+        {
+            encodingInfo = Utf32_Strict;
+            return true;
+        }
+        if (codePage == 12001)
+        {
+            encodingInfo = Utf32BE_Strict;
+            return true;
+        }
+        encodingInfo = null;
+        return false;
+    }
+     */
 }
