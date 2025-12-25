@@ -54,7 +54,7 @@ internal class MarkupEncodingInfosTest
         }
     }
 
-    private static void ByteTest(MarkupEncodingInfo<byte> markupEncodingInfo, Encoding encoding)
+    private static void ByteTest(MarkupAlphabetInfo<byte> markupEncodingInfo, Encoding encoding)
     {
         if (!encoding.IsSingleByte)
         {
@@ -63,7 +63,7 @@ internal class MarkupEncodingInfosTest
 
         Assert.That(markupEncodingInfo.CodePages.Contains(encoding.CodePage), Is.True);
 
-        var markupEncoding = markupEncodingInfo.Encoding;
+        var markupEncoding = markupEncodingInfo.Alphabet;
         var size = markupEncoding.Size;
 
         var lt = encoding.GetBytes("<");
@@ -144,13 +144,13 @@ internal class MarkupEncodingInfosTest
         }
     }
 
-    private static void CastTest<T>(int codePage, MarkupEncodingInfo<byte> mebi, MarkupEncodingInfo<T> meci) where T : unmanaged
+    private static void CastTest<T>(int codePage, MarkupAlphabetInfo<byte> mebi, MarkupAlphabetInfo<T> meci) where T : unmanaged
     {
         Assert.That(mebi.CodePages.Contains(codePage), Is.True);
         Assert.That(meci.CodePages.Contains(codePage), Is.True);
 
-        var meb = mebi.Encoding;
-        var mec = meci.Encoding;
+        var meb = mebi.Alphabet;
+        var mec = meci.Alphabet;
 
         var lt = Cast<T>(meb.LT);
         var gt = Cast<T>(meb.GT);

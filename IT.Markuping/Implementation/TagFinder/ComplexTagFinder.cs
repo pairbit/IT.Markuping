@@ -39,7 +39,7 @@ public class ComplexTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquata
         _otherSpaces = otherSpaces;
     }
 
-    public ComplexTagFinder(MarkupEncoding<T> encoding)
+    public ComplexTagFinder(MarkupAlphabet<T> encoding)
     {
         _minLength = encoding.Size;
         _lt = encoding.LT.ToArray();

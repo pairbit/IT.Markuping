@@ -6,16 +6,16 @@ namespace IT.Markuping.Implementation;
 
 public static class TagFinders
 {
-    public static readonly OtherSpacesTagFinder<byte> Utf8 = new((MarkupTokens<byte>)MarkupEncodingByteInfos.Utf8.Encoding);
-    public static readonly OtherSpaceTagFinder<byte> Europa = new((MarkupTokens<byte>)MarkupEncodingByteInfos.Europa.Encoding);
-    public static readonly OtherSpacesTagFinder<byte> EBCDIC = new((MarkupTokens<byte>)MarkupEncodingByteInfos.EBCDIC.Encoding);
-    public static readonly OtherSpacesTagFinder<byte> EBCDIC_Turkish = new((MarkupTokens<byte>)MarkupEncodingByteInfos.EBCDIC_Turkish.Encoding);
-    public static readonly OtherSpacesTagFinder<byte> IBM_Latin1 = new((MarkupTokens<byte>)MarkupEncodingByteInfos.IBM_Latin1.Encoding);
+    public static readonly OtherSpacesTagFinder<byte> Utf8 = new((MarkupTokens<byte>)MarkupEncodingByteInfos.Utf8.Alphabet);
+    public static readonly OtherSpaceTagFinder<byte> Europa = new((MarkupTokens<byte>)MarkupEncodingByteInfos.Europa.Alphabet);
+    public static readonly OtherSpacesTagFinder<byte> EBCDIC = new((MarkupTokens<byte>)MarkupEncodingByteInfos.EBCDIC.Alphabet);
+    public static readonly OtherSpacesTagFinder<byte> EBCDIC_Turkish = new((MarkupTokens<byte>)MarkupEncodingByteInfos.EBCDIC_Turkish.Alphabet);
+    public static readonly OtherSpacesTagFinder<byte> IBM_Latin1 = new((MarkupTokens<byte>)MarkupEncodingByteInfos.IBM_Latin1.Alphabet);
 
-    public static readonly ComplexTagFinder<byte> Utf16 = new(MarkupEncodingByteInfos.Utf16.Encoding);
-    public static readonly ComplexTagFinder<byte> Utf16BE = new(MarkupEncodingByteInfos.Utf16BE.Encoding);
-    public static readonly ComplexTagFinder<byte> Utf32 = new(MarkupEncodingByteInfos.Utf32.Encoding);
-    public static readonly ComplexTagFinder<byte> Utf32BE = new(MarkupEncodingByteInfos.Utf32BE.Encoding);
+    public static readonly ComplexTagFinder<byte> Utf16 = new(MarkupEncodingByteInfos.Utf16.Alphabet);
+    public static readonly ComplexTagFinder<byte> Utf16BE = new(MarkupEncodingByteInfos.Utf16BE.Alphabet);
+    public static readonly ComplexTagFinder<byte> Utf32 = new(MarkupEncodingByteInfos.Utf32.Alphabet);
+    public static readonly ComplexTagFinder<byte> Utf32BE = new(MarkupEncodingByteInfos.Utf32BE.Alphabet);
 
     public static bool TryGet(int codePage, [MaybeNullWhen(false)] out ITagFinder<byte> tagFinder)
     {

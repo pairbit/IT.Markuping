@@ -3,9 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace IT.Markuping;
 
-//MarkupAlphabet
-//MarkupABC
-public readonly struct MarkupEncoding<T> where T : unmanaged
+public readonly struct MarkupAlphabet<T> where T : unmanaged
 {
     private readonly T[] _abc;
     private readonly int _size;
@@ -105,7 +103,7 @@ public readonly struct MarkupEncoding<T> where T : unmanaged
 
     #endregion Props
 
-    public MarkupEncoding(int size, T[] abc)
+    public MarkupAlphabet(int size, T[] abc)
     {
         if (size < 1) throw new ArgumentOutOfRangeException(nameof(size));
         if (abc == null) throw new ArgumentNullException(nameof(abc));
@@ -124,7 +122,7 @@ public readonly struct MarkupEncoding<T> where T : unmanaged
         return _abc.AsSpan(start, _size);
     }
 
-    public static explicit operator MarkupTokens<T>(MarkupEncoding<T> encoding)
+    public static explicit operator MarkupTokens<T>(MarkupAlphabet<T> encoding)
     {
         if (!encoding.IsComplex)
         {

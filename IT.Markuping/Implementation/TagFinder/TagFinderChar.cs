@@ -4,10 +4,10 @@ namespace IT.Markuping.Implementation;
 
 public class TagFinderChar : TagFinder<char>
 {
-    public static readonly TagFinderChar Utf16 = new(new((MarkupTokens<char>)MarkupEncodingCharInfos.Utf16.Encoding));
+    public static readonly TagFinderChar Utf16 = new(new((MarkupTokens<char>)MarkupEncodingCharInfos.Utf16.Alphabet));
 
 #if NET
-    public static readonly TagFinderChar Utf16_IgnoreCase = new(new((MarkupTokens<char>)MarkupEncodingCharInfos.Utf16.Encoding), StringComparison.OrdinalIgnoreCase);
+    public static readonly TagFinderChar Utf16_IgnoreCase = new(new((MarkupTokens<char>)MarkupEncodingCharInfos.Utf16.Alphabet), StringComparison.OrdinalIgnoreCase);
 
     private readonly StringComparison _comparison;
 
