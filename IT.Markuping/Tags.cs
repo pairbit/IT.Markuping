@@ -52,6 +52,18 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
         _closing = closing;
     }
 
+    internal Tags(Tag tag, TagClosing closing, bool isTree)
+    {
+        Debug.Assert(!((TagOpening)tag).IsSelfClosing);
+        Debug.Assert(tag.Start < tag.End);
+        Debug.Assert(tag.End <= closing.Start);
+        Debug.Assert(closing.Start < closing.End);
+        Debug.Assert(!closing.IsTree);
+
+        _opening = (TagOpening)tag;
+        _closing = isTree ? closing.AsTree() : closing;
+    }
+
     public Tags(TagOpening opening, TagClosing closing)
     {
         if (opening.IsSelfClosing) throw new ArgumentException("SelfClosing", nameof(opening));

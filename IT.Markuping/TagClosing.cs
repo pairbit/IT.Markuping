@@ -83,6 +83,13 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
 
     #endregion Ctors
 
+    internal TagClosing AsTree()
+    {
+        Debug.Assert(_start >= 0);
+
+        return new(~_start, _end);
+    }
+
     internal TagClosing WithTree()
     {
         var start = _start;

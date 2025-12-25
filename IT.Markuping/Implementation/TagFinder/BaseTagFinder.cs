@@ -361,7 +361,7 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
         return count;
     }
 
-    private TagOpening LastOpening(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, out int nodes)
+    private Tag LastOpening(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, out int nodes)
     {
         int count = 1;
         nodes = 0;
@@ -376,7 +376,7 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
 
             count += CountLastClosing(data.Slice(opening.End), name, ns) - 1;
             if (count == 0)
-                return (TagOpening)opening;
+                return opening;
 
             nodes++;
             data = data.Slice(0, opening.Start);
