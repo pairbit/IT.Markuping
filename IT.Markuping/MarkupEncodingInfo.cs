@@ -2,16 +2,16 @@
 
 namespace IT.Markuping;
 
-public class MarkupEncodingInfo
+public class MarkupEncodingInfo<T> where T : unmanaged
 {
     private readonly int[] _codePages = null!;
-    private readonly MarkupEncoding<byte> _encoding;
+    private readonly MarkupEncoding<T> _encoding;
 
-    public MarkupEncoding<byte> Encoding => _encoding;
+    public MarkupEncoding<T> Encoding => _encoding;
 
     public ReadOnlySpan<int> CodePages => _codePages;
 
-    public MarkupEncodingInfo(MarkupEncoding<byte> encoding, int[] codePages)
+    public MarkupEncodingInfo(MarkupEncoding<T> encoding, int[] codePages)
     {
         if (codePages == null) throw new ArgumentNullException(nameof(codePages));
         if (codePages.Length == 0) throw new ArgumentException("empty", nameof(codePages));

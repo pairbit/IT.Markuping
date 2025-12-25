@@ -40,7 +40,7 @@ internal class MarkupEncodingInfosTest
         }
     }
 
-    private void Test(MarkupEncodingInfo markupEncodingInfo, Encoding encoding)
+    private void Test(MarkupEncodingInfo<byte> markupEncodingInfo, Encoding encoding)
     {
         if (!encoding.IsSingleByte)
         {
