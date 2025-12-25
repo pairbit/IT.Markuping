@@ -2,25 +2,38 @@
 
 namespace IT.Markuping.Implementation;
 
-public class TagFinderChar : TagFinder<char>
+public class TagFinderChar : OtherSpacesTagFinder<char>
 {
-    public static readonly TagFinderChar Utf16 = new(new((MarkupTokens<char>)MarkupAlphabets.Char.Utf16));
-    public static readonly TagFinderChar Utf16BE = new(new((MarkupTokens<char>)MarkupAlphabets.Char.Utf16BE));
+    public static readonly TagFinderChar Utf16 = new((MarkupTokens<char>)MarkupAlphabets.Char.Utf16);
+    public static readonly TagFinderChar Utf16BE = new((MarkupTokens<char>)MarkupAlphabets.Char.Utf16BE);
 #if NET
-    public static readonly TagFinderChar Utf16_IgnoreCase = new(new((MarkupTokens<char>)MarkupAlphabets.Char.Utf16), StringComparison.OrdinalIgnoreCase);
+    public static readonly TagFinderChar Utf16_IgnoreCase = new((MarkupTokens<char>)MarkupAlphabets.Char.Utf16, StringComparison.OrdinalIgnoreCase);
 
     private readonly StringComparison _comparison;
-
-    public TagFinderChar(Tokens tokens, StringComparison comparison = StringComparison.Ordinal) : base(tokens)
-    {
-        _comparison = comparison;
-    }
-#else
-    public TagFinderChar(Tokens tokens) : base(tokens)
-    {
-
-    }
 #endif
+
+    public TagFinderChar(Tokens tokens, char cr, char lf, char tab
+#if NET
+        , StringComparison comparison = StringComparison.Ordinal
+#endif
+        ) : base(tokens, cr, lf, tab)
+    {
+#if NET
+        _comparison = comparison;
+#endif
+    }
+
+    public TagFinderChar(MarkupTokens<char> tokens
+#if NET
+        , StringComparison comparison = StringComparison.Ordinal
+#endif
+        ) : base(tokens)
+    {
+#if NET
+        _comparison = comparison;
+#endif
+    }
+
     protected override int IndexOf(ReadOnlySpan<char> data, ReadOnlySpan<char> value)
         => data.IndexOf(value
 #if NET

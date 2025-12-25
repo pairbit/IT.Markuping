@@ -8,11 +8,11 @@ public class OtherSpacesTagFinder<T> : TagFinder<T> where T : unmanaged, IEquata
     private readonly T _lf;//\n
     private readonly T _tab;//\t
 
-    public OtherSpacesTagFinder(Tokens tokens, T cr, T lf, T ht) : base(tokens)
+    public OtherSpacesTagFinder(Tokens tokens, T cr, T lf, T tab) : base(tokens)
     {
         _cr = cr;
         _lf = lf;
-        _tab = ht;
+        _tab = tab;
     }
 
     public OtherSpacesTagFinder(MarkupTokens<T> tokens) : base(new(tokens))
