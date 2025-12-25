@@ -130,6 +130,15 @@ public readonly struct Tag : IComparable<Tag>, IEquatable<Tag>, IFormattable
 
     public Tag AddOffset(int offset) => new(_start, _end, offset);
 
+    public Tag MultipleOffset(int offset)
+    {
+        var start = _start;
+        var end = _end;
+        return new(
+            start < 0 ? ~checked(~start * offset) : checked(start * offset),
+            end < 0 ? ~checked(~end * offset) : checked(end * offset));
+    }
+
     public bool TryGetOpening(out TagOpening opening)
     {
         if (_start == _end || _start < 0)

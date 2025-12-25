@@ -104,7 +104,11 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
 
     public TagClosing MultipleOffset(int offset)
     {
-        throw new NotImplementedException();
+        var start = _start;
+        var end = _end;
+        return new(
+            start < 0 ? ~checked(~start * offset) : checked(start * offset),
+            end < 0 ? ~checked(~end * offset) : checked(end * offset));
     }
 
     #region Comparison
