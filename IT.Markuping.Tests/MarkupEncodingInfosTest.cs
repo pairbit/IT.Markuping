@@ -10,10 +10,14 @@ internal class MarkupEncodingInfosTest
     [Test]
     public void CastTest()
     {
-        CastTest(Encoding.Unicode, MarkupEncodingByteInfos.Utf16, MarkupEncodingCharInfos.Utf16);
-        CastTest(Encoding.Unicode, MarkupEncodingByteInfos.Utf16_Strict, MarkupEncodingCharInfos.Utf16_Strict);
-        CastTest(Encoding.BigEndianUnicode, MarkupEncodingByteInfos.Utf16BE, MarkupEncodingCharInfos.Utf16BE);
-        CastTest(Encoding.BigEndianUnicode, MarkupEncodingByteInfos.Utf16BE_Strict, MarkupEncodingCharInfos.Utf16BE_Strict);
+        CastTest(1200, MarkupEncodingByteInfos.Utf16, MarkupEncodingCharInfos.Utf16);
+        CastTest(1200, MarkupEncodingByteInfos.Utf16_Strict, MarkupEncodingCharInfos.Utf16_Strict);
+        CastTest(1201, MarkupEncodingByteInfos.Utf16BE, MarkupEncodingCharInfos.Utf16BE);
+        CastTest(1201, MarkupEncodingByteInfos.Utf16BE_Strict, MarkupEncodingCharInfos.Utf16BE_Strict);
+        CastTest(12000, MarkupEncodingByteInfos.Utf32, MarkupEncodingIntInfos.Utf32);
+        CastTest(12000, MarkupEncodingByteInfos.Utf32_Strict, MarkupEncodingIntInfos.Utf32_Strict);
+        CastTest(12001, MarkupEncodingByteInfos.Utf32BE, MarkupEncodingIntInfos.Utf32BE);
+        CastTest(12001, MarkupEncodingByteInfos.Utf32BE_Strict, MarkupEncodingIntInfos.Utf32BE_Strict);
     }
 
     [Test]
@@ -140,10 +144,10 @@ internal class MarkupEncodingInfosTest
         }
     }
 
-    private static void CastTest<T>(Encoding encoding, MarkupEncodingInfo<byte> mebi, MarkupEncodingInfo<T> meci) where T : unmanaged
+    private static void CastTest<T>(int codePage, MarkupEncodingInfo<byte> mebi, MarkupEncodingInfo<T> meci) where T : unmanaged
     {
-        Assert.That(mebi.CodePages.Contains(encoding.CodePage), Is.True);
-        Assert.That(meci.CodePages.Contains(encoding.CodePage), Is.True);
+        Assert.That(mebi.CodePages.Contains(codePage), Is.True);
+        Assert.That(meci.CodePages.Contains(codePage), Is.True);
 
         var meb = mebi.Encoding;
         var mec = meci.Encoding;
@@ -188,7 +192,7 @@ internal class MarkupEncodingInfosTest
 
         if (mec.IsComplex)
         {
-            Console.WriteLine($"{encoding.CodePage} is complex");
+            Console.WriteLine($"{codePage} is complex");
         }
         else
         {
