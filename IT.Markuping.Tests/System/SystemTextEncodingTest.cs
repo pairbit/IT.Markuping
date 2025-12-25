@@ -6,18 +6,6 @@ namespace IT.Markuping.Tests;
 
 internal class SystemTextEncodingTest
 {
-    //[Test]
-    //public void df()
-    //{
-    //    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-    //    var europa = Encoding.GetEncoding(29001);
-    //    for (int i = 0; i < 255; i++)
-    //    {
-    //        Console.WriteLine($"{i} - {europa.GetString([(byte)i])}");
-    //    }
-    //}
-
     [Test]
     public void Xml_GetEncodings_Test()
     {

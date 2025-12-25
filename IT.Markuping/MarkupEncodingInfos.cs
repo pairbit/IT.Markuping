@@ -25,7 +25,7 @@ public static class MarkupEncodingInfos
 
     public static readonly MarkupEncodingInfo<byte> Europa =
         new(new(1, [(byte)'<', (byte)'>', (byte)'/', (byte)':', (byte)' ', (byte)'"', (byte)'=',
-            (byte)'\'', 63, 63, 63]), [29001]);
+            (byte)'\'', (byte)'?', (byte)'?', (byte)'?']), [29001]);
 
     public static readonly MarkupEncodingInfo<byte> EBCDIC =
         new(new(1, [76, 110, 97, 122, 64, 127, 126,
