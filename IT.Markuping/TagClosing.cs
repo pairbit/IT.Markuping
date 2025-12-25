@@ -90,11 +90,11 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
         return new(~_start, _end);
     }
 
-    internal TagClosing WithTree()
-    {
-        var start = _start;
-        return start < 0 ? this : new(~start, _end);
-    }
+    //internal TagClosing WithTree()
+    //{
+    //    var start = _start;
+    //    return start < 0 ? this : new(~start, _end);
+    //}
 
     internal TagClosing AddOffset(int offset, bool isTree)
     {

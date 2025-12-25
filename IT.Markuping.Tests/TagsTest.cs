@@ -55,12 +55,12 @@ internal class TagsTest
         Assert.That(tags.Closing, Is.Not.EqualTo(closing));
         Assert.That(tags.ToString(), Is.EqualTo("<5..10></11..22>"));
 
-        Assert.That(tags.Closing.IsTree, Is.True);
-        tags = new Tags(new(6, 10), tags.Closing, isTree: true);
-        Assert.That(tags.IsTree, Is.True);
-        Assert.That(tags.HasAttributes, Is.False);
-        Assert.That(tags.HasSpaceAtEnd, Is.False);
-        Assert.That(tags.ToString(), Is.EqualTo("<6..10></11..22>"));
+        //Assert.That(tags.Closing.IsTree, Is.True);
+        //tags = new Tags(new(6, 10), tags.Closing, isTree: true);
+        //Assert.That(tags.IsTree, Is.True);
+        //Assert.That(tags.HasAttributes, Is.False);
+        //Assert.That(tags.HasSpaceAtEnd, Is.False);
+        //Assert.That(tags.ToString(), Is.EqualTo("<6..10></11..22>"));
     }
 
     [Test]

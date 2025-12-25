@@ -81,10 +81,8 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
 
     public Tags(TagOpening opening, TagClosing closing, bool isTree)
     {
+        if (closing.IsTree) throw new ArgumentException("Tree", nameof(closing));
         if (opening.IsSelfClosing) throw new ArgumentException("SelfClosing", nameof(opening));
-
-        //TODO: что делать если уже с признаком IsTree
-        if (!isTree && closing.IsTree) throw new ArgumentException("Tree", nameof(closing));
 
         var openingEnd = opening.End;
         if (opening.Start >= openingEnd) throw new ArgumentOutOfRangeException(nameof(opening), "Start >= End");
@@ -94,7 +92,7 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
         if (openingEnd > closingStart) throw new ArgumentOutOfRangeException(nameof(closing), "openingEnd > closingStart");
 
         _opening = opening;
-        _closing = isTree ? closing.WithTree() : closing;
+        _closing = isTree ? closing.AsTree() : closing;
     }
 
     #endregion Ctors

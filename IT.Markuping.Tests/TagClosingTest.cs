@@ -45,8 +45,7 @@ internal class TagClosingTest
         Assert.That(closing.ToString(), Is.EqualTo("</66..77 >"));
 
         closing = new(int.MaxValue - 1, int.MaxValue, hasSpace: true);
-        closing = closing.WithTree();
-        Assert.That(closing, Is.EqualTo(closing.WithTree()));
+        closing = closing.AsTree();
         Assert.That(closing.Start, Is.EqualTo(2147483646));
         Assert.That(closing.End, Is.EqualTo(2147483647));
         Assert.That(closing.Length, Is.EqualTo(1));
