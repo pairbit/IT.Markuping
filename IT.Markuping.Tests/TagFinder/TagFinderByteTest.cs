@@ -1,4 +1,5 @@
 ﻿using IT.Markuping.Implementation;
+using IT.Markuping.Interfaces;
 using System;
 using System.Text;
 
@@ -9,13 +10,8 @@ internal class TagFinderByteTest
     //[Test]
     public void Tester_Utf()
     {
-        var tester = new TagFinderByteTester(TagFinders.Utf8, Encoding.UTF8);
-
-        tester.Test();
-
-        tester = new TagFinderByteTester(TagFinders.Utf16, Encoding.Unicode);
-
-        tester.Test();
+        Test(TagFinders.Utf8, Encoding.UTF8);
+        Test(TagFinders.Utf16, Encoding.Unicode);
     }
 
     [Test]
@@ -30,18 +26,43 @@ internal class TagFinderByteTest
         foreach (var encodingInfo in encodingInfos)
         {
             var codePage = encodingInfo.CodePage;
+            var encoding = encodingInfo.GetEncoding();
 
             if (TagFinders.TryGet(codePage, out var tagFinder))
             {
-                var encoding = encodingInfo.GetEncoding();
-                var tester = new TagFinderByteTester(tagFinder, encoding);
-
-                tester.Test();
+                Test(tagFinder, encoding);
             }
             else
             {
                 Assert.Fail($"{codePage,5} Options not supported");
             }
+
+            if (MarkupEncodingInfos.Utf8.CodePages.Contains(codePage))
+            {
+                Test(TagFinderByte.Utf8, encoding);
+            }
+            else if (MarkupEncodingInfos.Europa.CodePages.Contains(codePage))
+            {
+                Test(TagFinderByte.Europa, encoding);
+            }
+            else if (MarkupEncodingInfos.EBCDIC.CodePages.Contains(codePage))
+            {
+                Test(TagFinderByte.EBCDIC, encoding);
+            }
+            else if (MarkupEncodingInfos.EBCDIC_Turkish.CodePages.Contains(codePage))
+            {
+                Test(TagFinderByte.EBCDIC_Turkish, encoding);
+            }
+            else if (MarkupEncodingInfos.IBM_Latin1.CodePages.Contains(codePage))
+            {
+                Test(TagFinderByte.IBM_Latin1, encoding);
+            }
         }
+    }
+
+    private static void Test(ITagFinder<byte> finder, Encoding encoding)
+    {
+        var tester = new TagFinderByteTester(finder, encoding);
+        tester.Test();
     }
 }
