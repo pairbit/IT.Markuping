@@ -3,6 +3,8 @@ using System.Runtime.CompilerServices;
 
 namespace IT.Markuping;
 
+//MarkupAlphabet
+//MarkupABC
 public readonly struct MarkupEncoding<T> where T : unmanaged
 {
     private readonly T[] _abc;
@@ -131,7 +133,7 @@ public readonly struct MarkupEncoding<T> where T : unmanaged
             {
                 return new(abc[0], abc[1], abc[2], abc[3], abc[4], abc[5], abc[6], default, default, default, default);
             }
-            if (abc.Length == Unsafe.SizeOf<MarkupTokens<T>>())
+            if (abc.Length * Unsafe.SizeOf<T>() == Unsafe.SizeOf<MarkupTokens<T>>())
             {
                 return Unsafe.As<T, MarkupTokens<T>>(ref abc[0]);
             }
