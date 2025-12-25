@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IT.Markuping", "IT.Markupin
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IT.Markuping.Tests", "IT.Markuping.Tests\IT.Markuping.Tests.csproj", "{2CD9CC65-316F-40AB-BA9E-936D1FE928A1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IT.Markuping.Benchmarks", "IT.Markuping.Benchmarks\IT.Markuping.Benchmarks.csproj", "{AD0E1042-E7A4-4B89-8AF2-0556073C532A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{2CD9CC65-316F-40AB-BA9E-936D1FE928A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CD9CC65-316F-40AB-BA9E-936D1FE928A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2CD9CC65-316F-40AB-BA9E-936D1FE928A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD0E1042-E7A4-4B89-8AF2-0556073C532A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD0E1042-E7A4-4B89-8AF2-0556073C532A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD0E1042-E7A4-4B89-8AF2-0556073C532A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD0E1042-E7A4-4B89-8AF2-0556073C532A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
