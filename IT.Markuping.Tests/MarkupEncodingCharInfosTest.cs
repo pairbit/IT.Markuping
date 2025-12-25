@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace IT.Markuping.Tests;
@@ -11,6 +12,7 @@ public class MarkupEncodingCharInfosTest
     {
         Test(Encoding.Unicode, MarkupEncodingByteInfos.Utf16, MarkupEncodingCharInfos.Utf16);
         Test(Encoding.Unicode, MarkupEncodingByteInfos.Utf16_Strict, MarkupEncodingCharInfos.Utf16_Strict);
+        //Test(Encoding.BigEndianUnicode, MarkupEncodingByteInfos.Utf16BE, MarkupEncodingCharInfos.Utf16);
     }
 
     private static void Test(Encoding encoding, MarkupEncodingInfo<byte> mebi, MarkupEncodingInfo<char> meci)
@@ -21,17 +23,17 @@ public class MarkupEncodingCharInfosTest
         var meb = mebi.Encoding;
         var mec = meci.Encoding;
 
-        var lt = encoding.GetString(meb.LT);
-        var gt = encoding.GetString(meb.GT);
-        var slash = encoding.GetString(meb.Slash);
-        var colon = encoding.GetString(meb.Colon);
-        var space = encoding.GetString(meb.Space);
-        var quot = encoding.GetString(meb.Quot);
-        var eq = encoding.GetString(meb.Eq);
-        var apos = encoding.GetString(meb.Apos);
-        var cr = encoding.GetString(meb.CR);
-        var lf = encoding.GetString(meb.LF);
-        var tab = encoding.GetString(meb.Tab);
+        var lt = Cast(meb.LT);
+        var gt = Cast(meb.GT);
+        var slash = Cast(meb.Slash);
+        var colon = Cast(meb.Colon);
+        var space = Cast(meb.Space);
+        var quot = Cast(meb.Quot);
+        var eq = Cast(meb.Eq);
+        var apos = Cast(meb.Apos);
+        var cr = Cast(meb.CR);
+        var lf = Cast(meb.LF);
+        var tab = Cast(meb.Tab);
 
         Assert.That(mec.LT.SequenceEqual(lt), Is.True);
         Assert.That(mec.GT.SequenceEqual(gt), Is.True);
@@ -91,4 +93,7 @@ public class MarkupEncodingCharInfosTest
             }
         }
     }
+
+    private static ReadOnlySpan<char> Cast(ReadOnlySpan<byte> span)
+        => MemoryMarshal.Cast<byte, char>(span);
 }
