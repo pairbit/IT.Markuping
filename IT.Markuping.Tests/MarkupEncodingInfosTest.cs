@@ -12,7 +12,8 @@ internal class MarkupEncodingInfosTest
     {
         CastTest(Encoding.Unicode, MarkupEncodingByteInfos.Utf16, MarkupEncodingCharInfos.Utf16);
         CastTest(Encoding.Unicode, MarkupEncodingByteInfos.Utf16_Strict, MarkupEncodingCharInfos.Utf16_Strict);
-        //CastTest(Encoding.BigEndianUnicode, MarkupEncodingByteInfos.Utf16BE, MarkupEncodingCharInfos.Utf16);
+        CastTest(Encoding.BigEndianUnicode, MarkupEncodingByteInfos.Utf16BE, MarkupEncodingCharInfos.Utf16BE);
+        CastTest(Encoding.BigEndianUnicode, MarkupEncodingByteInfos.Utf16BE_Strict, MarkupEncodingCharInfos.Utf16BE_Strict);
     }
 
     [Test]
