@@ -32,11 +32,6 @@ public class TagFinderBenchmark
     private Data _utf32;
     private Data _utf32BE;
 
-    private readonly ProxyTagFinderByte<char> Utf16 = TagFinderChar.Utf16.AsProxy();
-    private readonly ProxyTagFinderByte<char> Utf16BE = TagFinderChar.Utf16BE.AsProxy();
-    private readonly ProxyTagFinderByte<int> Utf32 = TagFinderInt32.Utf32.AsProxy();
-    private readonly ProxyTagFinderByte<int> Utf32BE = TagFinderInt32.Utf32BE.AsProxy();
-
     [GlobalSetup]
     public void GlobalSetup()
     {
@@ -76,28 +71,28 @@ public class TagFinderBenchmark
     public Tags Utf8() => FirstPair(TagFinders.Utf8, _utf8);
 
     [Benchmark]
-    public Tags Utf16_Complex() => FirstPair(TagFinders.Utf16, _utf16);
+    public Tags Utf16() => FirstPair(TagFinders.Utf16, _utf16);
 
     [Benchmark]
-    public Tags Utf16_Proxy() => FirstPair(Utf16, _utf16);
+    public Tags Utf16BE() => FirstPair(TagFinders.Utf16BE, _utf16BE);
 
     [Benchmark]
-    public Tags Utf16BE_Complex() => FirstPair(TagFinders.Utf16BE, _utf16BE);
+    public Tags Utf32() => FirstPair(TagFinders.Utf32, _utf32);
 
     [Benchmark]
-    public Tags Utf16BE_Proxy() => FirstPair(Utf16BE, _utf16BE);
+    public Tags Utf32BE() => FirstPair(TagFinders.Utf32BE, _utf32BE);
 
     [Benchmark]
-    public Tags Utf32_Complex() => FirstPair(TagFinders.Utf32, _utf32);
+    public Tags Utf16_Complex() => FirstPair(TagFinders.Complex_Utf16, _utf16);
 
     [Benchmark]
-    public Tags Utf32_Proxy() => FirstPair(Utf32, _utf32);
+    public Tags Utf16BE_Complex() => FirstPair(TagFinders.Complex_Utf16BE, _utf16BE);
 
     [Benchmark]
-    public Tags Utf32BE_Complex() => FirstPair(TagFinders.Utf32BE, _utf32BE);
+    public Tags Utf32_Complex() => FirstPair(TagFinders.Complex_Utf32, _utf32);
 
     [Benchmark]
-    public Tags Utf32BE_Proxy() => FirstPair(Utf32BE, _utf32BE);
+    public Tags Utf32BE_Complex() => FirstPair(TagFinders.Complex_Utf32BE, _utf32BE);
 
     private Tags FirstPair(ITagFinder<byte> finder, Data data)
     {
@@ -114,13 +109,13 @@ public class TagFinderBenchmark
         GlobalSetup();
 
         Utf8();
+        Utf16();
+        Utf16BE();
+        Utf32();
+        Utf32BE();
         Utf16_Complex();
-        Utf16_Proxy();
         Utf16BE_Complex();
-        Utf16BE_Proxy();
         Utf32_Complex();
-        Utf32_Proxy();
         Utf32BE_Complex();
-        Utf32BE_Proxy();
     }
 }

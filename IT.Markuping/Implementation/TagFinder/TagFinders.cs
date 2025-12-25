@@ -12,10 +12,15 @@ public static class TagFinders
     public static readonly OtherSpacesTagFinder<byte> EBCDIC_Turkish = new((MarkupTokens<byte>)MarkupAlphabets.Byte.EBCDIC_Turkish);
     public static readonly OtherSpacesTagFinder<byte> IBM_Latin1 = new((MarkupTokens<byte>)MarkupAlphabets.Byte.IBM_Latin1);
 
-    public static readonly ComplexTagFinder<byte> Utf16 = new(MarkupAlphabets.Byte.Utf16);
-    public static readonly ComplexTagFinder<byte> Utf16BE = new(MarkupAlphabets.Byte.Utf16BE);
-    public static readonly ComplexTagFinder<byte> Utf32 = new(MarkupAlphabets.Byte.Utf32);
-    public static readonly ComplexTagFinder<byte> Utf32BE = new(MarkupAlphabets.Byte.Utf32BE);
+    public static readonly ProxyTagFinderByte<char> Utf16 = new(TagFinderChar.Utf16);
+    public static readonly ProxyTagFinderByte<char> Utf16BE = new(TagFinderChar.Utf16BE);
+    public static readonly ProxyTagFinderByte<int> Utf32 = new(TagFinderInt32.Utf32);
+    public static readonly ProxyTagFinderByte<int> Utf32BE = new(TagFinderInt32.Utf32BE);
+
+    public static readonly ComplexTagFinder<byte> Complex_Utf16 = new(MarkupAlphabets.Byte.Utf16);
+    public static readonly ComplexTagFinder<byte> Complex_Utf16BE = new(MarkupAlphabets.Byte.Utf16BE);
+    public static readonly ComplexTagFinder<byte> Complex_Utf32 = new(MarkupAlphabets.Byte.Utf32);
+    public static readonly ComplexTagFinder<byte> Complex_Utf32BE = new(MarkupAlphabets.Byte.Utf32BE);
 
     public static bool TryGet(int codePage, [MaybeNullWhen(false)] out ITagFinder<byte> tagFinder)
     {

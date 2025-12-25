@@ -1,14 +1,10 @@
-﻿using IT.Markuping.Implementation;
-using IT.Markuping.Interfaces;
+﻿using IT.Markuping.Interfaces;
 using System;
 
 namespace IT.Markuping.Extensions;
 
 public static class xITagFinder
 {
-    public static ProxyTagFinderByte<T> AsProxy<T>(this ITagFinder<T> finder) where T : unmanaged
-        => new(finder);
-
     public static TagOpening FirstOpening<T>(this ITagFinder<T> finder, ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, TagEndings endings = default) where T : unmanaged
         => (TagOpening)finder.First(data, name, ns, endings.GetEndings());
 
