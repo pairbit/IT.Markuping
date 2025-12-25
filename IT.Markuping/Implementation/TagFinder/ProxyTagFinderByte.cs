@@ -108,5 +108,14 @@ public class ProxyTagFinderByte<T> : ITagFinder<byte> where T : unmanaged
     #endregion ITagFinder
 
     private static ReadOnlySpan<T> Cast(ReadOnlySpan<byte> span)
-        => MemoryMarshal.Cast<byte, T>(span);
+    {
+        if (span.Length == 0) return default;
+
+        return MemoryMarshal.Cast<byte, T>(span);
+        //Debug.Assert(Size == Unsafe.SizeOf<T>());
+
+        //TODO: проверить на остаток от деления
+        //var length = span.Length / Unsafe.SizeOf<T>();
+        //return MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<byte, T>(ref MemoryMarshal.GetReference(span)), length);
+    }
 }
