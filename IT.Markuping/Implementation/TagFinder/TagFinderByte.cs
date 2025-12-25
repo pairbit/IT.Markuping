@@ -1044,13 +1044,15 @@ public class TagFinderByte : TagFinder<byte>
 
     #endregion static
 
-    public static readonly TagFinderByte Utf8 = new(new((MarkupTokens<byte>)MarkupEncodingInfos.Utf8.Encoding), Utf8_WhiteSpaces);
-    public static readonly TagFinderByte Europa = new(new((MarkupTokens<byte>)MarkupEncodingInfos.Europa.Encoding), Europa_29001_WhiteSpaces);
-    public static readonly TagFinderByte EBCDIC = new(new((MarkupTokens<byte>)MarkupEncodingInfos.EBCDIC.Encoding), EBCDIC_WhiteSpaces);
-    public static readonly TagFinderByte EBCDIC_Turkish = new(new((MarkupTokens<byte>)MarkupEncodingInfos.EBCDIC_Turkish.Encoding), EBCDIC_WhiteSpaces);
-    public static readonly TagFinderByte IBM_Latin1 = new(new((MarkupTokens<byte>)MarkupEncodingInfos.IBM_Latin1.Encoding), IBM_Latin1_WhiteSpaces);
+    public static readonly TagFinderByte Utf8 = new(new((MarkupTokens<byte>)MarkupEncodingByteInfos.Utf8.Encoding), Utf8_WhiteSpaces);
+    public static readonly TagFinderByte Europa = new(new((MarkupTokens<byte>)MarkupEncodingByteInfos.Europa.Encoding), Europa_29001_WhiteSpaces);
+    public static readonly TagFinderByte EBCDIC = new(new((MarkupTokens<byte>)MarkupEncodingByteInfos.EBCDIC.Encoding), EBCDIC_WhiteSpaces);
+    public static readonly TagFinderByte EBCDIC_Turkish = new(new((MarkupTokens<byte>)MarkupEncodingByteInfos.EBCDIC_Turkish.Encoding), EBCDIC_WhiteSpaces);
+    public static readonly TagFinderByte IBM_Latin1 = new(new((MarkupTokens<byte>)MarkupEncodingByteInfos.IBM_Latin1.Encoding), IBM_Latin1_WhiteSpaces);
 
     private readonly bool[] _otherSpaces;
+
+    public ReadOnlySpan<bool> OtherSpaces => _otherSpaces;
 
     public TagFinderByte(Tokens tokens, bool[] otherSpaces) : base(tokens)
     {
@@ -1060,6 +1062,7 @@ public class TagFinderByte : TagFinder<byte>
         _otherSpaces = otherSpaces;
     }
 
+    //TODO: change to _otherSpaces[value]
     protected override bool IsSpace(byte value)
         => value.Equals(_tokens._space) || _otherSpaces[value];
 }

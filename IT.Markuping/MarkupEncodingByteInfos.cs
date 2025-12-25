@@ -3,8 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace IT.Markuping;
 
-//MarkupEncodingByteInfos
-public static class MarkupEncodingInfos
+public static class MarkupEncodingByteInfos
 {
     public static readonly MarkupEncodingInfo<byte> Utf8_Strict =
         new(new(1, [(byte)'<', (byte)'>', (byte)'/', (byte)':', (byte)' ', (byte)'"', (byte)'=']),

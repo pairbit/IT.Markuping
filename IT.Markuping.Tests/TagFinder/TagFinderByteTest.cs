@@ -37,23 +37,23 @@ internal class TagFinderByteTest
                 Assert.Fail($"{codePage,5} Options not supported");
             }
 
-            if (MarkupEncodingInfos.Utf8.CodePages.Contains(codePage))
+            if (MarkupEncodingByteInfos.Utf8.CodePages.Contains(codePage))
             {
                 Test(TagFinderByte.Utf8, encoding);
             }
-            else if (MarkupEncodingInfos.Europa.CodePages.Contains(codePage))
+            else if (MarkupEncodingByteInfos.Europa.CodePages.Contains(codePage))
             {
                 Test(TagFinderByte.Europa, encoding);
             }
-            else if (MarkupEncodingInfos.EBCDIC.CodePages.Contains(codePage))
+            else if (MarkupEncodingByteInfos.EBCDIC.CodePages.Contains(codePage))
             {
                 Test(TagFinderByte.EBCDIC, encoding);
             }
-            else if (MarkupEncodingInfos.EBCDIC_Turkish.CodePages.Contains(codePage))
+            else if (MarkupEncodingByteInfos.EBCDIC_Turkish.CodePages.Contains(codePage))
             {
                 Test(TagFinderByte.EBCDIC_Turkish, encoding);
             }
-            else if (MarkupEncodingInfos.IBM_Latin1.CodePages.Contains(codePage))
+            else if (MarkupEncodingByteInfos.IBM_Latin1.CodePages.Contains(codePage))
             {
                 Test(TagFinderByte.IBM_Latin1, encoding);
             }

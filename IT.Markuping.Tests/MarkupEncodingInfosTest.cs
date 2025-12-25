@@ -20,7 +20,7 @@ internal class MarkupEncodingInfosTest
             var codePage = encodingInfo.CodePage;
             var encoding = encodingInfo.GetEncoding();
 
-            if (MarkupEncodingInfos.TryGet(codePage, out var markupEncodingInfo))
+            if (MarkupEncodingByteInfos.TryGet(codePage, out var markupEncodingInfo))
             {
                 Test(markupEncodingInfo, encoding);
             }
@@ -29,7 +29,7 @@ internal class MarkupEncodingInfosTest
                 Assert.Fail($"CodePage {codePage,5} not supported");
             }
 
-            if (MarkupEncodingInfos.TryGetStrict(codePage, out markupEncodingInfo))
+            if (MarkupEncodingByteInfos.TryGetStrict(codePage, out markupEncodingInfo))
             {
                 Test(markupEncodingInfo, encoding);
             }

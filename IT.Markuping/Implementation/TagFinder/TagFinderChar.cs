@@ -4,6 +4,8 @@ namespace IT.Markuping.Implementation;
 
 public class TagFinderChar : TagFinder<char>
 {
+    //public static readonly TagFinderChar Utf8 = new(new();
+
 #if NET
     private readonly StringComparison _comparison;
 
