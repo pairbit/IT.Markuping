@@ -58,22 +58,22 @@ internal class TagFinderByteTest
             {
                 Test(TagFinderByte.IBM_Latin1, encoding);
             }
-            //else if (codePage == 1200)
-            //{
-            //    Test(TagFinderChar.Utf16.AsProxy(), encoding);
-            //}
-            //else if (codePage == 1201)
-            //{
-            //    Test(TagFinderChar.Utf16BE.AsProxy(), encoding);
-            //}
-            //else if (codePage == 12000)
-            //{
-            //    Test(TagFinderInt32.Utf32.AsProxy(), encoding);
-            //}
-            //else if (codePage == 12001)
-            //{
-            //    Test(TagFinderInt32.Utf32BE.AsProxy(), encoding);
-            //}
+            else if (codePage == 1200)
+            {
+                Test(TagFinderChar.Utf16.AsProxy(), encoding);
+            }
+            else if (codePage == 1201)
+            {
+                Test(TagFinderChar.Utf16BE.AsProxy(), encoding);
+            }
+            else if (codePage == 12000)
+            {
+                Test(TagFinderInt32.Utf32.AsProxy(), encoding);
+            }
+            else if (codePage == 12001)
+            {
+                Test(TagFinderInt32.Utf32BE.AsProxy(), encoding);
+            }
         }
     }
 

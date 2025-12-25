@@ -88,9 +88,7 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
     #endregion Ctors
 
     public Tags MultipleOffset(int offset)
-    {
-        throw new NotImplementedException();
-    }
+        => new((Tag)_opening.MultipleOffset(offset), _closing.MultipleOffset(offset));
 
     #region Comparison
 
