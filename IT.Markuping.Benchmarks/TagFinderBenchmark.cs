@@ -1,6 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
-using IT.Markuping.Implementation;
 using IT.Markuping.Interfaces;
 using System.Text;
 using System.Xml;
@@ -108,10 +107,16 @@ public class TagFinderBenchmark
     public bool IsTrueAuto() => _map.IsTrueAuto(_by);
 
     [Benchmark]
-    public Tags Utf8_OtherSpaces() => FirstPair(TagFinders.Utf8, _utf8);
+    public Tags Utf8() => FirstPair(TagFinders.Utf8, _utf8);
 
     [Benchmark]
-    public Tags Utf8_Map() => FirstPair(TagFinderByte.Utf8, _utf8);
+    public Tags Utf8_OtherSpaces() => FirstPair(TagFinders.OtherSpaces_Utf8, _utf8);
+
+    [Benchmark]
+    public Tags Europa() => FirstPair(TagFinders.Europa, _utf8);
+
+    [Benchmark]
+    public Tags Europa_OtherSpace() => FirstPair(TagFinders.OtherSpace_Europa, _utf8);
 
     [Benchmark]
     public Tags Utf16() => FirstPair(TagFinders.Utf16, _utf16);
@@ -125,16 +130,16 @@ public class TagFinderBenchmark
     [Benchmark]
     public Tags Utf32BE() => FirstPair(TagFinders.Utf32BE, _utf32BE);
 
-    [Benchmark]
+    //[Benchmark]
     public Tags Utf16_Complex() => FirstPair(TagFinders.Complex_Utf16, _utf16);
 
-    [Benchmark]
+    //[Benchmark]
     public Tags Utf16BE_Complex() => FirstPair(TagFinders.Complex_Utf16BE, _utf16BE);
 
-    [Benchmark]
+    //[Benchmark]
     public Tags Utf32_Complex() => FirstPair(TagFinders.Complex_Utf32, _utf32);
 
-    [Benchmark]
+    //[Benchmark]
     public Tags Utf32BE_Complex() => FirstPair(TagFinders.Complex_Utf32BE, _utf32BE);
 
     private Tags FirstPair(ITagFinder<byte> finder, Data data)
@@ -151,8 +156,10 @@ public class TagFinderBenchmark
     {
         GlobalSetup();
 
-        Utf8_Map();
+        Utf8();
         Utf8_OtherSpaces();
+        Europa();
+        Europa_OtherSpace();
         Utf16();
         Utf16BE();
         Utf32();

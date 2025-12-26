@@ -7,11 +7,17 @@ namespace IT.Markuping;
 
 public static class TagFinders
 {
-    public static readonly OtherSpacesTagFinder<byte> Utf8 = new((MarkupTokens<byte>)MarkupAlphabets.Byte.Utf8);
-    public static readonly OtherSpaceTagFinder<byte> Europa = new((MarkupTokens<byte>)MarkupAlphabets.Byte.Europa);
-    public static readonly OtherSpacesTagFinder<byte> EBCDIC = new((MarkupTokens<byte>)MarkupAlphabets.Byte.EBCDIC);
-    public static readonly OtherSpacesTagFinder<byte> EBCDIC_Turkish = new((MarkupTokens<byte>)MarkupAlphabets.Byte.EBCDIC_Turkish);
-    public static readonly OtherSpacesTagFinder<byte> IBM_Latin1 = new((MarkupTokens<byte>)MarkupAlphabets.Byte.IBM_Latin1);
+    public static readonly TagFinderByte Utf8 = TagFinderByte.Utf8;
+    public static readonly TagFinderByte Europa = TagFinderByte.Europa;
+    public static readonly TagFinderByte EBCDIC = TagFinderByte.EBCDIC;
+    public static readonly TagFinderByte EBCDIC_Turkish = TagFinderByte.EBCDIC_Turkish;
+    public static readonly TagFinderByte IBM_Latin1 = TagFinderByte.IBM_Latin1;
+
+    public static readonly OtherSpacesTagFinder<byte> OtherSpaces_Utf8 = new((MarkupTokens<byte>)MarkupAlphabets.Byte.Utf8);
+    public static readonly OtherSpaceTagFinder<byte> OtherSpace_Europa = new((MarkupTokens<byte>)MarkupAlphabets.Byte.Europa);
+    public static readonly OtherSpacesTagFinder<byte> OtherSpaces_EBCDIC = new((MarkupTokens<byte>)MarkupAlphabets.Byte.EBCDIC);
+    public static readonly OtherSpacesTagFinder<byte> OtherSpaces_EBCDIC_Turkish = new((MarkupTokens<byte>)MarkupAlphabets.Byte.EBCDIC_Turkish);
+    public static readonly OtherSpacesTagFinder<byte> OtherSpaces_IBM_Latin1 = new((MarkupTokens<byte>)MarkupAlphabets.Byte.IBM_Latin1);
 
     public static readonly ProxyTagFinderByte<char> Utf16 = new(TagFinderChar.Utf16);
     public static readonly ProxyTagFinderByte<char> Utf16BE = new(TagFinderChar.Utf16BE);
