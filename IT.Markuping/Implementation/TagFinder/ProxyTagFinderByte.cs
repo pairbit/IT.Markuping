@@ -25,7 +25,7 @@ public class ProxyTagFinderByte<T> : ITagFinder<byte> where T : unmanaged
 
     #region ITagFinder
 
-    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes, out Range ns)
+    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes, out TagNS ns)
     {
         var tags = _proxy.FirstPair(Cast(data), Cast(name), out nodes, out ns);
 
@@ -42,7 +42,7 @@ public class ProxyTagFinderByte<T> : ITagFinder<byte> where T : unmanaged
     public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes)
         => _proxy.FirstPair(Cast(data), Cast(name), out nodes).MultipleOffset(Size);
 
-    public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes, out Range ns)
+    public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes, out TagNS ns)
     {
         var tags = _proxy.LastPair(Cast(data), Cast(name), out nodes, out ns);
 
@@ -59,7 +59,7 @@ public class ProxyTagFinderByte<T> : ITagFinder<byte> where T : unmanaged
     public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes)
         => _proxy.LastPair(Cast(data), Cast(name), out nodes).MultipleOffset(Size);
 
-    public Tag First(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out Range ns, TagEndings endings = TagEndings.AnyClosing)
+    public Tag First(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out TagNS ns, TagEndings endings = TagEndings.AnyClosing)
     {
         var tag = _proxy.First(Cast(data), Cast(name), out ns, endings);
 
@@ -88,7 +88,7 @@ public class ProxyTagFinderByte<T> : ITagFinder<byte> where T : unmanaged
     public TagClosing FirstClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name)
         => _proxy.FirstClosing(Cast(data), Cast(name)).MultipleOffset(Size);
 
-    public TagClosing LastClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out Range ns)
+    public TagClosing LastClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out TagNS ns)
     {
         var tag = _proxy.LastClosing(Cast(data), Cast(name), out ns);
 

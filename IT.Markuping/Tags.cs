@@ -19,13 +19,21 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
     //TODO: нужно ли удалять признак IsTree при возврате???
     public TagClosing Closing => _closing;
 
+#if !NETSTANDARD2_0
     public Range Outer => new(_opening.Start, _closing.End);
+#endif
+
+    public int Start => _opening.Start;
 
     public int Length => _closing.End - _opening.Start;
 
     public bool IsEmpty => _closing.End == _opening.Start;
 
+#if !NETSTANDARD2_0
     public Range Inner => new(_opening.End, _closing.Start);
+#endif
+
+    public int InnerStart => _opening.End;
 
     public int InnerLength => _closing.Start - _opening.End;
 

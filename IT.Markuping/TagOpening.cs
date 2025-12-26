@@ -22,7 +22,9 @@ public readonly struct TagOpening : IComparable<TagOpening>, IEquatable<TagOpeni
 
     public bool IsEmpty => _start == _end;
 
+#if !NETSTANDARD2_0
     public Range Range => new(Start, End);
+#endif
 
     public bool HasAttributes => _start < 0;
 

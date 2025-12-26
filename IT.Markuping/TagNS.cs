@@ -24,16 +24,18 @@ public readonly struct TagNS : IComparable<TagNS>, IEquatable<TagNS>, IFormattab
 
     public bool IsEmpty => _start == _end;
 
+#if !NETSTANDARD2_0
     public Range Range => new(_start, _end);
+#endif
 
     #endregion Props
 
     #region Ctors
 
-    private TagNS(StartEnd startEnd)
+    internal TagNS(StartEnd startEnd)
     {
         Debug.Assert(startEnd._start >= 0);
-        Debug.Assert(startEnd._end > startEnd._start);
+        Debug.Assert(startEnd._end > startEnd._start || (startEnd._end == 0 && startEnd._start == 0));
         Debug.Assert(Unsafe.SizeOf<StartEnd>() == Unsafe.SizeOf<TagNS>());
 
         this = Unsafe.As<StartEnd, TagNS>(ref startEnd);

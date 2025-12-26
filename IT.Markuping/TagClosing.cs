@@ -24,7 +24,9 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
 
     public bool IsEmpty => _start == _end;
 
+#if !NETSTANDARD2_0
     public Range Range => new(Start, End);
+#endif
 
     public bool HasSpace => _end < 0;
 

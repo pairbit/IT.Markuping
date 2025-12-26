@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IT.Markuping.Internal;
+using System;
 using System.Diagnostics;
 
 namespace IT.Markuping.Implementation;
@@ -83,7 +84,7 @@ public class ComplexTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquata
         return data.Slice(start, _colon.Length).SequenceEqual(_colon);
     }
 
-    protected override bool IsStartOpening(ReadOnlySpan<T> data, ref int start, out Range ns)
+    protected override bool IsStartOpening(ReadOnlySpan<T> data, ref int start, out TagNS ns)
     {
         Debug.Assert(start < data.Length);
         Debug.Assert(start >= _lt.Length);
@@ -105,7 +106,7 @@ public class ComplexTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquata
                 {
                     Debug.Assert(endNS > start);
 
-                    ns = start..endNS;
+                    ns = new(new StartEnd(start, endNS));
                     start -= _lt.Length;
                     return true;
                 }
@@ -157,7 +158,7 @@ public class ComplexTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquata
         return data.Slice(start, _colon.Length).SequenceEqual(_colon);
     }
 
-    protected override bool IsStartClosing(ReadOnlySpan<T> data, ref int start, out Range ns)
+    protected override bool IsStartClosing(ReadOnlySpan<T> data, ref int start, out TagNS ns)
     {
         var startClosingLength = _lt.Length + _slash.Length;
 
@@ -183,7 +184,7 @@ public class ComplexTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquata
                     {
                         Debug.Assert(endNS > start);
 
-                        ns = start..endNS;
+                        ns = new(new StartEnd(start, endNS));
                         start -= startClosingLength;
                         return true;
                     }

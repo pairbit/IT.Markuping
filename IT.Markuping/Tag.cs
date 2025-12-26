@@ -22,7 +22,9 @@ public readonly struct Tag : IComparable<Tag>, IEquatable<Tag>, IFormattable
 
     public bool IsEmpty => _start == _end;
 
+#if !NETSTANDARD2_0
     public Range Range => new(Start, End);
+#endif
 
     public TagEnding Ending
     {
