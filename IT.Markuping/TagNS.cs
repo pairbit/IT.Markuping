@@ -101,20 +101,13 @@ public readonly struct TagNS : IComparable<TagNS>, IEquatable<TagNS>, IFormattab
                 ((uint)End).TryFormat(chars.Slice(2 + startWritten), out var endWritten))
             {
                 written = minLength + startWritten + endWritten;
-                if (chars.Length >= written)
-                {
-                    chars[startWritten] = '.';
-                    chars[startWritten + 1] = '.';
-                    return true;
-                }
-                else if (clear)
-                {
-                    chars.Slice(0, startWritten + 2 + endWritten).Clear();
-                }
+                chars[startWritten] = '.';
+                chars[startWritten + 1] = '.';
+                return true;
             }
             else if (clear)
             {
-                chars.Slice(1, startWritten).Clear();
+                chars.Slice(0, startWritten).Clear();
             }
         }
         written = 0;

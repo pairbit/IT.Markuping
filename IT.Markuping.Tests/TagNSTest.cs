@@ -101,10 +101,10 @@ internal class TagNSTest
     public void TryFormatTest()
     {
         var tag = new TagNS(10, 11);
-        Assert.That(tag.TryFormat(stackalloc char[4], out var written), Is.False);
+        Assert.That(tag.TryFormat(stackalloc char[3], out var written), Is.False);
         Assert.That(written == 0, Is.True);
 
-        Span<char> span = stackalloc char[5];
+        Span<char> span = stackalloc char[4];
         Assert.That(tag.TryFormat(span, out written), Is.False);
         Assert.That(written == 0, Is.True);
 
