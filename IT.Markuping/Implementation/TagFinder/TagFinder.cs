@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IT.Markuping.Internal;
+using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
@@ -79,7 +80,7 @@ public class TagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
                data.Slice(start, ns.Length).SequenceEqual(ns);
     }
 
-    protected override bool IsStartOpening(ReadOnlySpan<T> data, ref int start, out Range ns)
+    protected override bool IsStartOpening(ReadOnlySpan<T> data, ref int start, out TagNS ns)
     {
         Debug.Assert(start < data.Length);
         Debug.Assert(start >= 1);
@@ -100,7 +101,7 @@ public class TagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
                 {
                     Debug.Assert(endNS > start + 1);
 
-                    ns = (start + 1)..endNS;
+                    ns = new(new StartEnd(start + 1, endNS));
                     return true;
                 }
                 else if (token.Equals(_tokens._quot) || token.Equals(_tokens._apos))
@@ -130,7 +131,7 @@ public class TagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
                data.Slice(start, ns.Length).SequenceEqual(ns);
     }
 
-    protected override bool IsStartClosing(ReadOnlySpan<T> data, ref int start, out Range ns)
+    protected override bool IsStartClosing(ReadOnlySpan<T> data, ref int start, out TagNS ns)
     {
         Debug.Assert(start < data.Length);
         Debug.Assert(start >= 2);
@@ -157,7 +158,7 @@ public class TagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
                     {
                         Debug.Assert(endNS > start + 2);
 
-                        ns = (start + 2)..endNS;
+                        ns = new(new StartEnd(start + 2, endNS));
                         return true;
                     }
                     break;

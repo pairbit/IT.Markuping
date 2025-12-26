@@ -1,8 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
-using IT.Markuping.Extensions;
-using IT.Markuping.Implementation;
 using IT.Markuping.Interfaces;
+using System;
 using System.Text;
 using System.Xml;
 
@@ -25,7 +24,37 @@ public class TagFinderBenchmark
         }
     }
 
+    public readonly struct Map
+    {
+        internal readonly byte _b1, _b2, _b3, _b4;
+        internal readonly bool[] _map;
+
+        public Map(byte b1, byte b2, byte b3, byte b4)
+        {
+            _b1 = b1;
+            _b2 = b2;
+            _b3 = b3;
+            _b4 = b4;
+            _map = new bool[256];
+            _map[_b1] = true;
+            _map[_b2] = true;
+            _map[_b3] = true;
+            _map[_b4] = true;
+        }
+
+        public bool IsTrueAuto(byte index) => _map[index];
+
+        public bool IsTrueManual4(byte index) =>
+            index == _b1 || index == _b2 || index == _b3 || index == _b4;
+
+        public bool IsTrueManual2(byte index) =>
+            index == _b1 || index == _b2;
+    }
+
+    private byte _by;
+    
     private int _count;
+    private Map _map;
     private Data _utf8;
     private Data _utf16;
     private Data _utf16BE;
@@ -57,6 +86,8 @@ public class TagFinderBenchmark
     </{name}>
 </{name}>";
         _count = 13;
+        _by = 102;
+        _map = new(12, 23, 64, 155);
         var doc = new XmlDocument();
         doc.LoadXml(data);
 
@@ -68,30 +99,48 @@ public class TagFinderBenchmark
     }
 
     [Benchmark]
+    public bool IsTrueManual2() => _map.IsTrueManual2(_by);
+
+    [Benchmark]
+    public bool IsTrueManual4() => _map.IsTrueManual4(_by);
+
+    [Benchmark]
+    public bool IsTrueAuto() => _map.IsTrueAuto(_by);
+
+    [Benchmark]
     public Tags Utf8() => FirstPair(TagFinders.Utf8, _utf8);
 
     [Benchmark]
+    public Tags Utf8_OtherSpaces() => FirstPair(TagFinders.OtherSpaces_Utf8, _utf8);
+
+    [Benchmark]
+    public Tags Europa() => FirstPair(TagFinders.Europa, _utf8);
+
+    [Benchmark]
+    public Tags Europa_OtherSpace() => FirstPair(TagFinders.OtherSpace_Europa, _utf8);
+
+    //[Benchmark]
     public Tags Utf16() => FirstPair(TagFinders.Utf16, _utf16);
 
-    [Benchmark]
+    //[Benchmark]
     public Tags Utf16BE() => FirstPair(TagFinders.Utf16BE, _utf16BE);
-
-    [Benchmark]
+    
+    //[Benchmark]
     public Tags Utf32() => FirstPair(TagFinders.Utf32, _utf32);
 
-    [Benchmark]
+    //[Benchmark]
     public Tags Utf32BE() => FirstPair(TagFinders.Utf32BE, _utf32BE);
 
-    [Benchmark]
+    //[Benchmark]
     public Tags Utf16_Complex() => FirstPair(TagFinders.Complex_Utf16, _utf16);
 
-    [Benchmark]
+    //[Benchmark]
     public Tags Utf16BE_Complex() => FirstPair(TagFinders.Complex_Utf16BE, _utf16BE);
 
-    [Benchmark]
+    //[Benchmark]
     public Tags Utf32_Complex() => FirstPair(TagFinders.Complex_Utf32, _utf32);
 
-    [Benchmark]
+    //[Benchmark]
     public Tags Utf32BE_Complex() => FirstPair(TagFinders.Complex_Utf32BE, _utf32BE);
 
     private Tags FirstPair(ITagFinder<byte> finder, Data data)
@@ -109,6 +158,9 @@ public class TagFinderBenchmark
         GlobalSetup();
 
         Utf8();
+        Utf8_OtherSpaces();
+        Europa();
+        Europa_OtherSpace();
         Utf16();
         Utf16BE();
         Utf32();
@@ -117,5 +169,8 @@ public class TagFinderBenchmark
         Utf16BE_Complex();
         Utf32_Complex();
         Utf32BE_Complex();
+
+        if (IsTrueManual2() != IsTrueAuto() || IsTrueManual4() != IsTrueAuto())
+            throw new InvalidOperationException();
     }
 }

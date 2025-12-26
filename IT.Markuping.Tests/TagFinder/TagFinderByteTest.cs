@@ -1,5 +1,6 @@
 ﻿using IT.Markuping.Implementation;
 using IT.Markuping.Interfaces;
+using IT.Markuping.Internal;
 using System;
 using System.Text;
 
@@ -34,28 +35,32 @@ internal class TagFinderByteTest
             }
             else
             {
-                Assert.Fail($"{codePage,5} Options not supported");
+#if NET
+                Assert.Fail($"CodePage {codePage,5} not supported");
+#else
+                Console.WriteLine($"CodePage {codePage,5} not supported");
+#endif
             }
 
-            if (MarkupCodePages.Utf8.AsSpan().Contains(codePage))
+            if (MarkupCodePages.Utf8.AsSpan().IndexOf(codePage) > -1)
             {
-                Test(TagFinderByte.Utf8, encoding);
+                Test(TagFinders.OtherSpaces_Utf8, encoding);
             }
             else if (codePage == 29001)
             {
-                Test(TagFinderByte.Europa, encoding);
+                Test(TagFinders.OtherSpace_Europa, encoding);
             }
-            else if (MarkupCodePages.EBCDIC.AsSpan().Contains(codePage))
+            else if (MarkupCodePages.EBCDIC.AsSpan().IndexOf(codePage) > -1)
             {
-                Test(TagFinderByte.EBCDIC, encoding);
+                Test(TagFinders.OtherSpaces_EBCDIC, encoding);
             }
             else if (codePage == 1026 || codePage == 20905)
             {
-                Test(TagFinderByte.EBCDIC_Turkish, encoding);
+                Test(TagFinders.OtherSpaces_EBCDIC_Turkish, encoding);
             }
             else if (codePage == 1047 || codePage == 20924)
             {
-                Test(TagFinderByte.IBM_Latin1, encoding);
+                Test(TagFinders.OtherSpaces_IBM_Latin1, encoding);
             }
             else if (codePage == 1200)
             {

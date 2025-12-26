@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+	<TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">net462;net472;net8.0;net9.0</TargetFrameworks>
+	<TargetFrameworks Condition="'$(OS)' != 'Windows_NT'">net8.0;net9.0</TargetFrameworks>
 	<LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
 
@@ -23,6 +24,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="NUnit3TestAdapter" Version="6.0.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.1" />
   </ItemGroup>
 
   <ItemGroup>
