@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using IT.Markuping.Interfaces;
+using System;
 using System.Text;
 using System.Xml;
 
@@ -118,16 +119,16 @@ public class TagFinderBenchmark
     [Benchmark]
     public Tags Europa_OtherSpace() => FirstPair(TagFinders.OtherSpace_Europa, _utf8);
 
-    [Benchmark]
+    //[Benchmark]
     public Tags Utf16() => FirstPair(TagFinders.Utf16, _utf16);
 
-    [Benchmark]
+    //[Benchmark]
     public Tags Utf16BE() => FirstPair(TagFinders.Utf16BE, _utf16BE);
-
-    [Benchmark]
+    
+    //[Benchmark]
     public Tags Utf32() => FirstPair(TagFinders.Utf32, _utf32);
 
-    [Benchmark]
+    //[Benchmark]
     public Tags Utf32BE() => FirstPair(TagFinders.Utf32BE, _utf32BE);
 
     //[Benchmark]
