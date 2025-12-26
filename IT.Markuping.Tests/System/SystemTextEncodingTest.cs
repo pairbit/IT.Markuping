@@ -9,7 +9,10 @@ internal class SystemTextEncodingTest
     [Test]
     public void Xml_GetEncodings_Test()
     {
-        var abc = "<>/: \"'=!-[]?\r\n\t";
+        //<>/: \"'=!-[]?\r\n\t
+        //<>/: \"'=\r\n\t
+        var abc = "<>/: \"'=\r\n\t";
+        Console.WriteLine(abc);
         var arrayUtf8 = Encoding.UTF8.GetBytes(abc);
         //var arrayUtf7 = Encoding.UTF7.GetBytes(abc);
 
@@ -19,9 +22,9 @@ internal class SystemTextEncodingTest
         var array20905 = Encoding.GetEncoding(20905).GetBytes(abc);
 
         //Console.WriteLine($"UTF7: {string.Join(",", arrayUtf7)}");
-        //Console.WriteLine($"UTF8: {string.Join(",", arrayUtf8)}");
-        //Console.WriteLine($"20880: {string.Join(",", array20880)} = {new string(array20880.Select(x => (char)x).ToArray())}");
-        //Console.WriteLine($"20905: {string.Join(",", array20905)}");
+        Console.WriteLine($"UTF8: {string.Join(",", arrayUtf8)}");
+        Console.WriteLine($"20880: {string.Join(",", array20880)}");
+        Console.WriteLine($"20905: {string.Join(",", array20905)}");
 
         var utf8s = new List<int>();
         var ibm20880s = new List<int>();
