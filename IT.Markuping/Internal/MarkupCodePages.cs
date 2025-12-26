@@ -1,4 +1,4 @@
-﻿namespace IT.Markuping;
+﻿namespace IT.Markuping.Internal;
 
 internal static class MarkupCodePages
 {

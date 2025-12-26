@@ -1,8 +1,10 @@
-﻿using IT.Markuping.Interfaces;
+﻿using IT.Markuping.Implementation;
+using IT.Markuping.Interfaces;
+using IT.Markuping.Internal;
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace IT.Markuping.Implementation;
+namespace IT.Markuping;
 
 public static class TagFinders
 {

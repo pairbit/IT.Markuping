@@ -1,7 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
-using IT.Markuping.Extensions;
-using IT.Markuping.Implementation;
 using IT.Markuping.Interfaces;
 using System.Text;
 using System.Xml;

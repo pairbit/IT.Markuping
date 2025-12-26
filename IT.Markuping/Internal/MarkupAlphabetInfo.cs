@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IT.Markuping;
+namespace IT.Markuping.Internal;
 
 internal class MarkupAlphabetInfo<T> where T : unmanaged
 {
