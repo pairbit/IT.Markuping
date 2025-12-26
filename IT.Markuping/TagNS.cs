@@ -1,5 +1,7 @@
-﻿using System;
+﻿using IT.Markuping.Internal;
+using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace IT.Markuping;
 
@@ -18,18 +20,30 @@ public readonly struct TagNS : IComparable<TagNS>, IEquatable<TagNS>, IFormattab
 
     public int End => _end;
 
-    public int Length => End - Start;
+    public int Length => _end - _start;
 
     public bool IsEmpty => _start == _end;
 
-    public Range Range => new(Start, End);
+    public Range Range => new(_start, _end);
 
     #endregion Props
 
     #region Ctors
 
+    private TagNS(StartEnd startEnd)
+    {
+        Debug.Assert(startEnd._start >= 0);
+        Debug.Assert(startEnd._end > startEnd._start);
+        Debug.Assert(Unsafe.SizeOf<StartEnd>() == Unsafe.SizeOf<TagNS>());
+
+        this = Unsafe.As<StartEnd, TagNS>(ref startEnd);
+    }
+
     private TagNS(int start, int end, int offset)
     {
+        Debug.Assert(start >= 0);
+        Debug.Assert(end > start);
+
         _end = checked(end + offset);
         if (_end < 1) throw new ArgumentOutOfRangeException(nameof(offset));
 
@@ -51,15 +65,15 @@ public readonly struct TagNS : IComparable<TagNS>, IEquatable<TagNS>, IFormattab
     public TagNS AddOffset(int offset) => new(_start, _end, offset);
 
     public TagNS MultipleOffset(int offset)
-        => new(checked(_start * offset), checked(_end * offset));
+        => new(new StartEnd(checked(_start * offset), checked(_end * offset)));
 
     #region Comparison
 
     public int CompareTo(TagNS other)
     {
-        var compared = Start.CompareTo(other.Start);
+        var compared = _start.CompareTo(other._start);
 
-        Debug.Assert(End.CompareTo(other.End) == compared);
+        Debug.Assert(_end.CompareTo(other._end) == compared);
 
         return compared;
     }
@@ -77,7 +91,7 @@ public readonly struct TagNS : IComparable<TagNS>, IEquatable<TagNS>, IFormattab
     public override string ToString()
     {
 #if NETSTANDARD2_0
-        return $"{Start}..{End}";
+        return $"{_start}..{_end}";
 #else
         Span<char> span = stackalloc char[2 + (2 * 10)];
 
@@ -95,10 +109,10 @@ public readonly struct TagNS : IComparable<TagNS>, IEquatable<TagNS>, IFormattab
         var minLength = 2;
         //0..3
         //min-max = 4-22
-        if (chars.Length >= minLength + 2 && ((uint)Start).TryFormat(chars, out var startWritten))
+        if (chars.Length >= minLength + 2 && ((uint)_start).TryFormat(chars, out var startWritten))
         {
             if (chars.Length >= minLength + startWritten + startWritten &&
-                ((uint)End).TryFormat(chars.Slice(2 + startWritten), out var endWritten))
+                ((uint)_end).TryFormat(chars.Slice(2 + startWritten), out var endWritten))
             {
                 written = minLength + startWritten + endWritten;
                 chars[startWritten] = '.';
