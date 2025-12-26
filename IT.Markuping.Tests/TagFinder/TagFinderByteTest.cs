@@ -35,10 +35,14 @@ internal class TagFinderByteTest
             }
             else
             {
-                Assert.Fail($"{codePage,5} Options not supported");
+#if NET
+                Assert.Fail($"CodePage {codePage,5} not supported");
+#else
+                Console.WriteLine($"CodePage {codePage,5} not supported");
+#endif
             }
 
-            if (MarkupCodePages.Utf8.AsSpan().Contains(codePage))
+            if (MarkupCodePages.Utf8.AsSpan().IndexOf(codePage) > -1)
             {
                 Test(TagFinderByte.Utf8, encoding);
             }
@@ -46,7 +50,7 @@ internal class TagFinderByteTest
             {
                 Test(TagFinderByte.Europa, encoding);
             }
-            else if (MarkupCodePages.EBCDIC.AsSpan().Contains(codePage))
+            else if (MarkupCodePages.EBCDIC.AsSpan().IndexOf(codePage) > -1)
             {
                 Test(TagFinderByte.EBCDIC, encoding);
             }

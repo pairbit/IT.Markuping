@@ -142,7 +142,7 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
     public override string ToString()
     {
 #if NETSTANDARD2_0
-        return HasSpace ? $"<{Start}..{End} >" : $"<{Start}..{End}>";
+        return HasSpace ? $"</{Start}..{End} >" : $"</{Start}..{End}>";
 #else
         Span<char> span = stackalloc char[6 + (2 * 10)];
 

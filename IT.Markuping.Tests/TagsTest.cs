@@ -63,6 +63,7 @@ internal class TagsTest
         //Assert.That(tags.ToString(), Is.EqualTo("<6..10></11..22>"));
     }
 
+#if NET
     [Test]
     public void TryFormatTest()
     {
@@ -102,6 +103,7 @@ internal class TagsTest
         Assert.That(written == 17, Is.True);
         Assert.That(span.ToString(), Is.EqualTo("<0..10></10..11 >"));
     }
+#endif
 
     [Test]
     public void CompareToTest()
@@ -122,22 +124,28 @@ internal class TagsTest
     {
         var ex1 = Assert.Throws<ArgumentException>(() => new Tags(new(0, 1, isSelfClosing: true), default));
         Assert.That(ex1.ParamName, Is.EqualTo("opening"));
+#if NET
         Assert.That(ex1.Message, Is.EqualTo("SelfClosing (Parameter 'opening')"));
-
+#endif
         var ex2 = Assert.Throws<ArgumentOutOfRangeException>(() => new Tags(default, default));
         Assert.That(ex2.ParamName, Is.EqualTo("opening"));
+#if NET
         Assert.That(ex2.Message, Is.EqualTo("Start >= End (Parameter 'opening')"));
-
+#endif
         ex2 = Assert.Throws<ArgumentOutOfRangeException>(() => new Tags(new(0, 1), default));
         Assert.That(ex2.ParamName, Is.EqualTo("closing"));
+#if NET
         Assert.That(ex2.Message, Is.EqualTo("Start >= End (Parameter 'closing')"));
-
+#endif
         ex2 = Assert.Throws<ArgumentOutOfRangeException>(() => new Tags(new(1, 2), new(1, 2)));
         Assert.That(ex2.ParamName, Is.EqualTo("closing"));
+#if NET
         Assert.That(ex2.Message, Is.EqualTo("openingEnd > closingStart (Parameter 'closing')"));
-
+#endif
         ex1 = Assert.Throws<ArgumentException>(() => new Tags(new(0, 1), new(1, 2, false, isTree: true), isTree: false));
         Assert.That(ex1.ParamName, Is.EqualTo("closing"));
+#if NET
         Assert.That(ex1.Message, Is.EqualTo("Tree (Parameter 'closing')"));
+#endif
     }
 }

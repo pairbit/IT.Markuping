@@ -108,6 +108,7 @@ internal class TagOpeningTest
         Assert.That(ex2.ParamName, Is.EqualTo("offset"));
     }
 
+#if NET
     [Test]
     public void TryFormatTest()
     {
@@ -158,6 +159,7 @@ internal class TagOpeningTest
         Assert.That(written == 16, Is.True);
         Assert.That(span.ToString(), Is.EqualTo("<12345..123456/>"));
     }
+#endif
 
     [Test]
     public void CompareToTest()

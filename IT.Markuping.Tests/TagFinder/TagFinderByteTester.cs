@@ -359,7 +359,7 @@ internal class TagFinderByteTester
         var closing = encoding.GetBytes($"<{tagData}>");
         var selfClosing = encoding.GetBytes($"<{tagData} />");
 
-        var data = encoding.GetBytes($"<{tagData}><{tagData} /></{tagData}><{tagData} b=3 /><{tagData}\rc=4></{tagData}>");
+        var data = encoding.GetBytes($"<{tagData}><{tagData} /></{tagData}><{tagData} b=3 /><{tagData}\rc=4></{tagData}>").AsSpan();
 
         var tag = First(data, tagData, TagEnding.Closing, TagEndings.AnyClosing);
         Assert.That(data[tag.Range].SequenceEqual(closing), Is.True);

@@ -24,10 +24,13 @@ public static class TagFinders
     public static readonly ComplexTagFinder<byte> Complex_Utf32BE = new(MarkupAlphabets.Byte.Utf32BE);
 
     public static bool TryGet(int codePage,
-#if !NETSTANDARD2_0
+#if NETSTANDARD2_0
+        out ITagFinder<byte>? tagFinder
+#else
         [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)]
+        out ITagFinder<byte> tagFinder
 #endif
-    out ITagFinder<byte>? tagFinder)
+    )
     {
         if (MarkupCodePages.Utf8.AsSpan().IndexOf(codePage) > -1)
         {
