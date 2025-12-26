@@ -160,7 +160,7 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
                 if (!tag.IsEmpty)
                 {
                     var offset = len - data.Length;
-                    ns = ns.AddOffsetIfNotZero(offset);
+                    if (!ns.IsZero()) ns = ns.AddOffset(offset);
                     return tag.AddOffset(offset);
                 }
             }

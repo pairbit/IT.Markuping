@@ -19,9 +19,4 @@ internal static class xRange
         Debug.Assert(!range.Start.IsFromEnd && !range.End.IsFromEnd);
         return new(checked(offset + range.Start.Value), checked(offset + range.End.Value));
     }
-
-    public static Range AddOffsetIfNotZero(this Range range, int offset)
-    {
-        return range.Equals(default) ? range : range.AddOffset(offset);
-    }
 }
