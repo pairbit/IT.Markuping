@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace IT.Markuping.Implementation;
 
@@ -1062,7 +1063,10 @@ public class TagFinderByte : TagFinder<byte>
         _otherSpaces = otherSpaces;
     }
 
-    //TODO: change to _otherSpaces[value]
     protected override bool IsSpace(byte value)
-        => value.Equals(_tokens._space) || _otherSpaces[value];
+    {
+        Debug.Assert(_otherSpaces.Length == 256);
+
+        return _otherSpaces[value];
+    }
 }
