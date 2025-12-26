@@ -54,6 +54,7 @@ internal class TagClosingTest
         Assert.That(closing.ToString(), Is.EqualTo("</2147483646..2147483647 >"));
     }
 
+#if NET
     [Test]
     public void TryFormatTest()
     {
@@ -102,6 +103,7 @@ internal class TagClosingTest
         Assert.That(written == 17, Is.True);
         Assert.That(span.ToString(), Is.EqualTo("</12345..123456 >"));
     }
+#endif
 
     [Test]
     public void CompareToTest()

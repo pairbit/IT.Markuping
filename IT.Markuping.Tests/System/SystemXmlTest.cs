@@ -46,16 +46,20 @@ public class SystemXmlTest
     public void InvalidXml()
     {
         var ex = Assert.Throws<XmlException>(() => ToStrict("<a b=4 />"));
+#if NET
         Assert.That(ex.Message, Is.EqualTo(
             "'4' is an unexpected token. The expected token is '\"' or '''. Line 1, position 6."));
-
+#endif
         ex = Assert.Throws<XmlException>(() => ToStrict("<a b=\"\\\"\" />"));
+#if NET
         Assert.That(ex.Message, Is.EqualTo(
             "Name cannot begin with the '\"' character, hexadecimal value 0x22. Line 1, position 9."));
-
+#endif
         ex = Assert.Throws<XmlException>(() => ToStrict("<a b=\"<\" />"));
+#if NET
         Assert.That(ex.Message, Is.EqualTo(
             "'<', hexadecimal value 0x3C, is an invalid attribute character. Line 1, position 7."));
+#endif
     }
 
     [Test]

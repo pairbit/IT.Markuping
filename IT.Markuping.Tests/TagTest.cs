@@ -140,6 +140,7 @@ internal class TagTest
         Assert.That(opening.IsEmpty, Is.True);
     }
 
+#if NET
     [Test]
     public void TryFormatTest()
     {
@@ -166,6 +167,7 @@ internal class TagTest
         Assert.That(written == 15, Is.True);
         Assert.That(span.ToString(), Is.EqualTo("<12345..123456>"));
     }
+#endif
 
     [Test]
     public void CompareToTest()

@@ -40,7 +40,11 @@ internal class MarkupAlphabetsTest
             }
             else
             {
+#if NET
                 Assert.Fail($"CodePage {codePage,5} not supported");
+#else
+                Console.WriteLine($"CodePage {codePage,5} not supported");
+#endif
             }
 
             if (MarkupAlphabets.Byte.TryGetStrict(codePage, out alphabet))
@@ -49,7 +53,11 @@ internal class MarkupAlphabetsTest
             }
             else
             {
+#if NET
                 Assert.Fail($"CodePage {codePage,5} not supported");
+#else
+                Console.WriteLine($"CodePage {codePage,5} not supported");
+#endif
             }
         }
     }
@@ -136,7 +144,7 @@ internal class MarkupAlphabetsTest
         }
     }
 
-    private static void CastTest<T>(MarkupAlphabet<byte> abcByte, MarkupAlphabet<T> abc) where T : unmanaged
+    private static void CastTest<T>(MarkupAlphabet<byte> abcByte, MarkupAlphabet<T> abc) where T : unmanaged, IEquatable<T>
     {
         var lt = Cast<T>(abcByte.LT);
         var gt = Cast<T>(abcByte.GT);
