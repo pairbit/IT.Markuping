@@ -1,5 +1,6 @@
 ﻿using IT.Markuping.Extensions;
 using IT.Markuping.Interfaces;
+using IT.Markuping.Internal;
 using System;
 using System.Linq;
 using System.Text;

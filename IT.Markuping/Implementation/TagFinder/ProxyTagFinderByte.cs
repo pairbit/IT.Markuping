@@ -1,5 +1,5 @@
-﻿using IT.Markuping.Extensions;
-using IT.Markuping.Interfaces;
+﻿using IT.Markuping.Interfaces;
+using IT.Markuping.Internal;
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
