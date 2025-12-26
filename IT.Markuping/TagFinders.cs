@@ -2,7 +2,6 @@
 using IT.Markuping.Interfaces;
 using IT.Markuping.Internal;
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace IT.Markuping;
 
@@ -24,7 +23,11 @@ public static class TagFinders
     public static readonly ComplexTagFinder<byte> Complex_Utf32 = new(MarkupAlphabets.Byte.Utf32);
     public static readonly ComplexTagFinder<byte> Complex_Utf32BE = new(MarkupAlphabets.Byte.Utf32BE);
 
-    public static bool TryGet(int codePage, [MaybeNullWhen(false)] out ITagFinder<byte> tagFinder)
+    public static bool TryGet(int codePage,
+#if !NETSTANDARD2_0
+        [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)]
+#endif
+    out ITagFinder<byte>? tagFinder)
     {
         if (MarkupCodePages.Utf8.AsSpan().IndexOf(codePage) > -1)
         {

@@ -108,6 +108,9 @@ public readonly struct TagOpening : IComparable<TagOpening>, IEquatable<TagOpeni
 
     public override string ToString()
     {
+#if NETSTANDARD2_0
+        return IsSelfClosing ? $"<{Start}..{End}/>" : $"<{Start}..{End}>";
+#else
         Span<char> span = stackalloc char[5 + (2 * 10)];
 
         var status = TryFormat(span, out var written);
@@ -115,8 +118,10 @@ public readonly struct TagOpening : IComparable<TagOpening>, IEquatable<TagOpeni
         Debug.Assert(status);
 
         return new(span.Slice(0, written));
+#endif
     }
 
+#if !NETSTANDARD2_0
     public bool TryFormat(Span<char> chars, out int written, bool clear = true)
     {
         var minLength = IsSelfClosing ? 5 : 4;
@@ -151,6 +156,7 @@ public readonly struct TagOpening : IComparable<TagOpening>, IEquatable<TagOpeni
         written = 0;
         return false;
     }
+#endif
 
     #endregion ToString
 

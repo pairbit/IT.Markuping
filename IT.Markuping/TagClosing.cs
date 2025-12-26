@@ -141,6 +141,9 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
 
     public override string ToString()
     {
+#if NETSTANDARD2_0
+        return HasSpace ? $"<{Start}..{End} >" : $"<{Start}..{End}>";
+#else
         Span<char> span = stackalloc char[6 + (2 * 10)];
 
         var status = TryFormat(span, out var written);
@@ -148,8 +151,10 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
         Debug.Assert(status);
 
         return new(span.Slice(0, written));
+#endif
     }
 
+#if !NETSTANDARD2_0
     public bool TryFormat(Span<char> chars, out int written, bool clear = true)
     {
         var minLength = HasSpace ? 6 : 5;
@@ -185,6 +190,7 @@ public readonly struct TagClosing : IComparable<TagClosing>, IEquatable<TagClosi
         written = 0;
         return false;
     }
+#endif
 
     #endregion ToString
 

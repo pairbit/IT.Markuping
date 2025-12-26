@@ -1,6 +1,5 @@
 ﻿using IT.Markuping.Internal;
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace IT.Markuping;
 
@@ -65,7 +64,7 @@ public static partial class MarkupAlphabets
             new(4, [0, 0, 0, (byte)'<', 0, 0, 0, (byte)'>', 0, 0, 0, (byte)'/', 0, 0, 0, (byte)':', 0, 0, 0, (byte)' ', 0, 0, 0, (byte)'"', 0, 0, 0, (byte)'=',
                 0, 0, 0, (byte)'\'', 0, 0, 0, (byte)'\r', 0, 0, 0, (byte)'\n', 0, 0, 0, (byte)'\t']);
 
-        public static bool TryGet(int codePage, [MaybeNullWhen(false)] out MarkupAlphabet<byte> alphabet)
+        public static bool TryGet(int codePage, out MarkupAlphabet<byte> alphabet)
         {
             if (MarkupCodePages.Utf8.AsSpan().IndexOf(codePage) > -1)
             {
@@ -116,7 +115,7 @@ public static partial class MarkupAlphabets
             return false;
         }
 
-        public static bool TryGetStrict(int codePage, [MaybeNullWhen(false)] out MarkupAlphabet<byte> alphabet)
+        public static bool TryGetStrict(int codePage, out MarkupAlphabet<byte> alphabet)
         {
             if (MarkupCodePages.Utf8_Strict.AsSpan().IndexOf(codePage) > -1)
             {

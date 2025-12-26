@@ -123,6 +123,9 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
 
     public override string ToString()
     {
+#if NETSTANDARD2_0
+        return _opening.ToString() + _closing.ToString();
+#else
         Span<char> span = stackalloc char[4 + (2 * 10) + 6 + (2 * 10)];
 
         var status = TryFormat(span, out var written);
@@ -130,8 +133,10 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
         Debug.Assert(status);
 
         return new(span.Slice(0, written));
+#endif
     }
 
+#if !NETSTANDARD2_0
     public bool TryFormat(Span<char> chars, out int written, bool clear = true)
     {
         //<0..3></3..5>
@@ -153,6 +158,7 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
         written = 0;
         return false;
     }
+#endif
 
     #endregion ToString
 
