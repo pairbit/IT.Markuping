@@ -107,6 +107,12 @@ public class SystemXmlTest
         StrictTest("<a><![CDATA[<a></a>]]></a>");
 
         StrictTest(@"
+<root xmlns:ns=""uri1"">
+    <ns:a ns:a=""b"">2</ns:a>
+</root>
+");
+
+        StrictTest(@"
 <root xmlns:my=""uri1"" xmlns:other=""uri2"">
     <Signature>1</Signature>
     <my:Signature>2</my:Signature>
