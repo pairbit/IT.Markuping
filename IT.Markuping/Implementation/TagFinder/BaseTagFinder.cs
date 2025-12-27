@@ -204,6 +204,31 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
         return default;
     }
 
+    public Tag Last(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, TagEndings endings = default)
+    {
+        if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
+
+        var namelen = name.Length;
+        Debug.Assert(namelen > 0);
+
+        var min = LtLength;
+        int index = data.Length;
+        do
+        {
+            index = LastIndexOf(data.Slice(0, index), name);
+            if (index < min) break;
+
+            var tag = GetTag(data, index, index + namelen, endings, out ns);
+            if (!tag.IsEmpty)
+            {
+                return tag;
+            }
+        } while (true);
+
+        ns = default;
+        return default;
+    }
+
     public Tag Last(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, TagEndings endings = default)
         => ns.IsEmpty ? Last(data, name, endings) : LastNS(data, name, ns, endings);
 
