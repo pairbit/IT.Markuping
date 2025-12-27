@@ -110,6 +110,10 @@ public class ComplexTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquata
                     start -= _lt.Length;
                     return true;
                 }
+                else if (start >= _slash.Length && data.Slice(start - _slash.Length, _slash.Length).SequenceEqual(_slash))
+                {
+                    break;
+                }
                 else if (start >= _quot.Length && data.Slice(start - _quot.Length, _quot.Length).SequenceEqual(_quot))
                 {
                     break;

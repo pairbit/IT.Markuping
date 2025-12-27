@@ -93,7 +93,7 @@ internal class StrictTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquat
                     ns = new(new StartEnd(start + 1, endNS));
                     return true;
                 }
-                else if (token.Equals(_tokens._quot))
+                else if (token.Equals(_tokens._slash) || token.Equals(_tokens._quot))
                 {
                     break;
                 }

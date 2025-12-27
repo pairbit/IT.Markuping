@@ -22,12 +22,6 @@ internal class TagFinderByteTester
         InternalTest();
         Test(new(_encoding, "a"));
         Test(new(_encoding, "a", "n"));
-
-        //TODO: BUG #8
-        var data = _encoding.GetBytes("</ns:a>").AsSpan();
-        var tag = _finder.First(data, _encoding.GetBytes("a"), out var ns);
-        Assert.That(data.Slice(tag.Start, tag.Length).SequenceEqual(data), Is.True);
-        Assert.That(data.Slice(ns.Start, ns.Length).SequenceEqual(_encoding.GetBytes("/ns")), Is.True);
     }
 
     private void InternalTest()
@@ -325,6 +319,8 @@ internal class TagFinderByteTester
         FirstLast($"<{tagData} {tagData}='{tagData}>'/>", tagData, TagEnding.SelfClosingHasAttributes, endingName, endingName);
 
         FailFirstLast(tagData.FullName, tagData);
+        FailFirstLast($"</{tagData}>", tagData);
+        FailFirstLast($"</{tagData}", tagData);
         FailFirstLast($"<{tagData}", tagData);
         FailFirstLast($"<{tagData}/", tagData);
         FailFirstLast($"<{tagData} ", tagData);
@@ -621,13 +617,13 @@ internal class TagFinderByteTester
         var tag = _finder.Last(data, tagData.FullName, endings);
 
         Assert.That(_finder.Last(data, tagData.Name, tagData.Namespace, endings), Is.EqualTo(tag));
-        //Assert.That(_finder.Last(data, tagData.Name, out var ns, endings), Is.EqualTo(tag));
-        //Assert.That(data.Slice(ns.Start, ns.Length).SequenceEqual(tagData.Namespace), Is.True);
-        //if (tagData.HasNamespace)
-        //{
-        //    Assert.That(_finder.Last(data, tagData.FullName, out ns, endings), Is.EqualTo(tag));
-        //    Assert.That(ns.IsEmpty, Is.True);
-        //}
+        Assert.That(_finder.Last(data, tagData.Name, out var ns, endings), Is.EqualTo(tag));
+        Assert.That(data.Slice(ns.Start, ns.Length).SequenceEqual(tagData.Namespace), Is.True);
+        if (tagData.HasNamespace)
+        {
+            Assert.That(_finder.Last(data, tagData.FullName, out ns, endings), Is.EqualTo(tag));
+            Assert.That(ns.IsEmpty, Is.True);
+        }
 
         EndingTest(tag, ending);
 
