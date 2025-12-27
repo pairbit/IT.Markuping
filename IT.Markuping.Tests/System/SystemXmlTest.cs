@@ -128,6 +128,15 @@ public class SystemXmlTest
     <my:Signature xmlns:my=""uri2"">3</my:Signature>
 </root>
 ");
+        //3. Но данны алгоритм плох в 99% так как объявление может быть в одном месте
+        //и префиксы будут использоваться несколько раз.
+        //Получатеся мы будем искать один и тот же префикс несколько раз что плохо
+        StrictTest(@"
+<root xmlns:ds=""uri1"">
+    <ds:Signature>1</ds:Signature>
+    <ds:Signature>2</ds:Signature>
+</root>
+");
     }
 
     [Test]
