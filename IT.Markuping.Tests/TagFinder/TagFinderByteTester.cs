@@ -22,6 +22,12 @@ internal class TagFinderByteTester
         InternalTest();
         Test(new(_encoding, "a"));
         Test(new(_encoding, "a", "n"));
+
+        //TODO: BUG #8
+        var data = _encoding.GetBytes("</ns:a>").AsSpan();
+        var tag = _finder.First(data, _encoding.GetBytes("a"), out var ns);
+        Assert.That(data.Slice(tag.Start, tag.Length).SequenceEqual(data), Is.True);
+        Assert.That(data.Slice(ns.Start, ns.Length).SequenceEqual(_encoding.GetBytes("/ns")), Is.True);
     }
 
     private void InternalTest()
