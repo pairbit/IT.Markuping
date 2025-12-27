@@ -583,6 +583,13 @@ internal class TagFinderByteTester
         }
         Assert.That(_finder.Last(data, tagData.FullName, endings).IsEmpty, Is.True);
         Assert.That(_finder.Last(data, tagData.Name, tagData.Namespace, endings).IsEmpty, Is.True);
+        Assert.That(_finder.Last(data, tagData.Name, out ns, endings).IsEmpty, Is.True);
+        Assert.That(ns.IsEmpty, Is.True);
+        if (tagData.HasNamespace)
+        {
+            Assert.That(_finder.Last(data, tagData.FullName, out ns).IsEmpty, Is.True);
+            Assert.That(ns.IsEmpty, Is.True);
+        }
     }
 
     private Tag First(ReadOnlySpan<byte> data, TagData tagData, TagEnding ending, TagEndings endings)
@@ -608,6 +615,13 @@ internal class TagFinderByteTester
         var tag = _finder.Last(data, tagData.FullName, endings);
 
         Assert.That(_finder.Last(data, tagData.Name, tagData.Namespace, endings), Is.EqualTo(tag));
+        //Assert.That(_finder.Last(data, tagData.Name, out var ns, endings), Is.EqualTo(tag));
+        //Assert.That(data.Slice(ns.Start, ns.Length).SequenceEqual(tagData.Namespace), Is.True);
+        //if (tagData.HasNamespace)
+        //{
+        //    Assert.That(_finder.Last(data, tagData.FullName, out ns, endings), Is.EqualTo(tag));
+        //    Assert.That(ns.IsEmpty, Is.True);
+        //}
 
         EndingTest(tag, ending);
 
