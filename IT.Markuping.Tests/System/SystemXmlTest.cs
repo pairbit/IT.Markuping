@@ -17,10 +17,7 @@ public class SystemXmlTest
 
             try
             {
-                var doc = new XmlDocument() { PreserveWhitespace = false };
-                doc.LoadXml(xml);
-
-                Assert.That(doc.OuterXml, Is.EqualTo("<ds:tag xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\"></ds:tag>"));
+                Assert.That(ToStrict(xml), Is.EqualTo("<ds:tag xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\"></ds:tag>"));
 
                 Console.Write($"{i},");
             }
@@ -95,18 +92,14 @@ public class SystemXmlTest
     [Test]
     public void CommentsTest()
     {
-        Assert.That(ToStrict("<!--<a>--><a><!--</a>--><!--<a>--></a><!--</a>-->"),
-            Is.EqualTo("<!--<a>--><a><!--</a>--><!--<a>--></a><!--</a>-->"));
-
-        Assert.That(ToStrict("<a><![CDATA[<a></a>]]></a>"),
-            Is.EqualTo("<a><![CDATA[<a></a>]]></a>"));
+        StrictTest("<!--<a>--><a><!--</a>--><!--<a>--></a><!--</a>-->");
+        StrictTest("<a><![CDATA[<a></a>]]></a>");
     }
 
     [Test]
     public void XPathTest()
     {
-        var xml = new XmlDocument();
-        xml.LoadXml("<root><a><b><inner>inner text</inner></b></a></root>");
+        var xml = LoadXml("<root><a><b><inner>inner text</inner></b></a></root>");
 
         Assert.That(xml.SelectSingleNode("//b")!.OuterXml, Is.EqualTo("<b><inner>inner text</inner></b>"));
 
@@ -120,9 +113,14 @@ public class SystemXmlTest
 
     private static string ToStrict(string xml, bool preserveWhitespace = true)
     {
+        return LoadXml(xml, preserveWhitespace).OuterXml;
+    }
+
+    private static XmlDocument LoadXml(string xml, bool preserveWhitespace = true)
+    {
         var doc = new XmlDocument() { PreserveWhitespace = preserveWhitespace };
         doc.LoadXml(xml);
 
-        return doc.OuterXml;
+        return doc;
     }
 }
