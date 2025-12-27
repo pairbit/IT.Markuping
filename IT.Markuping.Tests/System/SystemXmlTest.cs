@@ -108,8 +108,9 @@ public class SystemXmlTest
 
         StrictTest(@"
 <root xmlns:my=""uri1"" xmlns:other=""uri2"">
-    <my:Signature>1</my:Signature>
-    <other:Signature>2</other:Signature>
+    <Signature>1</Signature>
+    <my:Signature>2</my:Signature>
+    <other:Signature>3</other:Signature>
 </root>
 ");
 
@@ -122,8 +123,9 @@ public class SystemXmlTest
         //так и вне его, но не ниже;
         StrictTest(@"
 <root xmlns:my=""uri1"">
-    <my:Signature>1</my:Signature>
-    <my:Signature xmlns:my=""uri2"">2</my:Signature>
+    <Signature>1</Signature>
+    <my:Signature>2</my:Signature>
+    <my:Signature xmlns:my=""uri2"">3</my:Signature>
 </root>
 ");
     }
