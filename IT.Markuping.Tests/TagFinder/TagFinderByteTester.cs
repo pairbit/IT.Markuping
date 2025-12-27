@@ -521,24 +521,52 @@ internal class TagFinderByteTester
         EndingTest(tag, ending);
 
         Assert.That(_finder.Last(data, tagData.Name, tagData.Namespace, endings), Is.EqualTo(tag));
+        Assert.That(_finder.Last(data, tagData.Name, out var ns, endings), Is.EqualTo(tag));
+        Assert.That(data.Slice(ns.Start, ns.Length).SequenceEqual(tagData.Namespace), Is.True);
+        if (tagData.HasNamespace)
+        {
+            Assert.That(_finder.Last(data, tagData.FullName, out ns, endings), Is.EqualTo(tag));
+            Assert.That(ns.IsEmpty, Is.True);
+        }
 
         for (int i = 1; i < availableEndings.Length; i++)
         {
             endings = availableEndings[i];
             Assert.That(_finder.Last(data, tagData.FullName, endings), Is.EqualTo(tag));
             Assert.That(_finder.Last(data, tagData.Name, tagData.Namespace, endings), Is.EqualTo(tag));
+            Assert.That(_finder.Last(data, tagData.Name, out ns, endings), Is.EqualTo(tag));
+            Assert.That(data.Slice(ns.Start, ns.Length).SequenceEqual(tagData.Namespace), Is.True);
+            if (tagData.HasNamespace)
+            {
+                Assert.That(_finder.Last(data, tagData.FullName, out ns, endings), Is.EqualTo(tag));
+                Assert.That(ns.IsEmpty, Is.True);
+            }
         }
 
         foreach (var notAvailableEndings in GetNotAvailableEndings(ending))
         {
             Assert.That(_finder.Last(data, tagData.FullName, notAvailableEndings).IsEmpty, Is.True);
             Assert.That(_finder.Last(data, tagData.Name, tagData.Namespace, notAvailableEndings).IsEmpty, Is.True);
+            Assert.That(_finder.Last(data, tagData.Name, out ns, notAvailableEndings).IsEmpty, Is.True);
+            Assert.That(ns.IsEmpty, Is.True);
+            if (tagData.HasNamespace)
+            {
+                Assert.That(_finder.Last(data, tagData.FullName, out ns, notAvailableEndings).IsEmpty, Is.True);
+                Assert.That(ns.IsEmpty, Is.True);
+            }
         }
 
         if (endingName.IsEmpty)
         {
             Assert.That(_finder.Last(data, tagData.FullName, TagEndings.HasNoAttributes), Is.EqualTo(tag));
             Assert.That(_finder.Last(data, tagData.Name, tagData.Namespace, TagEndings.HasNoAttributes), Is.EqualTo(tag));
+            Assert.That(_finder.Last(data, tagData.Name, out ns, TagEndings.HasNoAttributes), Is.EqualTo(tag));
+            Assert.That(data.Slice(ns.Start, ns.Length).SequenceEqual(tagData.Namespace), Is.True);
+            if (tagData.HasNamespace)
+            {
+                Assert.That(_finder.Last(data, tagData.FullName, out ns, TagEndings.HasNoAttributes), Is.EqualTo(tag));
+                Assert.That(ns.IsEmpty, Is.True);
+            }
         }
         else
         {
@@ -547,6 +575,13 @@ internal class TagFinderByteTester
             Assert.That(data.Slice(tag2.Start, tag2.Length).SequenceEqual(endingName), Is.True);
 
             Assert.That(_finder.Last(data, tagData.Name, tagData.Namespace, TagEndings.HasNoAttributes), Is.EqualTo(tag2));
+            Assert.That(_finder.Last(data, tagData.Name, out ns, TagEndings.HasNoAttributes), Is.EqualTo(tag2));
+            Assert.That(data.Slice(ns.Start, ns.Length).SequenceEqual(tagData.Namespace), Is.True);
+            if (tagData.HasNamespace)
+            {
+                Assert.That(_finder.Last(data, tagData.FullName, out ns, TagEndings.HasNoAttributes), Is.EqualTo(tag2));
+                Assert.That(ns.IsEmpty, Is.True);
+            }
         }
 
         //Без атрибутов
@@ -554,6 +589,13 @@ internal class TagFinderByteTester
         {
             Assert.That(_finder.Last(data, tagData.FullName, TagEndings.HasAttributes).IsEmpty, Is.True);
             Assert.That(_finder.Last(data, tagData.Name, tagData.Namespace, TagEndings.HasAttributes).IsEmpty, Is.True);
+            Assert.That(_finder.Last(data, tagData.Name, out ns, TagEndings.HasAttributes).IsEmpty, Is.True);
+            Assert.That(ns.IsEmpty, Is.True);
+            if (tagData.HasNamespace)
+            {
+                Assert.That(_finder.Last(data, tagData.FullName, out ns, TagEndings.HasAttributes).IsEmpty, Is.True);
+                Assert.That(ns.IsEmpty, Is.True);
+            }
         }
         else
         {
@@ -562,6 +604,13 @@ internal class TagFinderByteTester
             Assert.That(data.Slice(tag2.Start, tag2.Length).SequenceEqual(attributeStart), Is.True);
 
             Assert.That(_finder.Last(data, tagData.Name, tagData.Namespace, TagEndings.HasAttributes), Is.EqualTo(tag2));
+            Assert.That(_finder.Last(data, tagData.Name, out ns, TagEndings.HasAttributes), Is.EqualTo(tag2));
+            Assert.That(data.Slice(ns.Start, ns.Length).SequenceEqual(tagData.Namespace), Is.True);
+            if (tagData.HasNamespace)
+            {
+                Assert.That(_finder.Last(data, tagData.FullName, out ns, TagEndings.HasAttributes), Is.EqualTo(tag2));
+                Assert.That(ns.IsEmpty, Is.True);
+            }
         }
 
         return tag;
