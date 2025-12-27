@@ -57,6 +57,17 @@ public class SystemXmlTest
         Assert.That(ex.Message, Is.EqualTo(
             "'<', hexadecimal value 0x3C, is an invalid attribute character. Line 1, position 7."));
 #endif
+
+        ex = Assert.Throws<XmlException>(()=>LoadXml(@"
+<root>
+    <my:Signature>1</my:Signature>
+    <my:Signature xmlns:my='uri2'>2</my:Signature>
+</root>
+"));
+#if NET
+        Assert.That(ex.Message, Is.EqualTo(
+            "'my' is an undeclared prefix. Line 3, position 6."));
+#endif
     }
 
     [Test]
@@ -94,6 +105,27 @@ public class SystemXmlTest
     {
         StrictTest("<!--<a>--><a><!--</a>--><!--<a>--></a><!--</a>-->");
         StrictTest("<a><![CDATA[<a></a>]]></a>");
+
+        StrictTest(@"
+<root xmlns:my=""uri1"" xmlns:other=""uri2"">
+    <my:Signature>1</my:Signature>
+    <other:Signature>2</other:Signature>
+</root>
+");
+
+        //Данный пример доказывает, что нельзя сначала искать NS prefix по URI
+        //Потому что prefix могут перетираться разными значениями URI
+        //Правильный алгоритм:
+        //1. Сначала ищем тег по имени Signature;
+        //2. Если есть ns prefix ищем его uri начиная с opening.End до начала документа
+        //то-есть LastIndexOf. URI может быть объявляен как в самом теге атрибута,
+        //так и вне его, но не ниже;
+        StrictTest(@"
+<root xmlns:my=""uri1"">
+    <my:Signature>1</my:Signature>
+    <my:Signature xmlns:my=""uri2"">2</my:Signature>
+</root>
+");
     }
 
     [Test]
