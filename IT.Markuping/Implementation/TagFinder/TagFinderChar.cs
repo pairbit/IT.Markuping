@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if NET
+using System;
+#endif
 
 namespace IT.Markuping.Implementation;
 
@@ -37,19 +39,11 @@ public class TagFinderChar : OtherSpacesTagFinder<char>
 #if NET
     protected override bool Equals(ReadOnlySpan<char> data, ReadOnlySpan<char> value)
         => data.Equals(value, _comparison);
-#endif
 
     protected override int IndexOf(ReadOnlySpan<char> data, ReadOnlySpan<char> value)
-        => data.IndexOf(value
-#if NET
-            , _comparison
-#endif
-            );
+        => data.IndexOf(value, _comparison);
 
     protected override int LastIndexOf(ReadOnlySpan<char> data, ReadOnlySpan<char> value)
-        => data.LastIndexOf(value
-#if NET
-            , _comparison
+        => data.LastIndexOf(value, _comparison);
 #endif
-            );
 }
