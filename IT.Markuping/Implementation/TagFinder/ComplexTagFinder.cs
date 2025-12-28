@@ -87,51 +87,37 @@ public class ComplexTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquata
     protected override bool IsStartOpening(ReadOnlySpan<T> data, ref int start, out TagNS ns)
     {
         Debug.Assert(start < data.Length);
-        Debug.Assert(start >= _lt.Length);
+        Debug.Assert(start >= _size);
 
-        if (data.Slice(start - _lt.Length, _lt.Length).SequenceEqual(_lt))
+        start -= _size;
+        if (data.Slice(start, _lt.Length).SequenceEqual(_lt))
         {
-            start -= _lt.Length;
             ns = default;
             return true;
         }
 
-        start -= _colon.Length;
-        if (start > _lt.Length && data.Slice(start, _colon.Length).SequenceEqual(_colon))
+        if (start > _size && data.Slice(start, _colon.Length).SequenceEqual(_colon))
         {
             var endNS = start;
             do
             {
-                if (data.Slice(start - _lt.Length, _lt.Length).SequenceEqual(_lt))
+                start -= _size;
+                if (IsSeq(data, _lt, start))
                 {
-                    Debug.Assert(endNS > start);
+                    Debug.Assert(endNS > start + _lt.Length);
 
-                    ns = new(new StartEnd(start, endNS));
-                    start -= _lt.Length;
+                    ns = new(new StartEnd(start + _lt.Length, endNS));
                     return true;
                 }
-                else if (IsSpace(data, start))
+                else if (IsSpace(data, ref start))
                 {
                     break;
                 }
-                else if (start >= _slash.Length && data.Slice(start - _slash.Length, _slash.Length).SequenceEqual(_slash))
+                else if (IsSeq(data, _slash, start) || IsSeq(data, _quot, start) || IsSeq(data, _apos, start))
                 {
                     break;
                 }
-                else if (start >= _quot.Length && data.Slice(start - _quot.Length, _quot.Length).SequenceEqual(_quot))
-                {
-                    break;
-                }
-                else if (start >= _apos.Length && data.Slice(start - _apos.Length, _apos.Length).SequenceEqual(_apos))
-                {
-                    break;
-                }
-                else
-                {
-                    //TODO: спорное решение для байтов переменной длины
-                    start -= _size;
-                }
-            } while (start >= _lt.Length);
+            } while (start >= _size);
         }
         ns = default;
         return false;
@@ -335,18 +321,6 @@ public class ComplexTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquata
             if (len >= space.Length && span.Slice(start, space.Length).SequenceEqual(space))
             {
                 start += space.Length;
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private bool IsSpace(ReadOnlySpan<T> span, int start)
-    {
-        foreach (var space in _spaces)
-        {
-            if (start >= space.Length && span.Slice(start - space.Length, space.Length).SequenceEqual(space))
-            {
                 return true;
             }
         }
