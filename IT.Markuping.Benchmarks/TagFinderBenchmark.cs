@@ -52,7 +52,7 @@ public class TagFinderBenchmark
     }
 
     private byte _by;
-    
+
     private int _count;
     private Map _map;
     private Data _utf8;
@@ -124,7 +124,7 @@ public class TagFinderBenchmark
 
     //[Benchmark]
     public Tags Utf16BE() => FirstPair(TagFinders.Utf16BE, _utf16BE);
-    
+
     //[Benchmark]
     public Tags Utf32() => FirstPair(TagFinders.Utf32, _utf32);
 
@@ -147,7 +147,7 @@ public class TagFinderBenchmark
     {
         var tags = finder.FirstPair(data._data, data._name, out var nodes);
 
-        if (!data._data.AsSpan()[tags.Outer].SequenceEqual(data._data) || nodes != _count)
+        if (!data._data.AsSpan().Slice(tags.Start, tags.Length).SequenceEqual(data._data) || nodes != _count)
             throw new InvalidOperationException();
 
         return tags;
