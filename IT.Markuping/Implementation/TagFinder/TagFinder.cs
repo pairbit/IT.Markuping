@@ -56,6 +56,9 @@ public class TagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
 
     protected virtual bool IsSpace(T value) => value.Equals(_tokens._space);
 
+    protected virtual bool Equals(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
+        => data.SequenceEqual(value);
+
     protected override int IndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.IndexOf(value);
 
@@ -77,7 +80,7 @@ public class TagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
 
         return data[start++].Equals(_tokens._lt) &&
                data[start + ns.Length].Equals(_tokens._colon) &&
-               data.Slice(start, ns.Length).SequenceEqual(ns);
+               Equals(data.Slice(start, ns.Length), ns);
     }
 
     protected override bool IsStartOpening(ReadOnlySpan<T> data, ref int start, out TagNS ns)
@@ -129,7 +132,7 @@ public class TagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
         return data[start++].Equals(_tokens._lt) &&
                data[start++].Equals(_tokens._slash) &&
                data[start + ns.Length].Equals(_tokens._colon) &&
-               data.Slice(start, ns.Length).SequenceEqual(ns);
+               Equals(data.Slice(start, ns.Length), ns);
     }
 
     protected override bool IsStartClosing(ReadOnlySpan<T> data, ref int start, out TagNS ns)

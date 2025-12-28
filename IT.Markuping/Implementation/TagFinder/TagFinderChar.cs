@@ -34,6 +34,11 @@ public class TagFinderChar : OtherSpacesTagFinder<char>
 #endif
     }
 
+#if NET
+    protected override bool Equals(ReadOnlySpan<char> data, ReadOnlySpan<char> value)
+        => data.Equals(value, _comparison);
+#endif
+
     protected override int IndexOf(ReadOnlySpan<char> data, ReadOnlySpan<char> value)
         => data.IndexOf(value
 #if NET
