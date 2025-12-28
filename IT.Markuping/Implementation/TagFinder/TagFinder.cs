@@ -104,7 +104,7 @@ public class TagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
                     ns = new(new StartEnd(start + 1, endNS));
                     return true;
                 }
-                else if (token.Equals(_tokens._quot) || token.Equals(_tokens._apos))
+                else if (IsSpace(token) || token.Equals(_tokens._slash) || token.Equals(_tokens._quot) || token.Equals(_tokens._apos))
                 {
                     break;
                 }

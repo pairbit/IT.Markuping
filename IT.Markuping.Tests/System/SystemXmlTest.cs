@@ -17,10 +17,7 @@ public class SystemXmlTest
 
             try
             {
-                var doc = new XmlDocument() { PreserveWhitespace = false };
-                doc.LoadXml(xml);
-
-                Assert.That(doc.OuterXml, Is.EqualTo("<ds:tag xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\"></ds:tag>"));
+                Assert.That(ToStrict(xml), Is.EqualTo("<ds:tag xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\"></ds:tag>"));
 
                 Console.Write($"{i},");
             }
@@ -60,6 +57,17 @@ public class SystemXmlTest
         Assert.That(ex.Message, Is.EqualTo(
             "'<', hexadecimal value 0x3C, is an invalid attribute character. Line 1, position 7."));
 #endif
+
+        ex = Assert.Throws<XmlException>(()=>LoadXml(@"
+<root>
+    <my:Signature>1</my:Signature>
+    <my:Signature xmlns:my='uri2'>2</my:Signature>
+</root>
+"));
+#if NET
+        Assert.That(ex.Message, Is.EqualTo(
+            "'my' is an undeclared prefix. Line 3, position 6."));
+#endif
     }
 
     [Test]
@@ -95,18 +103,52 @@ public class SystemXmlTest
     [Test]
     public void CommentsTest()
     {
-        Assert.That(ToStrict("<!--<a>--><a><!--</a>--><!--<a>--></a><!--</a>-->"),
-            Is.EqualTo("<!--<a>--><a><!--</a>--><!--<a>--></a><!--</a>-->"));
+        StrictTest("<!--<a>--><a><!--</a>--><!--<a>--></a><!--</a>-->");
+        StrictTest("<a><![CDATA[<a></a>]]></a>");
 
-        Assert.That(ToStrict("<a><![CDATA[<a></a>]]></a>"),
-            Is.EqualTo("<a><![CDATA[<a></a>]]></a>"));
+        StrictTest(@"
+<root xmlns:ns=""uri1"">
+    <ns:a ns:a=""b"">2</ns:a>
+</root>
+");
+
+        StrictTest(@"
+<root xmlns:my=""uri1"" xmlns:other=""uri2"">
+    <Signature>1</Signature>
+    <my:Signature>2</my:Signature>
+    <other:Signature>3</other:Signature>
+</root>
+");
+
+        //Данный пример доказывает, что нельзя сначала искать NS prefix по URI
+        //Потому что prefix могут перетираться разными значениями URI
+        //Правильный алгоритм:
+        //1. Сначала ищем тег по имени Signature;
+        //2. Если есть ns prefix ищем его uri начиная с opening.End до начала документа
+        //то-есть LastIndexOf. URI может быть объявляен как в самом теге атрибута,
+        //так и вне его, но не ниже;
+        StrictTest(@"
+<root xmlns:my=""uri1"">
+    <Signature>1</Signature>
+    <my:Signature>2</my:Signature>
+    <my:Signature xmlns:my=""uri2"">3</my:Signature>
+</root>
+");
+        //3. Но данны алгоритм плох в 99% так как объявление может быть в одном месте
+        //и префиксы будут использоваться несколько раз.
+        //Получатеся мы будем искать один и тот же префикс несколько раз что плохо
+        StrictTest(@"
+<root xmlns:ds=""uri1"">
+    <ds:Signature>1</ds:Signature>
+    <ds:Signature>2</ds:Signature>
+</root>
+");
     }
 
     [Test]
     public void XPathTest()
     {
-        var xml = new XmlDocument();
-        xml.LoadXml("<root><a><b><inner>inner text</inner></b></a></root>");
+        var xml = LoadXml("<root><a><b><inner>inner text</inner></b></a></root>");
 
         Assert.That(xml.SelectSingleNode("//b")!.OuterXml, Is.EqualTo("<b><inner>inner text</inner></b>"));
 
@@ -120,9 +162,14 @@ public class SystemXmlTest
 
     private static string ToStrict(string xml, bool preserveWhitespace = true)
     {
+        return LoadXml(xml, preserveWhitespace).OuterXml;
+    }
+
+    private static XmlDocument LoadXml(string xml, bool preserveWhitespace = true)
+    {
         var doc = new XmlDocument() { PreserveWhitespace = preserveWhitespace };
         doc.LoadXml(xml);
 
-        return doc.OuterXml;
+        return doc;
     }
 }
