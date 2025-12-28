@@ -300,6 +300,11 @@ internal class TagFinderByteTester
         var endingName2 = _encoding.GetBytes($"<{tagData}\r");
         var attributeStart = _encoding.GetBytes($"<{tagData}\r\n\t");
 
+        FailFirstLast($"<br {tagData}>", tagData);
+        FailFirstLast($"<br\r{tagData}>", tagData);
+        FailFirstLast($"<br\n{tagData}>", tagData);
+        FailFirstLast($"<br\t{tagData}>", tagData);
+
         FirstLast($"<{tagData}>", tagData, TagEnding.Closing);
         FirstLast($"<{tagData} \r\n\t>", tagData, TagEnding.Closing, endingName);
         FirstLast($"<{tagData} b>", tagData, TagEnding.ClosingHasAttributes, endingName, endingName);
