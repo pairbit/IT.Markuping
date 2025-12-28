@@ -104,6 +104,7 @@ public class TagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
                     ns = new(new StartEnd(start + 1, endNS));
                     return true;
                 }
+                //TODO: add colon || gt || eq?
                 else if (IsSpace(token) || token.Equals(_tokens._slash) || token.Equals(_tokens._quot) || token.Equals(_tokens._apos))
                 {
                     break;
@@ -163,6 +164,7 @@ public class TagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
                     }
                     break;
                 }
+                //TODO: add IsSpace || colon || gt || eq?
                 else if (token.Equals(_tokens._quot) || token.Equals(_tokens._apos))
                 {
                     break;
