@@ -1,7 +1,7 @@
 ﻿using IT.Markuping.Implementation.TagStrategies;
 using System;
 
-namespace IT.Markuping.Implementation;
+namespace IT.Markuping.Implementation.TagStrategies;
 
 public class OtherSpacesTagStrategy<T> : TagStrategy<T> where T : unmanaged, IEquatable<T>
 {

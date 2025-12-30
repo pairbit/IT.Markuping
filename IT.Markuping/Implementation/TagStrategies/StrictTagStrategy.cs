@@ -3,7 +3,7 @@ using IT.Markuping.Internal;
 using System;
 using System.Diagnostics;
 
-namespace IT.Markuping.Implementation;
+namespace IT.Markuping.Implementation.TagStrategies;
 
 internal class StrictTagStrategy<T> : ITagStrategy<T> where T : unmanaged, IEquatable<T>
 {
