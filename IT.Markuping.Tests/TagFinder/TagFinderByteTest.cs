@@ -43,39 +43,39 @@ internal class TagFinderByteTest
 
             if (MarkupCodePages.Utf8.AsSpan().IndexOf(codePage) > -1)
             {
-                Test(TagFinders.OtherSpaces_Utf8, encoding);
+                Test(TagFinders.OtherSpaces.Utf8, encoding);
             }
             else if (codePage == 29001)
             {
-                Test(TagFinders.OtherSpace_Europa, encoding);
+                Test(TagFinders.OtherSpaces.Europa, encoding);
             }
             else if (MarkupCodePages.EBCDIC.AsSpan().IndexOf(codePage) > -1)
             {
-                Test(TagFinders.OtherSpaces_EBCDIC, encoding);
+                Test(TagFinders.OtherSpaces.EBCDIC, encoding);
             }
             else if (codePage == 1026 || codePage == 20905)
             {
-                Test(TagFinders.OtherSpaces_EBCDIC_Turkish, encoding);
+                Test(TagFinders.OtherSpaces.EBCDIC_Turkish, encoding);
             }
             else if (codePage == 1047 || codePage == 20924)
             {
-                Test(TagFinders.OtherSpaces_IBM_Latin1, encoding);
+                Test(TagFinders.OtherSpaces.IBM_Latin1, encoding);
             }
             else if (codePage == 1200)
             {
-                Test(TagFinders.Complex_Utf16, encoding);
+                Test(TagFinders.Complex.Utf16, encoding);
             }
             else if (codePage == 1201)
             {
-                Test(TagFinders.Complex_Utf16BE, encoding);
+                Test(TagFinders.Complex.Utf16BE, encoding);
             }
             else if (codePage == 12000)
             {
-                Test(TagFinders.Complex_Utf32, encoding);
+                Test(TagFinders.Complex.Utf32, encoding);
             }
             else if (codePage == 12001)
             {
-                Test(TagFinders.Complex_Utf32BE, encoding);
+                Test(TagFinders.Complex.Utf32BE, encoding);
             }
         }
     }

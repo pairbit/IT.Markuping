@@ -1,6 +1,5 @@
 ﻿#if NET
 using IT.Markuping.Extensions;
-using IT.Markuping.Implementation;
 using IT.Markuping.Interfaces;
 using System.Linq;
 
@@ -11,9 +10,9 @@ internal class TagFinderCharTest
     [Test]
     public void Test()
     {
-        Test(TagFinderChar.Utf16_IgnoreCase);
+        Test(TagFinders.Char.Utf16_IgnoreCase);
 
-        var tags = TagFinderChar.Utf16_IgnoreCase.FirstTags("<NaMe></name>", "name");
+        var tags = TagFinders.Char.Utf16_IgnoreCase.FirstTags("<NaMe></name>", "name");
         Assert.That(tags.IsEmpty, Is.False);
     }
 

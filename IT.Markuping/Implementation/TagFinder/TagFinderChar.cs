@@ -6,11 +6,7 @@ namespace IT.Markuping.Implementation;
 
 public class TagFinderChar : OtherSpacesTagFinder<char>
 {
-    public static readonly TagFinderChar Utf16 = new((MarkupTokens<char>)MarkupAlphabets.Char.Utf16);
-    public static readonly TagFinderChar Utf16BE = new((MarkupTokens<char>)MarkupAlphabets.Char.Utf16BE);
 #if NET
-    public static readonly TagFinderChar Utf16_IgnoreCase = new((MarkupTokens<char>)MarkupAlphabets.Char.Utf16, StringComparison.OrdinalIgnoreCase);
-
     private readonly StringComparison _comparison;
 #endif
 

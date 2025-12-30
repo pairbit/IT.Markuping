@@ -111,37 +111,37 @@ public class TagFinderBenchmark
     public Tags Utf8() => FirstPair(TagFinders.Utf8, _utf8);
 
     [Benchmark]
-    public Tags Utf8_OtherSpaces() => FirstPair(TagFinders.OtherSpaces_Utf8, _utf8);
+    public Tags Utf8_OtherSpaces() => FirstPair(TagFinders.OtherSpaces.Utf8, _utf8);
 
     [Benchmark]
     public Tags Europa() => FirstPair(TagFinders.Europa, _utf8);
 
     [Benchmark]
-    public Tags Europa_OtherSpace() => FirstPair(TagFinders.OtherSpace_Europa, _utf8);
+    public Tags Europa_OtherSpace() => FirstPair(TagFinders.OtherSpaces.Europa, _utf8);
 
-    //[Benchmark]
+    [Benchmark]
     public Tags Utf16() => FirstPair(TagFinders.Utf16, _utf16);
 
-    //[Benchmark]
+    [Benchmark]
     public Tags Utf16BE() => FirstPair(TagFinders.Utf16BE, _utf16BE);
 
-    //[Benchmark]
+    [Benchmark]
     public Tags Utf32() => FirstPair(TagFinders.Utf32, _utf32);
 
-    //[Benchmark]
+    [Benchmark]
     public Tags Utf32BE() => FirstPair(TagFinders.Utf32BE, _utf32BE);
 
-    //[Benchmark]
-    public Tags Utf16_Complex() => FirstPair(TagFinders.Complex_Utf16, _utf16);
+    [Benchmark]
+    public Tags Utf16_Complex() => FirstPair(TagFinders.Complex.Utf16, _utf16);
 
-    //[Benchmark]
-    public Tags Utf16BE_Complex() => FirstPair(TagFinders.Complex_Utf16BE, _utf16BE);
+    [Benchmark]
+    public Tags Utf16BE_Complex() => FirstPair(TagFinders.Complex.Utf16BE, _utf16BE);
 
-    //[Benchmark]
-    public Tags Utf32_Complex() => FirstPair(TagFinders.Complex_Utf32, _utf32);
+    [Benchmark]
+    public Tags Utf32_Complex() => FirstPair(TagFinders.Complex.Utf32, _utf32);
 
-    //[Benchmark]
-    public Tags Utf32BE_Complex() => FirstPair(TagFinders.Complex_Utf32BE, _utf32BE);
+    [Benchmark]
+    public Tags Utf32BE_Complex() => FirstPair(TagFinders.Complex.Utf32BE, _utf32BE);
 
     private Tags FirstPair(ITagFinder<byte> finder, Data data)
     {
