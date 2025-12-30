@@ -16,6 +16,8 @@ public interface ITagFinder<T> where T : unmanaged
 
     Tags LastTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes);
 
+    //TagOpening FirstTagOpeningById(ReadOnlySpan<T> data, ReadOnlySpan<T> id, TagOpeningEndings endings = default);
+
     Tag FirstTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, TagEndings endings = default);
 
     Tag FirstTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, TagEndings endings = default);
