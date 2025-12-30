@@ -145,7 +145,7 @@ public class TagFinderBenchmark
 
     private Tags FirstPair(ITagFinder<byte> finder, Data data)
     {
-        var tags = finder.FirstPair(data._data, data._name, out var nodes);
+        var tags = finder.FirstTags(data._data, data._name, out var nodes);
 
         if (!data._data.AsSpan().Slice(tags.Start, tags.Length).SequenceEqual(data._data) || nodes != _count)
             throw new InvalidOperationException();

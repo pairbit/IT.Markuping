@@ -24,9 +24,9 @@ public class ProxyTagFinderByte<T> : ITagFinder<byte> where T : unmanaged
 
     #region ITagFinder
 
-    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out TagNS ns, out int nodes)
+    public Tags FirstTags(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out TagNS ns, out int nodes)
     {
-        var tags = _proxy.FirstPair(Cast(data), Cast(name), out ns, out nodes);
+        var tags = _proxy.FirstTags(Cast(data), Cast(name), out ns, out nodes);
 
         var size = Size;
 
@@ -35,15 +35,15 @@ public class ProxyTagFinderByte<T> : ITagFinder<byte> where T : unmanaged
         return tags.MultipleOffset(size);
     }
 
-    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, out int nodes)
-        => _proxy.FirstPair(Cast(data), Cast(name), Cast(ns), out nodes).MultipleOffset(Size);
+    public Tags FirstTags(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, out int nodes)
+        => _proxy.FirstTags(Cast(data), Cast(name), Cast(ns), out nodes).MultipleOffset(Size);
 
-    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes)
-        => _proxy.FirstPair(Cast(data), Cast(name), out nodes).MultipleOffset(Size);
+    public Tags FirstTags(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes)
+        => _proxy.FirstTags(Cast(data), Cast(name), out nodes).MultipleOffset(Size);
 
-    public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out TagNS ns, out int nodes)
+    public Tags LastTags(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out TagNS ns, out int nodes)
     {
-        var tags = _proxy.LastPair(Cast(data), Cast(name), out ns, out nodes);
+        var tags = _proxy.LastTags(Cast(data), Cast(name), out ns, out nodes);
 
         var size = Size;
 
@@ -52,15 +52,15 @@ public class ProxyTagFinderByte<T> : ITagFinder<byte> where T : unmanaged
         return tags.MultipleOffset(size);
     }
 
-    public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, out int nodes)
-        => _proxy.LastPair(Cast(data), Cast(name), Cast(ns), out nodes).MultipleOffset(Size);
+    public Tags LastTags(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, out int nodes)
+        => _proxy.LastTags(Cast(data), Cast(name), Cast(ns), out nodes).MultipleOffset(Size);
 
-    public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes)
-        => _proxy.LastPair(Cast(data), Cast(name), out nodes).MultipleOffset(Size);
+    public Tags LastTags(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes)
+        => _proxy.LastTags(Cast(data), Cast(name), out nodes).MultipleOffset(Size);
 
-    public Tag First(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out TagNS ns, TagEndings endings = default)
+    public Tag FirstTag(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out TagNS ns, TagEndings endings = default)
     {
-        var tag = _proxy.First(Cast(data), Cast(name), out ns, endings);
+        var tag = _proxy.FirstTag(Cast(data), Cast(name), out ns, endings);
 
         var size = Size;
 
@@ -69,15 +69,15 @@ public class ProxyTagFinderByte<T> : ITagFinder<byte> where T : unmanaged
         return tag.MultipleOffset(size);
     }
 
-    public Tag First(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, TagEndings endings = default)
-        => _proxy.First(Cast(data), Cast(name), Cast(ns), endings).MultipleOffset(Size);
+    public Tag FirstTag(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, TagEndings endings = default)
+        => _proxy.FirstTag(Cast(data), Cast(name), Cast(ns), endings).MultipleOffset(Size);
 
-    public Tag First(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, TagEndings endings = default)
-        => _proxy.First(Cast(data), Cast(name), endings).MultipleOffset(Size);
+    public Tag FirstTag(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, TagEndings endings = default)
+        => _proxy.FirstTag(Cast(data), Cast(name), endings).MultipleOffset(Size);
 
-    public Tag Last(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out TagNS ns, TagEndings endings = default)
+    public Tag LastTag(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out TagNS ns, TagEndings endings = default)
     {
-        var tag = _proxy.Last(Cast(data), Cast(name), out ns, endings);
+        var tag = _proxy.LastTag(Cast(data), Cast(name), out ns, endings);
 
         var size = Size;
 
@@ -86,21 +86,21 @@ public class ProxyTagFinderByte<T> : ITagFinder<byte> where T : unmanaged
         return tag.MultipleOffset(size);
     }
 
-    public Tag Last(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, TagEndings endings = default)
-        => _proxy.Last(Cast(data), Cast(name), Cast(ns), endings).MultipleOffset(Size);
+    public Tag LastTag(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, TagEndings endings = default)
+        => _proxy.LastTag(Cast(data), Cast(name), Cast(ns), endings).MultipleOffset(Size);
 
-    public Tag Last(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, TagEndings endings = default)
-        => _proxy.Last(Cast(data), Cast(name), endings).MultipleOffset(Size);
+    public Tag LastTag(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, TagEndings endings = default)
+        => _proxy.LastTag(Cast(data), Cast(name), endings).MultipleOffset(Size);
 
-    public TagClosing FirstClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
-        => _proxy.FirstClosing(Cast(data), Cast(name), Cast(ns)).MultipleOffset(Size);
+    public TagClosing FirstTagClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
+        => _proxy.FirstTagClosing(Cast(data), Cast(name), Cast(ns)).MultipleOffset(Size);
 
-    public TagClosing FirstClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name)
-        => _proxy.FirstClosing(Cast(data), Cast(name)).MultipleOffset(Size);
+    public TagClosing FirstTagClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name)
+        => _proxy.FirstTagClosing(Cast(data), Cast(name)).MultipleOffset(Size);
 
-    public TagClosing LastClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out TagNS ns)
+    public TagClosing LastTagClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out TagNS ns)
     {
-        var tag = _proxy.LastClosing(Cast(data), Cast(name), out ns);
+        var tag = _proxy.LastTagClosing(Cast(data), Cast(name), out ns);
 
         var size = Size;
 
@@ -109,11 +109,11 @@ public class ProxyTagFinderByte<T> : ITagFinder<byte> where T : unmanaged
         return tag.MultipleOffset(size);
     }
 
-    public TagClosing LastClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
-        => _proxy.LastClosing(Cast(data), Cast(name), Cast(ns)).MultipleOffset(Size);
+    public TagClosing LastTagClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns)
+        => _proxy.LastTagClosing(Cast(data), Cast(name), Cast(ns)).MultipleOffset(Size);
 
-    public TagClosing LastClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name)
-        => _proxy.LastClosing(Cast(data), Cast(name)).MultipleOffset(Size);
+    public TagClosing LastTagClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name)
+        => _proxy.LastTagClosing(Cast(data), Cast(name)).MultipleOffset(Size);
 
     #endregion ITagFinder
 

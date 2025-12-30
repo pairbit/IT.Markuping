@@ -13,19 +13,19 @@ internal class TagFinderCharTest
     {
         Test(TagFinderChar.Utf16_IgnoreCase);
 
-        var tags = TagFinderChar.Utf16_IgnoreCase.FirstPair("<NaMe></name>", "name", out _);
+        var tags = TagFinderChar.Utf16_IgnoreCase.FirstTags("<NaMe></name>", "name", out _);
         Assert.That(tags.IsEmpty, Is.False);
     }
 
     private static void Test(ITagFinder<char> finder)
     {
         var data = "<NaMe></NaMe>";
-        var tags = finder.FirstPair(data, "name", out var nodes);
+        var tags = finder.FirstTags(data, "name", out var nodes);
         Assert.That(nodes, Is.Zero);
         Assert.That(data[tags.Outer].SequenceEqual(data), Is.True);
 
         data = "<Ns:NaMe></Ns:NaMe>";
-        tags = finder.FirstPair(data, "name", "ns", out nodes);
+        tags = finder.FirstTags(data, "name", "ns", out nodes);
         Assert.That(nodes, Is.Zero);
         Assert.That(data[tags.Outer].SequenceEqual(data), Is.True);
     }
