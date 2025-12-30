@@ -49,7 +49,7 @@ public ref struct ValueTagFinder<T>
         _strategy = strategy;
     }
 
-    public Tag First(out TagNS ns, TagEndings endings = default)
+    public Tag FirstTag(out TagNS ns, TagEndings endings = default)
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
 
@@ -83,10 +83,10 @@ public ref struct ValueTagFinder<T>
         return default;
     }
 
-    public Tag First(ReadOnlySpan<T> ns, TagEndings endings = default)
-        => ns.IsEmpty ? First(endings) : FirstNS(ns, endings);
+    public Tag FirstTag(ReadOnlySpan<T> ns, TagEndings endings = default)
+        => ns.IsEmpty ? FirstTag(endings) : FirstTagNS(ns, endings);
 
-    public Tag First(TagEndings endings = default)
+    public Tag FirstTag(TagEndings endings = default)
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
 
@@ -117,7 +117,7 @@ public ref struct ValueTagFinder<T>
         return default;
     }
 
-    public Tag Last(out TagNS ns, TagEndings endings = default)
+    public Tag LastTag(out TagNS ns, TagEndings endings = default)
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
 
@@ -142,10 +142,10 @@ public ref struct ValueTagFinder<T>
         return default;
     }
 
-    public Tag Last(ReadOnlySpan<T> ns, TagEndings endings = default)
-        => ns.IsEmpty ? Last(endings) : LastNS(ns, endings);
+    public Tag LastTag(ReadOnlySpan<T> ns, TagEndings endings = default)
+        => ns.IsEmpty ? LastTag(endings) : LastTagNS(ns, endings);
 
-    public Tag Last(TagEndings endings = default)
+    public Tag LastTag(TagEndings endings = default)
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
 
@@ -169,10 +169,10 @@ public ref struct ValueTagFinder<T>
         return default;
     }
 
-    public TagClosing FirstClosing(ReadOnlySpan<T> ns)
-        => ns.IsEmpty ? FirstClosing() : FirstClosingNS(ns);
+    public TagClosing FirstTagClosing(ReadOnlySpan<T> ns)
+        => ns.IsEmpty ? FirstTagClosing() : FirstTagClosingNS(ns);
 
-    public TagClosing FirstClosing()
+    public TagClosing FirstTagClosing()
     {
         var namelen = _name.Length;
         Debug.Assert(namelen > 0);
@@ -188,7 +188,7 @@ public ref struct ValueTagFinder<T>
             var end = index + namelen;
             if (index >= min)
             {
-                var closing = GetClosing(data, index - min, end);
+                var closing = GetTagClosing(data, index - min, end);
                 if (!closing.IsEmpty)
                 {
                     return closing.AddOffset(len - data.Length);
@@ -200,7 +200,7 @@ public ref struct ValueTagFinder<T>
         return default;
     }
 
-    public TagClosing LastClosing(out TagNS ns)
+    public TagClosing LastTagClosing(out TagNS ns)
     {
         var namelen = _name.Length;
         Debug.Assert(namelen > 0);
@@ -212,7 +212,7 @@ public ref struct ValueTagFinder<T>
             var index = _strategy.LastIndexOf(data, _name);
             if (index < min) break;
 
-            var closing = GetClosing(data, index, index + namelen, out ns);
+            var closing = GetTagClosing(data, index, index + namelen, out ns);
             if (!closing.IsEmpty)
             {
                 return closing;
@@ -225,10 +225,10 @@ public ref struct ValueTagFinder<T>
         return default;
     }
 
-    public TagClosing LastClosing(ReadOnlySpan<T> ns)
-        => ns.IsEmpty ? LastClosing() : LastClosingNS(ns);
+    public TagClosing LastTagClosing(ReadOnlySpan<T> ns)
+        => ns.IsEmpty ? LastTagClosing() : LastTagClosingNS(ns);
 
-    public TagClosing LastClosing()
+    public TagClosing LastTagClosing()
     {
         var namelen = _name.Length;
         Debug.Assert(namelen > 0);
@@ -240,7 +240,7 @@ public ref struct ValueTagFinder<T>
             var index = _strategy.LastIndexOf(data, _name);
             if (index < min) break;
 
-            var closing = GetClosing(data, index - min, index + namelen);
+            var closing = GetTagClosing(data, index - min, index + namelen);
             if (!closing.IsEmpty)
             {
                 return closing;
@@ -256,7 +256,7 @@ public ref struct ValueTagFinder<T>
 
     #region Private Methods
 
-    private Tag FirstNS(ReadOnlySpan<T> ns, TagEndings endings)
+    private Tag FirstTagNS(ReadOnlySpan<T> ns, TagEndings endings)
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
 
@@ -291,7 +291,7 @@ public ref struct ValueTagFinder<T>
         return default;
     }
 
-    private Tag LastNS(ReadOnlySpan<T> ns, TagEndings endings)
+    private Tag LastTagNS(ReadOnlySpan<T> ns, TagEndings endings)
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
 
@@ -318,7 +318,7 @@ public ref struct ValueTagFinder<T>
         return default;
     }
 
-    private TagClosing FirstClosingNS(ReadOnlySpan<T> ns)
+    private TagClosing FirstTagClosingNS(ReadOnlySpan<T> ns)
     {
         var namelen = _name.Length;
         var nslen = ns.Length;
@@ -337,7 +337,7 @@ public ref struct ValueTagFinder<T>
             var end = index + namelen;
             if (index >= min)
             {
-                var closing = GetClosing(data, index - min, end, ns);
+                var closing = GetTagClosing(data, index - min, end, ns);
                 if (!closing.IsEmpty)
                 {
                     return closing.AddOffset(len - data.Length);
@@ -349,7 +349,7 @@ public ref struct ValueTagFinder<T>
         return default;
     }
 
-    private TagClosing LastClosingNS(ReadOnlySpan<T> ns)
+    private TagClosing LastTagClosingNS(ReadOnlySpan<T> ns)
     {
         var namelen = _name.Length;
         var nslen = ns.Length;
@@ -364,7 +364,7 @@ public ref struct ValueTagFinder<T>
             var index = _strategy.LastIndexOf(_data, _name);
             if (index < min) break;
 
-            var closing = GetClosing(data, index - min, index + namelen, ns);
+            var closing = GetTagClosing(data, index - min, index + namelen, ns);
             if (!closing.IsEmpty)
             {
                 return closing;
@@ -429,7 +429,7 @@ public ref struct ValueTagFinder<T>
         return default;
     }
 
-    private TagClosing GetClosing(ReadOnlySpan<T> data, int start, int end, out TagNS ns)
+    private TagClosing GetTagClosing(ReadOnlySpan<T> data, int start, int end, out TagNS ns)
     {
         Debug.Assert(start > 0 && end > 0);
         Debug.Assert(start < end);
@@ -443,7 +443,7 @@ public ref struct ValueTagFinder<T>
         return default;
     }
 
-    private TagClosing GetClosing(ReadOnlySpan<T> data, int start, int end)
+    private TagClosing GetTagClosing(ReadOnlySpan<T> data, int start, int end)
     {
         Debug.Assert(start >= 0 && start + 1 < data.Length);
         Debug.Assert(end > 0 && start < end);
@@ -456,7 +456,7 @@ public ref struct ValueTagFinder<T>
         return default;
     }
 
-    private TagClosing GetClosing(ReadOnlySpan<T> data, int start, int end, ReadOnlySpan<T> ns)
+    private TagClosing GetTagClosing(ReadOnlySpan<T> data, int start, int end, ReadOnlySpan<T> ns)
     {
         Debug.Assert(start >= 0 && end > 0);
         Debug.Assert(start < end);
