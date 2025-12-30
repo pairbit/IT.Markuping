@@ -25,7 +25,7 @@ internal class TagFinderCharTest
         Assert.That(data[tags.Outer].SequenceEqual(data), Is.True);
 
         data = "<Ns:NaMe></Ns:NaMe>";
-        tags = finder.FirstPair(data, "name", out nodes, "ns");
+        tags = finder.FirstPair(data, "name", "ns", out nodes);
         Assert.That(nodes, Is.Zero);
         Assert.That(data[tags.Outer].SequenceEqual(data), Is.True);
     }

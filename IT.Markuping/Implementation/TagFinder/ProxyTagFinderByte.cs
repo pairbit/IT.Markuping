@@ -24,9 +24,9 @@ public class ProxyTagFinderByte<T> : ITagFinder<byte> where T : unmanaged
 
     #region ITagFinder
 
-    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes, out TagNS ns)
+    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out TagNS ns, out int nodes)
     {
-        var tags = _proxy.FirstPair(Cast(data), Cast(name), out nodes, out ns);
+        var tags = _proxy.FirstPair(Cast(data), Cast(name), out ns, out nodes);
 
         var size = Size;
 
@@ -35,15 +35,15 @@ public class ProxyTagFinderByte<T> : ITagFinder<byte> where T : unmanaged
         return tags.MultipleOffset(size);
     }
 
-    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes, ReadOnlySpan<byte> ns)
-        => _proxy.FirstPair(Cast(data), Cast(name), out nodes, Cast(ns)).MultipleOffset(Size);
+    public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, out int nodes)
+        => _proxy.FirstPair(Cast(data), Cast(name), Cast(ns), out nodes).MultipleOffset(Size);
 
     public Tags FirstPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes)
         => _proxy.FirstPair(Cast(data), Cast(name), out nodes).MultipleOffset(Size);
 
-    public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes, out TagNS ns)
+    public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out TagNS ns, out int nodes)
     {
-        var tags = _proxy.LastPair(Cast(data), Cast(name), out nodes, out ns);
+        var tags = _proxy.LastPair(Cast(data), Cast(name), out ns, out nodes);
 
         var size = Size;
 
@@ -52,8 +52,8 @@ public class ProxyTagFinderByte<T> : ITagFinder<byte> where T : unmanaged
         return tags.MultipleOffset(size);
     }
 
-    public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes, ReadOnlySpan<byte> ns)
-        => _proxy.LastPair(Cast(data), Cast(name), out nodes, Cast(ns)).MultipleOffset(Size);
+    public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, ReadOnlySpan<byte> ns, out int nodes)
+        => _proxy.LastPair(Cast(data), Cast(name), Cast(ns), out nodes).MultipleOffset(Size);
 
     public Tags LastPair(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes)
         => _proxy.LastPair(Cast(data), Cast(name), out nodes).MultipleOffset(Size);

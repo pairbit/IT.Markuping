@@ -47,7 +47,7 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
 
     #region ITagFinder
 
-    public Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes, out TagNS ns)
+    public Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, out int nodes)
     {
         var opening = First(data, name, out ns, TagEndings.Closing);
         if (!opening.IsEmpty)
@@ -62,7 +62,7 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
         return default;
     }
 
-    public Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes, ReadOnlySpan<T> ns)
+    public Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, out int nodes)
     {
         var opening = First(data, name, ns, TagEndings.Closing);
         if (!opening.IsEmpty)
@@ -92,7 +92,7 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
         return default;
     }
 
-    public Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes, out TagNS ns)
+    public Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, out int nodes)
     {
         var closing = LastClosing(data, name, out ns);
         if (!closing.IsEmpty)
@@ -108,7 +108,7 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
         return default;
     }
 
-    public Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes, ReadOnlySpan<T> ns)
+    public Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, out int nodes)
     {
         var closing = LastClosing(data, name, ns);
         if (!closing.IsEmpty)
