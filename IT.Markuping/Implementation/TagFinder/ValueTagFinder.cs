@@ -37,6 +37,8 @@ public ref struct ValueTagFinder<T>
 
     #endregion Props
 
+    #region Public Methods
+
     public ValueTagFinder(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ITagStrategy<T> strategy)
     {
         if (strategy == null) throw new ArgumentNullException(nameof(strategy));
@@ -249,6 +251,8 @@ public ref struct ValueTagFinder<T>
 
         return default;
     }
+
+    #endregion Public Methods
 
     #region Private Methods
 
