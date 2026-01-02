@@ -6,14 +6,14 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company />
-    <Description>TagFinder</Description>
+    <Description>MarkupFinder</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/pairbit/IT.Markuping</RepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <Authors>Ivan Tikhonov</Authors>
     <Copyright>Ivan Tikhonov © 2025</Copyright>
     <Version>2.0.2</Version>
-    <PackageTags>TagFinder</PackageTags>
+    <PackageTags>MarkupFinder</PackageTags>
     <PackageReadmeFile>Readme.md</PackageReadmeFile>
     <PackageIcon>Icon.png</PackageIcon>
     <PackageReleaseNotes></PackageReleaseNotes>

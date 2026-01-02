@@ -5,13 +5,13 @@ using System.Text;
 
 namespace IT.Markuping.Tests;
 
-internal class TagFinderByteTest
+internal class MarkupFinderByteTest
 {
     //[Test]
     public void Tester_Utf()
     {
-        Test(TagFinders.Utf8, Encoding.UTF8);
-        Test(TagFinders.Utf16, Encoding.Unicode);
+        Test(MarkupFinders.Utf8, Encoding.UTF8);
+        Test(MarkupFinders.Utf16, Encoding.Unicode);
     }
 
     [Test]
@@ -28,7 +28,7 @@ internal class TagFinderByteTest
             var codePage = encodingInfo.CodePage;
             var encoding = encodingInfo.GetEncoding();
 
-            if (TagFinders.TryGet(codePage, out var tagFinder))
+            if (MarkupFinders.TryGet(codePage, out var tagFinder))
             {
                 Test(tagFinder, encoding);
             }
@@ -43,46 +43,46 @@ internal class TagFinderByteTest
 
             if (MarkupCodePages.Utf8.AsSpan().IndexOf(codePage) > -1)
             {
-                Test(TagFinders.OtherSpaces.Utf8, encoding);
+                Test(MarkupFinders.OtherSpaces.Utf8, encoding);
             }
             else if (codePage == 29001)
             {
-                Test(TagFinders.OtherSpaces.Europa, encoding);
+                Test(MarkupFinders.OtherSpaces.Europa, encoding);
             }
             else if (MarkupCodePages.EBCDIC.AsSpan().IndexOf(codePage) > -1)
             {
-                Test(TagFinders.OtherSpaces.EBCDIC, encoding);
+                Test(MarkupFinders.OtherSpaces.EBCDIC, encoding);
             }
             else if (codePage == 1026 || codePage == 20905)
             {
-                Test(TagFinders.OtherSpaces.EBCDIC_Turkish, encoding);
+                Test(MarkupFinders.OtherSpaces.EBCDIC_Turkish, encoding);
             }
             else if (codePage == 1047 || codePage == 20924)
             {
-                Test(TagFinders.OtherSpaces.IBM_Latin1, encoding);
+                Test(MarkupFinders.OtherSpaces.IBM_Latin1, encoding);
             }
             else if (codePage == 1200)
             {
-                Test(TagFinders.Complex.Utf16, encoding);
+                Test(MarkupFinders.Complex.Utf16, encoding);
             }
             else if (codePage == 1201)
             {
-                Test(TagFinders.Complex.Utf16BE, encoding);
+                Test(MarkupFinders.Complex.Utf16BE, encoding);
             }
             else if (codePage == 12000)
             {
-                Test(TagFinders.Complex.Utf32, encoding);
+                Test(MarkupFinders.Complex.Utf32, encoding);
             }
             else if (codePage == 12001)
             {
-                Test(TagFinders.Complex.Utf32BE, encoding);
+                Test(MarkupFinders.Complex.Utf32BE, encoding);
             }
         }
     }
 
     private static void Test(IMarkupFinder<byte> finder, Encoding encoding)
     {
-        var tester = new TagFinderByteTester(finder, encoding);
+        var tester = new MarkupFinderByteTester(finder, encoding);
         tester.Test();
     }
 }

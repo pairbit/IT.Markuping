@@ -22,7 +22,7 @@ public class ProxyTagFinderByte<T> : IMarkupFinder<byte> where T : unmanaged
         _proxy = proxy ?? throw new ArgumentNullException(nameof(proxy));
     }
 
-    #region ITagFinder
+    #region IMarkupFinder
 
     public Tags FirstTags(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out TagNS ns, out int nodes)
     {
@@ -115,7 +115,7 @@ public class ProxyTagFinderByte<T> : IMarkupFinder<byte> where T : unmanaged
     public TagClosing LastTagClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name)
         => _proxy.LastTagClosing(Cast(data), Cast(name)).MultipleOffset(Size);
 
-    #endregion ITagFinder
+    #endregion IMarkupFinder
 
     private static ReadOnlySpan<T> Cast(ReadOnlySpan<byte> span)
     {

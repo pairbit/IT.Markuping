@@ -5,14 +5,14 @@ using System.Linq;
 
 namespace IT.Markuping.Tests;
 
-internal class TagFinderCharTest
+internal class MarkupFinderCharTest
 {
     [Test]
     public void Test()
     {
-        Test(TagFinders.Char.Utf16_IgnoreCase);
+        Test(MarkupFinders.Char.Utf16_IgnoreCase);
 
-        var tags = TagFinders.Char.Utf16_IgnoreCase.FirstTags("<NaMe></name>", "name");
+        var tags = MarkupFinders.Char.Utf16_IgnoreCase.FirstTags("<NaMe></name>", "name");
         Assert.That(tags.IsEmpty, Is.False);
     }
 

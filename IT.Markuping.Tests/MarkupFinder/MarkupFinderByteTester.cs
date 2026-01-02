@@ -6,12 +6,12 @@ using System.Text;
 
 namespace IT.Markuping.Tests;
 
-internal class TagFinderByteTester
+internal class MarkupFinderByteTester
 {
     private readonly IMarkupFinder<byte> _finder;
     private readonly Encoding _encoding;
 
-    public TagFinderByteTester(IMarkupFinder<byte> finder, Encoding encoding)
+    public MarkupFinderByteTester(IMarkupFinder<byte> finder, Encoding encoding)
     {
         _finder = finder;
         _encoding = encoding;

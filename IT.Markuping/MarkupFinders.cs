@@ -5,7 +5,7 @@ using System;
 
 namespace IT.Markuping;
 
-public static class TagFinders
+public static class MarkupFinders
 {
     internal static class OtherSpaces
     {
