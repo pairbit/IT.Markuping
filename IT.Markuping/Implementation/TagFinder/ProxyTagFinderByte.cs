@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 
 namespace IT.Markuping.Implementation;
 
-public class ProxyTagFinderByte<T> : ITagFinder<byte> where T : unmanaged
+public class ProxyTagFinderByte<T> : IMarkupFinder<byte> where T : unmanaged
 {
     private static readonly int Size = Unsafe.SizeOf<T>();
 
-    private readonly ITagFinder<T> _proxy;
+    private readonly IMarkupFinder<T> _proxy;
 
     static ProxyTagFinderByte()
     {
@@ -17,7 +17,7 @@ public class ProxyTagFinderByte<T> : ITagFinder<byte> where T : unmanaged
             throw new ArgumentException("T is byte", nameof(T));
     }
 
-    public ProxyTagFinderByte(ITagFinder<T> proxy)
+    public ProxyTagFinderByte(IMarkupFinder<T> proxy)
     {
         _proxy = proxy ?? throw new ArgumentNullException(nameof(proxy));
     }

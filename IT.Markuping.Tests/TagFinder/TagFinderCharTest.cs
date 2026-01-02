@@ -16,7 +16,7 @@ internal class TagFinderCharTest
         Assert.That(tags.IsEmpty, Is.False);
     }
 
-    private static void Test(ITagFinder<char> finder)
+    private static void Test(IMarkupFinder<char> finder)
     {
         var data = "<NaMe></NaMe>";
         var tags = finder.FirstTags(data, "name");

@@ -2,7 +2,7 @@
 
 namespace IT.Markuping.Interfaces;
 
-public interface ITagFinder<T> where T : unmanaged
+public interface IMarkupFinder<T> where T : unmanaged
 {
     Tags FirstTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, out int nodes);
 

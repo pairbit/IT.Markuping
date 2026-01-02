@@ -143,7 +143,7 @@ public class TagFinderBenchmark
     [Benchmark]
     public Tags Utf32BE_Complex() => FirstPair(TagFinders.Complex.Utf32BE, _utf32BE);
 
-    private Tags FirstPair(ITagFinder<byte> finder, Data data)
+    private Tags FirstPair(IMarkupFinder<byte> finder, Data data)
     {
         var tags = finder.FirstTags(data._data, data._name, out var nodes);
 

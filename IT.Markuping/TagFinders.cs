@@ -54,7 +54,7 @@ public static class TagFinders
 #if !NETSTANDARD2_0
         [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)]
 #endif
-        out ITagFinder<byte> tagFinder
+        out IMarkupFinder<byte> tagFinder
     )
     {
         if (MarkupCodePages.Utf8.AsSpan().IndexOf(codePage) > -1)

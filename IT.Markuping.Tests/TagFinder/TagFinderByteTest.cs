@@ -80,7 +80,7 @@ internal class TagFinderByteTest
         }
     }
 
-    private static void Test(ITagFinder<byte> finder, Encoding encoding)
+    private static void Test(IMarkupFinder<byte> finder, Encoding encoding)
     {
         var tester = new TagFinderByteTester(finder, encoding);
         tester.Test();

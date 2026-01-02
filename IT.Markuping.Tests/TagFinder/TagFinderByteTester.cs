@@ -8,10 +8,10 @@ namespace IT.Markuping.Tests;
 
 internal class TagFinderByteTester
 {
-    private readonly ITagFinder<byte> _finder;
+    private readonly IMarkupFinder<byte> _finder;
     private readonly Encoding _encoding;
 
-    public TagFinderByteTester(ITagFinder<byte> finder, Encoding encoding)
+    public TagFinderByteTester(IMarkupFinder<byte> finder, Encoding encoding)
     {
         _finder = finder;
         _encoding = encoding;
