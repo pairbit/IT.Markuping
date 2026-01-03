@@ -60,10 +60,10 @@ public class TagStrategy<T> : ITagStrategy<T> where T : unmanaged, IEquatable<T>
     protected virtual bool Equals(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.SequenceEqual(value);
 
-    public int IndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
+    public virtual int IndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.IndexOf(value);
 
-    public int LastIndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
+    public virtual int LastIndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.LastIndexOf(value);
 
     public bool IsStartOpening(ReadOnlySpan<T> data, int start)
