@@ -1,12 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace IT.Markuping.Tests;
 
 internal class SystemTextEncodingTest
 {
-    [Test]
+    class EncodingMap
+    {
+        public List<int> CodePages { get; set; } = new();
+
+        public byte[] Bytes { get; set; } = [];
+
+        public bool IsSingle { get; set; }
+    }
+
+    //[Test]
     public void Xml_GetEncodings_Test()
     {
         //<>/: \"'=!-[]?\r\n\t
@@ -81,5 +91,79 @@ internal class SystemTextEncodingTest
             var encoding = Encoding.GetEncoding(codePage);
             Console.WriteLine($"{codePage,5} | {encoding.EncodingName,40} | {encoding.WebName,25} | {encoding.HeaderName,25} | {encoding.BodyName,25}");
         }
+    }
+    
+    [Test]
+    public void MappingTest()
+    {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+        var abc = "<>/: \"'=\r\n\t";
+        var maps = GetMaps(abc).OrderByDescending(x => x.CodePages.Count);
+
+        foreach (var map in maps)
+        {
+            Console.WriteLine($"\nSingle: {map.IsSingle}");
+            Console.WriteLine($"Bytes: {string.Join(", ", map.Bytes)}");
+            Console.WriteLine($"CodePages: {string.Join(", ", map.CodePages)}");
+            foreach (var codePage in map.CodePages)
+            {
+                var encoding = Encoding.GetEncoding(codePage);
+                Console.WriteLine($"{codePage,5} | {encoding.EncodingName,40} | {encoding.WebName,25} | {encoding.HeaderName,25} | {encoding.BodyName,25}");
+            }
+        }
+    }
+
+    private static List<EncodingMap> GetMaps(string abc)
+    {
+        var maps = new List<EncodingMap>();
+        var encodingInfos = Encoding.GetEncodings();
+        foreach (var encodingInfo in encodingInfos)
+        {
+            var codePage = encodingInfo.CodePage;
+            if (codePage == 1200 || codePage == 1201 ||
+                codePage == 12000 || codePage == 12001) continue;
+
+            var encoding = encodingInfo.GetEncoding();
+            var bytes = encoding.GetBytes(abc);
+            if (TryFindMap(maps, bytes, out var map))
+            {
+                map.CodePages.Add(codePage);
+            }
+            else
+            {
+                maps.Add(new()
+                {
+                    Bytes = bytes,
+                    CodePages = new() { codePage },
+                    IsSingle = bytes.Length == abc.Length
+                });
+            }
+        }
+
+        foreach (var map in maps)
+        {
+            map.CodePages.Sort();
+        }
+
+        return maps;
+    }
+
+    private static bool TryFindMap(IList<EncodingMap> maps, byte[] bytes,
+#if NET
+        [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)]
+#endif
+    out EncodingMap? map)
+    {
+        for (int i = 0; i < maps.Count; i++)
+        {
+            map = maps[i];
+            if (map.Bytes.SequenceEqual(bytes))
+            {
+                return true;
+            }
+        }
+        map = null;
+        return false;
     }
 }
