@@ -14,6 +14,8 @@ internal class SystemTextEncodingTest
         public byte[] Bytes { get; set; } = [];
 
         public bool IsSingle { get; set; }
+
+        public bool HasDuplicates { get; set; }
     }
 
     //[Test]
@@ -93,18 +95,30 @@ internal class SystemTextEncodingTest
         }
     }
     
+    //[Test]
+    public void E1251Test()
+    {
+        var encoding = Encoding.GetEncoding(1251);
+        var bytes = encoding.GetBytes("а");
+
+    }
+
     [Test]
     public void MappingTest()
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-        var abc = "<>/: \"'=";//xmlns
+        //<>/: \"'=!-[]?xmlns\r\n\t
+        //<>/: \"'=!-[]?\r\n\t
+        //<>/: \"'=xmlns\r\n\t (ok)
+        //<>/: \"'=\r\n\t
+        var abc = "<>/: \"'=xmlns\r\n\t";
         var maps = GetMaps(abc).OrderByDescending(x => x.CodePages.Count);
 
-        Console.WriteLine($"Abc: {abc}");
+        Console.WriteLine($"Abc#{abc.Length}: '{abc}' ");
         foreach (var map in maps)
         {
-            Console.WriteLine($"\nSingle: {map.IsSingle}");
+            Console.WriteLine($"\nSingle: {map.IsSingle}, HasDuplicates: {map.HasDuplicates}");
             Console.WriteLine($"Bytes: {string.Join(", ", map.Bytes)}");
             Console.WriteLine($"CodePages: {string.Join(", ", map.CodePages)}");
             foreach (var codePage in map.CodePages)
@@ -138,7 +152,8 @@ internal class SystemTextEncodingTest
                 {
                     Bytes = bytes,
                     CodePages = new() { codePage },
-                    IsSingle = bytes.Length == abc.Length
+                    IsSingle = bytes.Length == abc.Length,
+                    HasDuplicates = bytes.Distinct().Count() != abc.Length
                 });
             }
         }
