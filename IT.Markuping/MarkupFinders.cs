@@ -2,6 +2,7 @@
 using IT.Markuping.Interfaces;
 using IT.Markuping.Internal;
 using System;
+using System.Diagnostics;
 
 namespace IT.Markuping;
 
@@ -74,11 +75,13 @@ public static class MarkupFinders
         }
         if (codePage == 1026 || codePage == 20905)
         {
+            Debug.Assert(MarkupCodePages.EBCDIC_Turkish.IndexOf(codePage) > -1);
             finder = EBCDIC_Turkish;
             return true;
         }
         if (codePage == 1047 || codePage == 20924)
         {
+            Debug.Assert(MarkupCodePages.IBM_Latin1.IndexOf(codePage) > -1);
             finder = IBM_Latin1;
             return true;
         }

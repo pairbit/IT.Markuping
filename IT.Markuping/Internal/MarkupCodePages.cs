@@ -13,4 +13,8 @@ internal static class MarkupCodePages
 
     public static readonly int[] EBCDIC =
         [37, 500, 870, 875, 1140, 1141, 1142, 1143, 1144, 1145, 1146, 1147, 1148, 1149, 20273, 20277, 20278, 20280, 20284, 20285, 20290, 20297, 20420, 20423, 20424, 20833, 20838, 20871, 20880, 21025];
+
+    public static readonly int[] EBCDIC_Turkish = [1026, 20905];
+
+    public static readonly int[] IBM_Latin1 = [1047, 20924];
 }

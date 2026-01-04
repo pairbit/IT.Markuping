@@ -98,9 +98,10 @@ internal class SystemTextEncodingTest
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-        var abc = "<>/: \"'=\r\n\t";
+        var abc = "<>/: \"'=\r\n\t";//xmlns
         var maps = GetMaps(abc).OrderByDescending(x => x.CodePages.Count);
 
+        Console.WriteLine($"Abc: {abc}");
         foreach (var map in maps)
         {
             Console.WriteLine($"\nSingle: {map.IsSingle}");
@@ -122,7 +123,8 @@ internal class SystemTextEncodingTest
         {
             var codePage = encodingInfo.CodePage;
             if (codePage == 1200 || codePage == 1201 ||
-                codePage == 12000 || codePage == 12001) continue;
+                codePage == 12000 || codePage == 12001 ||
+                codePage == 65000) continue;
 
             var encoding = encodingInfo.GetEncoding();
             var bytes = encoding.GetBytes(abc);
