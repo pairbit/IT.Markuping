@@ -44,65 +44,65 @@ internal class MarkupFinderByteTester
 
         FirstLastTest(tagData);
 
-        PairsTest(tagData);
+        TagsTest(tagData);
     }
 
-    #region PairsTest
+    #region TagsTest
 
-    public void PairsTest(TagData tagData)
+    public void TagsTest(TagData tagData)
     {
-        FirstLastPair($"<{tagData}></{tagData}>", tagData, string.Empty);
-        FirstLastPair($"<{tagData}>inner</{tagData}>", tagData, "inner");
-        FirstLastPair($"<{tagData} ab>inner</{tagData} >", tagData, "inner");
-        FirstLastPair($"<{tagData} c=\"'>'\"><tag></tag></{tagData} >", tagData, "<tag></tag>");
-        FirstLastPair($"<{tagData} b c='\">\"'><{tagData}/></{tagData} \t\r\n>", tagData, $"<{tagData}/>");
+        FirstLastTags($"<{tagData}></{tagData}>", tagData, string.Empty);
+        FirstLastTags($"<{tagData}>inner</{tagData}>", tagData, "inner");
+        FirstLastTags($"<{tagData} ab>inner</{tagData} >", tagData, "inner");
+        FirstLastTags($"<{tagData} c=\"'>'\"><tag></tag></{tagData} >", tagData, "<tag></tag>");
+        FirstLastTags($"<{tagData} b c='\">\"'><{tagData}/></{tagData} \t\r\n>", tagData, $"<{tagData}/>");
 
-        FirstLastPair($"{tagData}<{tagData}></{tagData}>{tagData}", tagData, string.Empty,
+        FirstLastTags($"{tagData}<{tagData}></{tagData}>{tagData}", tagData, string.Empty,
             $"<{tagData}></{tagData}>");
 
         var data = _encoding.GetBytes($"<{tagData}>first</{tagData}><{tagData}>last</{tagData}>").AsSpan();
 
-        var first = FirstPair(data, tagData);
+        var first = FirstTags(data, tagData);
         Assert.That(data.Slice(first.Start, first.Length).SequenceEqual(_encoding.GetBytes($"<{tagData}>first</{tagData}>")), Is.True);
         Assert.That(data.Slice(first.InnerStart, first.InnerLength).SequenceEqual(_encoding.GetBytes("first")), Is.True);
 
-        var last = LastPair(data, tagData);
+        var last = LastTags(data, tagData);
         Assert.That(data.Slice(last.Start, last.Length).SequenceEqual(_encoding.GetBytes($"<{tagData}>last</{tagData}>")), Is.True);
         Assert.That(data.Slice(last.InnerStart, last.InnerLength).SequenceEqual(_encoding.GetBytes("last")), Is.True);
 
         Assert.That(first, Is.Not.EqualTo(last));
 
-        FirstLastPair($"<{tagData}><{tagData}>1</{tagData}></{tagData}>", tagData,
+        FirstLastTags($"<{tagData}><{tagData}>1</{tagData}></{tagData}>", tagData,
             $"<{tagData}>1</{tagData}>", nodesCount: 1);
 
-        FirstLastPair($"<{tagData}><{tagData}>1</{tagData}><{tagData}>2</{tagData}></{tagData}>", tagData,
+        FirstLastTags($"<{tagData}><{tagData}>1</{tagData}><{tagData}>2</{tagData}></{tagData}>", tagData,
             $"<{tagData}>1</{tagData}><{tagData}>2</{tagData}>", nodesCount: 2);
 
-        FirstLastPair($"<{tagData}><{tagData}><{tagData}>2</{tagData}></{tagData}></{tagData}>", tagData,
+        FirstLastTags($"<{tagData}><{tagData}><{tagData}>2</{tagData}></{tagData}></{tagData}>", tagData,
             $"<{tagData}><{tagData}>2</{tagData}></{tagData}>", nodesCount: 2);
 
-        FirstLastPair($"<{tagData}><{tagData}><{tagData}>1</{tagData}><{tagData}>2</{tagData}></{tagData}><{tagData}><{tagData}>3</{tagData}><{tagData}>4</{tagData}></{tagData}></{tagData}>", tagData,
+        FirstLastTags($"<{tagData}><{tagData}><{tagData}>1</{tagData}><{tagData}>2</{tagData}></{tagData}><{tagData}><{tagData}>3</{tagData}><{tagData}>4</{tagData}></{tagData}></{tagData}>", tagData,
             $"<{tagData}><{tagData}>1</{tagData}><{tagData}>2</{tagData}></{tagData}><{tagData}><{tagData}>3</{tagData}><{tagData}>4</{tagData}></{tagData}>", nodesCount: 6);
     }
 
-    private void FirstLastPair(string data, TagData tagData, string inner, string? outer = null, int nodesCount = 0)
+    private void FirstLastTags(string data, TagData tagData, string inner, string? outer = null, int nodesCount = 0)
     {
-        FirstLastPair(_encoding.GetBytes(data), tagData, _encoding.GetBytes(inner),
+        FirstLastTags(_encoding.GetBytes(data), tagData, _encoding.GetBytes(inner),
             outer == null ? [] : _encoding.GetBytes(outer), nodesCount);
     }
 
-    private void FirstLastPair(ReadOnlySpan<byte> data, TagData tagData, ReadOnlySpan<byte> inner,
+    private void FirstLastTags(ReadOnlySpan<byte> data, TagData tagData, ReadOnlySpan<byte> inner,
         ReadOnlySpan<byte> outer = default, int nodesCount = 0)
     {
-        var tags = FirstPair(data, tagData, nodesCount);
-        Assert.That(LastPair(data, tagData, nodesCount), Is.EqualTo(tags));
+        var tags = FirstTags(data, tagData, nodesCount);
+        Assert.That(LastTags(data, tagData, nodesCount), Is.EqualTo(tags));
 
         if (outer.IsEmpty) outer = data;
         Assert.That(data.Slice(tags.Start, tags.Length).SequenceEqual(outer), Is.True);
         Assert.That(data.Slice(tags.InnerStart, tags.InnerLength).SequenceEqual(inner), Is.True);
     }
 
-    private Tags FirstPair(ReadOnlySpan<byte> data, TagData tagData, int nodesCount = 0)
+    private Tags FirstTags(ReadOnlySpan<byte> data, TagData tagData, int nodesCount = 0)
     {
         var tags = _finder.FirstTags(data, tagData.FullName, out var nodes);
         Assert.That(nodes, Is.EqualTo(nodesCount));
@@ -121,7 +121,7 @@ internal class MarkupFinderByteTester
         return tags;
     }
 
-    private Tags LastPair(ReadOnlySpan<byte> data, TagData tagData, int nodesCount = 0)
+    private Tags LastTags(ReadOnlySpan<byte> data, TagData tagData, int nodesCount = 0)
     {
         var tags = _finder.LastTags(data, tagData.FullName, out var nodes);
         Assert.That(nodes, Is.EqualTo(nodesCount));
@@ -140,7 +140,7 @@ internal class MarkupFinderByteTester
         return tags;
     }
 
-    #endregion PairsTest
+    #endregion TagsTest
 
     #region FirstLastClosing
 
