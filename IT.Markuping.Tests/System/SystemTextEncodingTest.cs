@@ -95,12 +95,36 @@ internal class SystemTextEncodingTest
         }
     }
     
-    //[Test]
-    public void E1251Test()
+    [Test]
+    public void UnknownTest()
     {
-        var encoding = Encoding.GetEncoding(1251);
-        var bytes = encoding.GetBytes("а");
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
+        var encoding = Encoding.GetEncoding(29001);
+        Assert.That(encoding.WebName, Is.EqualTo("x-europa"));
+
+        byte[] unknown = [63];
+        Assert.That(encoding.GetBytes("?").SequenceEqual(unknown), Is.True);
+        Assert.That(encoding.GetBytes("\r").SequenceEqual(unknown), Is.True);
+        Assert.That(encoding.GetBytes("\n").SequenceEqual(unknown), Is.True);
+        Assert.That(encoding.GetBytes("\t").SequenceEqual(unknown), Is.True);
+
+        //x-ia5-
+        for (int codePage = 20106; codePage <= 20108; codePage++)
+        {
+            encoding = Encoding.GetEncoding(codePage);
+            Assert.That(encoding.WebName.StartsWith("x-ia5-"), Is.True);
+            Assert.That(encoding.GetBytes("?").SequenceEqual(unknown), Is.True);
+            Assert.That(encoding.GetBytes("[").SequenceEqual(unknown), Is.True);
+            Assert.That(encoding.GetBytes("]").SequenceEqual(unknown), Is.True);
+        }
+
+        encoding = Encoding.GetEncoding(20420);
+        Assert.That(encoding.EncodingName, Is.EqualTo("IBM EBCDIC (Arabic)"));
+        unknown = [111];
+        Assert.That(encoding.GetBytes("?").SequenceEqual(unknown), Is.True);
+        Assert.That(encoding.GetBytes("[").SequenceEqual(unknown), Is.True);
+        Assert.That(encoding.GetBytes("]").SequenceEqual(unknown), Is.True);
     }
 
     [Test]
@@ -110,9 +134,10 @@ internal class SystemTextEncodingTest
 
         //<>/: \"'=!-[]?xmlns\r\n\t
         //<>/: \"'=!-[]?\r\n\t
+        //<>/: \"'=!-?xmlns\r\n\t (ok)
         //<>/: \"'=xmlns\r\n\t (ok)
         //<>/: \"'=\r\n\t
-        var abc = "<>/: \"'=xmlns\r\n\t";
+        var abc = "<>/: \"'=!-[]?xmlns\r\n\t";
         var maps = GetMaps(abc).OrderByDescending(x => x.CodePages.Count);
 
         Console.WriteLine($"Abc#{abc.Length}: '{abc}' ");
