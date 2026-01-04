@@ -1,5 +1,6 @@
 ﻿using IT.Markuping.Internal;
 using System;
+using System.Diagnostics;
 
 namespace IT.Markuping;
 
@@ -83,11 +84,13 @@ public static partial class MarkupAlphabets
             }
             if (codePage == 1026 || codePage == 20905)
             {
+                Debug.Assert(MarkupCodePages.EBCDIC_Turkish.IndexOf(codePage) > -1);
                 alphabet = EBCDIC_Turkish;
                 return true;
             }
             if (codePage == 1047 || codePage == 20924)
             {
+                Debug.Assert(MarkupCodePages.IBM_Latin1.IndexOf(codePage) > -1);
                 alphabet = IBM_Latin1;
                 return true;
             }
@@ -129,6 +132,7 @@ public static partial class MarkupAlphabets
             }
             if (codePage == 1026 || codePage == 20905)
             {
+                Debug.Assert(MarkupCodePages.EBCDIC_Turkish.IndexOf(codePage) > -1);
                 alphabet = EBCDIC_Turkish_Strict;
                 return true;
             }

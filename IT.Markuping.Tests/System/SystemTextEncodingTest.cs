@@ -98,7 +98,7 @@ internal class SystemTextEncodingTest
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-        var abc = "<>/: \"'=\r\n\t";//xmlns
+        var abc = "<>/: \"'=";//xmlns
         var maps = GetMaps(abc).OrderByDescending(x => x.CodePages.Count);
 
         Console.WriteLine($"Abc: {abc}");
