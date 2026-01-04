@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace IT.Markuping.Implementation;
 
-public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
+public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
 {
     protected abstract int LtLength { get; }
 
@@ -45,11 +45,11 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
 
     #endregion Protected Methods
 
-    #region ITagFinder
+    #region IMarkupFinder
 
-    public Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes, out TagNS ns)
+    public Tags FirstTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, out int nodes)
     {
-        var opening = First(data, name, out ns, TagEndings.Closing);
+        var opening = FirstTag(data, name, out ns, TagEndings.Closing);
         if (!opening.IsEmpty)
         {
             var closing = FirstClosing(data, name, data.Slice(ns.Start, ns.Length), opening.End, out nodes);
@@ -62,9 +62,9 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
         return default;
     }
 
-    public Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes, ReadOnlySpan<T> ns)
+    public Tags FirstTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, out int nodes)
     {
-        var opening = First(data, name, ns, TagEndings.Closing);
+        var opening = FirstTag(data, name, ns, TagEndings.Closing);
         if (!opening.IsEmpty)
         {
             var closing = FirstClosing(data, name, ns, opening.End, out nodes);
@@ -77,9 +77,9 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
         return default;
     }
 
-    public Tags FirstPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes)
+    public Tags FirstTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes)
     {
-        var opening = First(data, name, TagEndings.Closing);
+        var opening = FirstTag(data, name, TagEndings.Closing);
         if (!opening.IsEmpty)
         {
             var closing = FirstClosing(data, name, default, opening.End, out nodes);
@@ -92,9 +92,9 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
         return default;
     }
 
-    public Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes, out TagNS ns)
+    public Tags LastTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, out int nodes)
     {
-        var closing = LastClosing(data, name, out ns);
+        var closing = LastTagClosing(data, name, out ns);
         if (!closing.IsEmpty)
         {
             var opening = LastOpening(data.Slice(0, closing.Start), name, data.Slice(ns.Start, ns.Length), out nodes);
@@ -108,9 +108,9 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
         return default;
     }
 
-    public Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes, ReadOnlySpan<T> ns)
+    public Tags LastTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, out int nodes)
     {
-        var closing = LastClosing(data, name, ns);
+        var closing = LastTagClosing(data, name, ns);
         if (!closing.IsEmpty)
         {
             var opening = LastOpening(data.Slice(0, closing.Start), name, ns, out nodes);
@@ -123,9 +123,9 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
         return default;
     }
 
-    public Tags LastPair(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes)
+    public Tags LastTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes)
     {
-        var closing = LastClosing(data, name);
+        var closing = LastTagClosing(data, name);
         if (!closing.IsEmpty)
         {
             var opening = LastOpening(data.Slice(0, closing.Start), name, default, out nodes);
@@ -138,7 +138,7 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
         return default;
     }
 
-    public Tag First(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, TagEndings endings = default)
+    public Tag FirstTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, TagEndings endings = default)
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
 
@@ -171,10 +171,10 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
         return default;
     }
 
-    public Tag First(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, TagEndings endings = default)
-        => ns.IsEmpty ? First(data, name, endings) : FirstNS(data, name, ns, endings);
+    public Tag FirstTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, TagEndings endings = default)
+        => ns.IsEmpty ? FirstTag(data, name, endings) : FirstNS(data, name, ns, endings);
 
-    public Tag First(ReadOnlySpan<T> data, ReadOnlySpan<T> name, TagEndings endings = default)
+    public Tag FirstTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, TagEndings endings = default)
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
 
@@ -204,7 +204,7 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
         return default;
     }
 
-    public Tag Last(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, TagEndings endings = default)
+    public Tag LastTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, TagEndings endings = default)
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
 
@@ -229,10 +229,10 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
         return default;
     }
 
-    public Tag Last(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, TagEndings endings = default)
-        => ns.IsEmpty ? Last(data, name, endings) : LastNS(data, name, ns, endings);
+    public Tag LastTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, TagEndings endings = default)
+        => ns.IsEmpty ? LastTag(data, name, endings) : LastNS(data, name, ns, endings);
 
-    public Tag Last(ReadOnlySpan<T> data, ReadOnlySpan<T> name, TagEndings endings = default)
+    public Tag LastTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, TagEndings endings = default)
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
 
@@ -256,10 +256,10 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
         return default;
     }
 
-    public TagClosing FirstClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns)
-        => ns.IsEmpty ? FirstClosing(data, name) : FirstClosingNS(data, name, ns);
+    public TagClosing FirstTagClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns)
+        => ns.IsEmpty ? FirstTagClosing(data, name) : FirstClosingNS(data, name, ns);
 
-    public TagClosing FirstClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name)
+    public TagClosing FirstTagClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name)
     {
         var namelen = name.Length;
         Debug.Assert(namelen > 0);
@@ -286,7 +286,7 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
         return default;
     }
 
-    public TagClosing LastClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns)
+    public TagClosing LastTagClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns)
     {
         var namelen = name.Length;
         Debug.Assert(namelen > 0);
@@ -310,10 +310,10 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
         return default;
     }
 
-    public TagClosing LastClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns)
-        => ns.IsEmpty ? LastClosing(data, name) : LastClosingNS(data, name, ns);
+    public TagClosing LastTagClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns)
+        => ns.IsEmpty ? LastTagClosing(data, name) : LastClosingNS(data, name, ns);
 
-    public TagClosing LastClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name)
+    public TagClosing LastTagClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name)
     {
         var namelen = name.Length;
         Debug.Assert(namelen > 0);
@@ -336,7 +336,7 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
         return default;
     }
 
-    #endregion
+    #endregion IMarkupFinder
 
     #region Private Methods
 
@@ -353,7 +353,7 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
             //var str = GetString(data);
 #endif
 
-            var closing = FirstClosing(data, name, ns);
+            var closing = FirstTagClosing(data, name, ns);
             if (closing.IsEmpty) break;
 
             count += CountFirst(data.Slice(0, closing.Start), name, ns) - 1;
@@ -377,7 +377,7 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
             //var str = GetString(data);
 #endif
 
-            var opening = First(data, name, ns, TagEndings.Closing);
+            var opening = FirstTag(data, name, ns, TagEndings.Closing);
             if (opening.IsEmpty) break;
 
             data = data.Slice(opening.End);
@@ -396,7 +396,7 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
             //var str = GetString(data);
 #endif
 
-            var opening = Last(data, name, ns, TagEndings.Closing);
+            var opening = LastTag(data, name, ns, TagEndings.Closing);
             if (opening.IsEmpty) break;
 
             count += CountLastClosing(data.Slice(opening.End), name, ns) - 1;
@@ -419,7 +419,7 @@ public abstract class BaseTagFinder<T> : ITagFinder<T> where T : unmanaged
             //var str = GetString(data);
 #endif
 
-            var closing = LastClosing(data, name, ns);
+            var closing = LastTagClosing(data, name, ns);
             if (closing.IsEmpty) break;
 
             data = data.Slice(0, closing.Start);

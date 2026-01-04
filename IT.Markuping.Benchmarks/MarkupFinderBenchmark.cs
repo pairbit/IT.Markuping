@@ -10,7 +10,7 @@ namespace IT.Markuping.Benchmarks;
 [MemoryDiagnoser]
 [MinColumn, MaxColumn]
 [Orderer(SummaryOrderPolicy.FastestToSlowest, MethodOrderPolicy.Declared)]
-public class TagFinderBenchmark
+public class MarkupFinderBenchmark
 {
     public readonly struct Data
     {
@@ -108,44 +108,44 @@ public class TagFinderBenchmark
     public bool IsTrueAuto() => _map.IsTrueAuto(_by);
 
     [Benchmark]
-    public Tags Utf8() => FirstPair(TagFinders.Utf8, _utf8);
+    public Tags Utf8() => FirstTags(MarkupFinders.Utf8, _utf8);
 
     [Benchmark]
-    public Tags Utf8_OtherSpaces() => FirstPair(TagFinders.OtherSpaces_Utf8, _utf8);
+    public Tags Utf8_OtherSpaces() => FirstTags(MarkupFinders.OtherSpaces.Utf8, _utf8);
 
     [Benchmark]
-    public Tags Europa() => FirstPair(TagFinders.Europa, _utf8);
+    public Tags Europa() => FirstTags(MarkupFinders.Europa, _utf8);
 
     [Benchmark]
-    public Tags Europa_OtherSpace() => FirstPair(TagFinders.OtherSpace_Europa, _utf8);
+    public Tags Europa_OtherSpace() => FirstTags(MarkupFinders.OtherSpaces.Europa, _utf8);
 
-    //[Benchmark]
-    public Tags Utf16() => FirstPair(TagFinders.Utf16, _utf16);
+    [Benchmark]
+    public Tags Utf16() => FirstTags(MarkupFinders.Utf16, _utf16);
 
-    //[Benchmark]
-    public Tags Utf16BE() => FirstPair(TagFinders.Utf16BE, _utf16BE);
+    [Benchmark]
+    public Tags Utf16BE() => FirstTags(MarkupFinders.Utf16BE, _utf16BE);
 
-    //[Benchmark]
-    public Tags Utf32() => FirstPair(TagFinders.Utf32, _utf32);
+    [Benchmark]
+    public Tags Utf32() => FirstTags(MarkupFinders.Utf32, _utf32);
 
-    //[Benchmark]
-    public Tags Utf32BE() => FirstPair(TagFinders.Utf32BE, _utf32BE);
+    [Benchmark]
+    public Tags Utf32BE() => FirstTags(MarkupFinders.Utf32BE, _utf32BE);
 
-    //[Benchmark]
-    public Tags Utf16_Complex() => FirstPair(TagFinders.Complex_Utf16, _utf16);
+    [Benchmark]
+    public Tags Utf16_Complex() => FirstTags(MarkupFinders.Complex.Utf16, _utf16);
 
-    //[Benchmark]
-    public Tags Utf16BE_Complex() => FirstPair(TagFinders.Complex_Utf16BE, _utf16BE);
+    [Benchmark]
+    public Tags Utf16BE_Complex() => FirstTags(MarkupFinders.Complex.Utf16BE, _utf16BE);
 
-    //[Benchmark]
-    public Tags Utf32_Complex() => FirstPair(TagFinders.Complex_Utf32, _utf32);
+    [Benchmark]
+    public Tags Utf32_Complex() => FirstTags(MarkupFinders.Complex.Utf32, _utf32);
 
-    //[Benchmark]
-    public Tags Utf32BE_Complex() => FirstPair(TagFinders.Complex_Utf32BE, _utf32BE);
+    [Benchmark]
+    public Tags Utf32BE_Complex() => FirstTags(MarkupFinders.Complex.Utf32BE, _utf32BE);
 
-    private Tags FirstPair(ITagFinder<byte> finder, Data data)
+    private Tags FirstTags(IMarkupFinder<byte> finder, Data data)
     {
-        var tags = finder.FirstPair(data._data, data._name, out var nodes);
+        var tags = finder.FirstTags(data._data, data._name, out var nodes);
 
         if (!data._data.AsSpan().Slice(tags.Start, tags.Length).SequenceEqual(data._data) || nodes != _count)
             throw new InvalidOperationException();

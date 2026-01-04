@@ -1,10 +1,11 @@
 ﻿using IT.Markuping.Internal;
 using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace IT.Markuping.Implementation;
 
-internal class StrictTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
+public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatable<T>
 {
     public readonly struct Tokens
     {
@@ -15,8 +16,9 @@ internal class StrictTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquat
         internal readonly T _space;//" "
         internal readonly T _quot;//"
         internal readonly T _eq;//=
+        internal readonly T _apos;//'
 
-        public Tokens(T lt, T gt, T slash, T colon, T space, T quot, T eq)
+        public Tokens(T lt, T gt, T slash, T colon, T space, T quot, T eq, T apos)
         {
             _lt = lt;
             _gt = gt;
@@ -25,6 +27,15 @@ internal class StrictTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquat
             _space = space;
             _quot = quot;
             _eq = eq;
+            _apos = apos;
+        }
+
+        public Tokens(MarkupTokens<T> tokens)
+        {
+            if (Unsafe.SizeOf<MarkupTokens<T>>() < Unsafe.SizeOf<Tokens>())
+                throw new ArgumentOutOfRangeException(nameof(tokens));
+
+            this = Unsafe.As<MarkupTokens<T>, Tokens>(ref tokens);
         }
     }
 
@@ -38,12 +49,15 @@ internal class StrictTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquat
 
     protected override int LtSlashColonLength => 3;
 
-    public StrictTagFinder(Tokens tokens)
+    public MarkupFinder(Tokens tokens)
     {
         _tokens = tokens;
     }
 
     protected virtual bool IsSpace(T value) => value.Equals(_tokens._space);
+
+    protected virtual bool Equals(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
+        => data.SequenceEqual(value);
 
     protected override int IndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.IndexOf(value);
@@ -66,7 +80,7 @@ internal class StrictTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquat
 
         return data[start++].Equals(_tokens._lt) &&
                data[start + ns.Length].Equals(_tokens._colon) &&
-               data.Slice(start, ns.Length).SequenceEqual(ns);
+               Equals(data.Slice(start, ns.Length), ns);
     }
 
     protected override bool IsStartOpening(ReadOnlySpan<T> data, ref int start, out TagNS ns)
@@ -93,7 +107,8 @@ internal class StrictTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquat
                     ns = new(new StartEnd(start + 1, endNS));
                     return true;
                 }
-                else if (IsSpace(token) || token.Equals(_tokens._slash) || token.Equals(_tokens._quot))
+                //TODO: add colon || gt || eq?
+                else if (IsSpace(token) || token.Equals(_tokens._slash) || token.Equals(_tokens._quot) || token.Equals(_tokens._apos))
                 {
                     break;
                 }
@@ -117,7 +132,7 @@ internal class StrictTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquat
         return data[start++].Equals(_tokens._lt) &&
                data[start++].Equals(_tokens._slash) &&
                data[start + ns.Length].Equals(_tokens._colon) &&
-               data.Slice(start, ns.Length).SequenceEqual(ns);
+               Equals(data.Slice(start, ns.Length), ns);
     }
 
     protected override bool IsStartClosing(ReadOnlySpan<T> data, ref int start, out TagNS ns)
@@ -152,7 +167,8 @@ internal class StrictTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquat
                     }
                     break;
                 }
-                else if (token.Equals(_tokens._quot))
+                //TODO: add IsSpace || colon || gt || eq?
+                else if (token.Equals(_tokens._quot) || token.Equals(_tokens._apos))
                 {
                     break;
                 }
@@ -260,6 +276,15 @@ internal class StrictTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquat
                 if (end + 1 >= data.Length) break;
 
                 var index = data.Slice(end).IndexOf(_tokens._quot);
+                if (index < 0) break;
+                end += index + 1;
+            }
+            else if (token.Equals(_tokens._apos))
+            {
+                //Добавляем еще длину gt
+                if (end + 1 >= data.Length) break;
+
+                var index = data.Slice(end).IndexOf(_tokens._apos);
                 if (index < 0) break;
                 end += index + 1;
             }

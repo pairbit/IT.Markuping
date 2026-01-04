@@ -1,7 +1,7 @@
 ﻿using IT.Markuping.Benchmarks;
 using System;
 
-new TagFinderBenchmark().Test();
-BenchmarkDotNet.Running.BenchmarkRunner.Run<TagFinderBenchmark>();
+new MarkupFinderBenchmark().Test();
+BenchmarkDotNet.Running.BenchmarkRunner.Run<MarkupFinderBenchmark>();
 
 Console.WriteLine("End....");
