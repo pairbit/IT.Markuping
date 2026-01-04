@@ -153,7 +153,7 @@ internal class SystemTextEncodingTest
 #if NET
         [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)]
 #endif
-    out EncodingMap? map)
+    out EncodingMap map)
     {
         for (int i = 0; i < maps.Count; i++)
         {
@@ -163,7 +163,11 @@ internal class SystemTextEncodingTest
                 return true;
             }
         }
-        map = null;
+        map = null
+#if !NET
+        !
+#endif
+            ;
         return false;
     }
 }
