@@ -45,7 +45,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
 
     #endregion Protected Methods
 
-    #region ITagFinder
+    #region IMarkupFinder
 
     public Tags FirstTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, out int nodes)
     {
@@ -336,7 +336,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         return default;
     }
 
-    #endregion
+    #endregion IMarkupFinder
 
     #region Private Methods
 

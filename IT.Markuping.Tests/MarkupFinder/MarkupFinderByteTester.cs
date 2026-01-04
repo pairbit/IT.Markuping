@@ -30,11 +30,11 @@ internal class MarkupFinderByteTester
         var startClosing = _encoding.GetBytes("</");
         var startClosingNS = _encoding.GetBytes("</ns:");
         var ns = _encoding.GetBytes("ns");
-        //if (_finder is TagFinder<byte> tagFinder)
+        //if (_finder is MarkupFinder<byte> finder)
         //{
-        //    Assert.That(tagFinder.IsStartClosing(startClosing, 0), Is.True);
-        //    Assert.That(tagFinder.IsStartClosing(startClosingNS, 0, ns), Is.True);
-        //    Assert.That(tagFinder.IsStartOpening(startOpeningNS, 0, ns), Is.True);
+        //    Assert.That(finder.IsStartClosing(startClosing, 0), Is.True);
+        //    Assert.That(finder.IsStartClosing(startClosingNS, 0, ns), Is.True);
+        //    Assert.That(finder.IsStartOpening(startOpeningNS, 0, ns), Is.True);
         //}
     }
 

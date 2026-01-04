@@ -28,9 +28,9 @@ internal class MarkupFinderByteTest
             var codePage = encodingInfo.CodePage;
             var encoding = encodingInfo.GetEncoding();
 
-            if (MarkupFinders.TryGet(codePage, out var tagFinder))
+            if (MarkupFinders.TryGet(codePage, out var finder))
             {
-                Test(tagFinder, encoding);
+                Test(finder, encoding);
             }
             else
             {

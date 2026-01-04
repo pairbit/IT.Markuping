@@ -54,55 +54,55 @@ public static class MarkupFinders
 #if !NETSTANDARD2_0
         [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)]
 #endif
-        out IMarkupFinder<byte> tagFinder
+        out IMarkupFinder<byte> finder
     )
     {
         if (MarkupCodePages.Utf8.AsSpan().IndexOf(codePage) > -1)
         {
-            tagFinder = Utf8;
+            finder = Utf8;
             return true;
         }
         if (codePage == 29001)
         {
-            tagFinder = Europa;
+            finder = Europa;
             return true;
         }
         if (MarkupCodePages.EBCDIC.AsSpan().IndexOf(codePage) > -1)
         {
-            tagFinder = EBCDIC;
+            finder = EBCDIC;
             return true;
         }
         if (codePage == 1026 || codePage == 20905)
         {
-            tagFinder = EBCDIC_Turkish;
+            finder = EBCDIC_Turkish;
             return true;
         }
         if (codePage == 1047 || codePage == 20924)
         {
-            tagFinder = IBM_Latin1;
+            finder = IBM_Latin1;
             return true;
         }
         if (codePage == 1200)
         {
-            tagFinder = Utf16;
+            finder = Utf16;
             return true;
         }
         if (codePage == 1201)
         {
-            tagFinder = Utf16BE;
+            finder = Utf16BE;
             return true;
         }
         if (codePage == 12000)
         {
-            tagFinder = Utf32;
+            finder = Utf32;
             return true;
         }
         if (codePage == 12001)
         {
-            tagFinder = Utf32BE;
+            finder = Utf32BE;
             return true;
         }
-        tagFinder = null
+        finder = null
 #if NETSTANDARD2_0
         !
 #endif
@@ -111,44 +111,44 @@ public static class MarkupFinders
     }
 
     /*
-     public static bool TryGetStrict(int codePage, [MaybeNullWhen(false)] out ITagFinder<byte> tagFinder)
+     public static bool TryGetStrict(int codePage, [MaybeNullWhen(false)] out IMarkupFinder<byte> finder)
     {
         if (Utf8_Strict.CodePages.IndexOf(codePage) > -1)
         {
-            tagFinder = Utf8_Strict;
+            finder = Utf8_Strict;
             return true;
         }
         if (EBCDIC_Strict.CodePages.IndexOf(codePage) > -1)
         {
-            tagFinder = EBCDIC_Strict;
+            finder = EBCDIC_Strict;
             return true;
         }
         if (codePage == 1026 || codePage == 20905)
         {
-            tagFinder = EBCDIC_Turkish_Strict;
+            finder = EBCDIC_Turkish_Strict;
             return true;
         }
         if (codePage == 1200)
         {
-            tagFinder = Utf16_Strict;
+            finder = Utf16_Strict;
             return true;
         }
         if (codePage == 1201)
         {
-            tagFinder = Utf16BE_Strict;
+            finder = Utf16BE_Strict;
             return true;
         }
         if (codePage == 12000)
         {
-            tagFinder = Utf32_Strict;
+            finder = Utf32_Strict;
             return true;
         }
         if (codePage == 12001)
         {
-            tagFinder = Utf32BE_Strict;
+            finder = Utf32BE_Strict;
             return true;
         }
-        tagFinder = null;
+        finder = null;
         return false;
     }
      */
