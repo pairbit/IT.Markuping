@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace IT.Markuping.Implementation;
 
-public abstract class BaseTagFinder<T> : IMarkupFinder<T> where T : unmanaged
+public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
 {
     protected abstract int LtLength { get; }
 

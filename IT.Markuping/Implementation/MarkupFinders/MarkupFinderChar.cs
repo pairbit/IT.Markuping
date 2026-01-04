@@ -4,13 +4,13 @@ using System;
 
 namespace IT.Markuping.Implementation;
 
-public class TagFinderChar : OtherSpacesTagFinder<char>
+public class MarkupFinderChar : OtherSpacesMarkupFinder<char>
 {
 #if NET
     private readonly StringComparison _comparison;
 #endif
 
-    public TagFinderChar(Tokens tokens, char cr, char lf, char tab
+    public MarkupFinderChar(Tokens tokens, char cr, char lf, char tab
 #if NET
         , StringComparison comparison = StringComparison.Ordinal
 #endif
@@ -21,7 +21,7 @@ public class TagFinderChar : OtherSpacesTagFinder<char>
 #endif
     }
 
-    public TagFinderChar(MarkupTokens<char> tokens
+    public MarkupFinderChar(MarkupTokens<char> tokens
 #if NET
         , StringComparison comparison = StringComparison.Ordinal
 #endif

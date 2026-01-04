@@ -2,16 +2,16 @@
 
 namespace IT.Markuping.Implementation;
 
-public class OtherSpaceTagFinder<T> : TagFinder<T> where T : unmanaged, IEquatable<T>
+public class OtherSpaceMarkupFinder<T> : MarkupFinder<T> where T : unmanaged, IEquatable<T>
 {
     private readonly T _otherSpace;
 
-    public OtherSpaceTagFinder(Tokens tokens, T otherSpace) : base(tokens)
+    public OtherSpaceMarkupFinder(Tokens tokens, T otherSpace) : base(tokens)
     {
         _otherSpace = otherSpace;
     }
 
-    public OtherSpaceTagFinder(MarkupTokens<T> tokens) : base(new(tokens))
+    public OtherSpaceMarkupFinder(MarkupTokens<T> tokens) : base(new(tokens))
     {
         if (!tokens._cr.Equals(tokens._lf) || !tokens._cr.Equals(tokens._tab)) throw new ArgumentOutOfRangeException(nameof(tokens));
 

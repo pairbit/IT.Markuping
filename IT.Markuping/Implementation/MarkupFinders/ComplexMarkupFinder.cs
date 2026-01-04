@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace IT.Markuping.Implementation;
 
-public class ComplexTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquatable<T>
+public class ComplexMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatable<T>
 {
     private readonly T[] _lt;
     private readonly T[] _gt;
@@ -25,7 +25,7 @@ public class ComplexTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquata
 
     protected override int LtSlashColonLength => _lt.Length + _slash.Length + _colon.Length;
 
-    public ComplexTagFinder(int length, T[] lt, T[] gt, T[] slash, T[] colon,
+    public ComplexMarkupFinder(int length, T[] lt, T[] gt, T[] slash, T[] colon,
         /*T[] space,*/ T[] quot, T[] eq, T[] apos, T[][] spaces)
     {
         _size = length;
@@ -40,7 +40,7 @@ public class ComplexTagFinder<T> : BaseTagFinder<T> where T : unmanaged, IEquata
         _spaces = spaces;
     }
 
-    public ComplexTagFinder(MarkupAlphabet<T> abc)
+    public ComplexMarkupFinder(MarkupAlphabet<T> abc)
     {
         _size = abc.Size;
         _lt = abc.LT.ToArray();

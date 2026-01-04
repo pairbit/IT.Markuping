@@ -2,20 +2,20 @@
 
 namespace IT.Markuping.Implementation;
 
-public class OtherSpacesTagFinder<T> : TagFinder<T> where T : unmanaged, IEquatable<T>
+public class OtherSpacesMarkupFinder<T> : MarkupFinder<T> where T : unmanaged, IEquatable<T>
 {
     private readonly T _cr;//\r
     private readonly T _lf;//\n
     private readonly T _tab;//\t
 
-    public OtherSpacesTagFinder(Tokens tokens, T cr, T lf, T tab) : base(tokens)
+    public OtherSpacesMarkupFinder(Tokens tokens, T cr, T lf, T tab) : base(tokens)
     {
         _cr = cr;
         _lf = lf;
         _tab = tab;
     }
 
-    public OtherSpacesTagFinder(MarkupTokens<T> tokens) : base(new(tokens))
+    public OtherSpacesMarkupFinder(MarkupTokens<T> tokens) : base(new(tokens))
     {
         _cr = tokens._cr;
         _lf = tokens._lf;
