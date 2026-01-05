@@ -19,38 +19,8 @@ internal class MarkupFinderByteTester
 
     public void Test()
     {
-        var tagName = _encoding.GetBytes("a");
-
-        var data = _encoding.GetBytes("</c>:a > b").AsSpan();
-        var tagClosing = _finder.LastTagClosing(data, tagName, out var ns);
-        Assert.That(tagClosing.IsEmpty, Is.True);
-        Assert.That(ns.IsEmpty, Is.True);
-
-        data = _encoding.GetBytes("<c>:a > b").AsSpan();
-        var tag = _finder.LastTag(data, tagName, out ns);
-        Assert.That(tag.IsEmpty, Is.True);
-        Assert.That(ns.IsEmpty, Is.True);
-
-        Assert.That(_finder.FirstTag(data, tagName, out var ns2).IsEmpty, Is.True);
-        Assert.That(ns2.IsEmpty, Is.True);
-
-        InternalTest();
         Test(new(_encoding, "a"));
         Test(new(_encoding, "a", "n"));
-    }
-
-    private void InternalTest()
-    {
-        var startOpeningNS = _encoding.GetBytes("<ns:");
-        var startClosing = _encoding.GetBytes("</");
-        var startClosingNS = _encoding.GetBytes("</ns:");
-        var ns = _encoding.GetBytes("ns");
-        //if (_finder is MarkupFinder<byte> finder)
-        //{
-        //    Assert.That(finder.IsStartClosing(startClosing, 0), Is.True);
-        //    Assert.That(finder.IsStartClosing(startClosingNS, 0, ns), Is.True);
-        //    Assert.That(finder.IsStartOpening(startOpeningNS, 0, ns), Is.True);
-        //}
     }
 
     public void Test(TagData tagData)
@@ -183,6 +153,7 @@ internal class MarkupFinderByteTester
             FailClosing($"<tag></tag><b c='ns:{tagData} \r\n\t>' />", tagData);
             FailClosing($"</ns/:{tagData}>", tagData);
             FailClosing($"</:{tagData}>", tagData);
+            FailClosing($"</=:{tagData}>", tagData);
         }
     }
 

@@ -59,7 +59,7 @@ public class ComplexMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, I
         IsSeq(data, _gt, start) ||
         IsSeq(data, _colon, start) ||
         IsSeq(data, _eq, start) ||
-        IsSeq(data, _quot, start) || 
+        IsSeq(data, _quot, start) ||
         IsSeq(data, _apos, start);
 
     protected override int IndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
@@ -158,54 +158,42 @@ public class ComplexMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, I
 
     protected override bool IsStartClosing(ReadOnlySpan<T> data, ref int start, out TagNS ns)
     {
-        var startClosingLength = _lt.Length + _slash.Length;
+        var sizeDouble = _size * 2;
 
         Debug.Assert(start < data.Length);
-        Debug.Assert(start >= startClosingLength);
+        Debug.Assert(start >= sizeDouble);
 
-        if (data.Slice(start - _slash.Length, _slash.Length).SequenceEqual(_slash))
+        start -= _size;
+        if (data.Slice(start, _slash.Length).SequenceEqual(_slash))
         {
-            start -= startClosingLength;
+            start -= _size;
             ns = default;
             return data.Slice(start, _lt.Length).SequenceEqual(_lt);
         }
 
-        start -= _colon.Length;
-        if (start > startClosingLength && data.Slice(start, _colon.Length).SequenceEqual(_colon))
+        if (start > sizeDouble && data.Slice(start, _colon.Length).SequenceEqual(_colon))
         {
             var endNS = start;
             do
             {
-                if (data.Slice(start - _slash.Length, _slash.Length).SequenceEqual(_slash))
+                start -= _size;
+                if (IsSeq(data, _slash, start))
                 {
-                    if (data.Slice(start - startClosingLength, _lt.Length).SequenceEqual(_lt))
+                    start -= _size;
+                    if (IsSeq(data, _lt, start))
                     {
-                        Debug.Assert(endNS > start);
+                        Debug.Assert(endNS > start + sizeDouble);
 
-                        ns = new(new StartEnd(start, endNS));
-                        start -= startClosingLength;
+                        ns = new(new StartEnd(start + sizeDouble, endNS));
                         return true;
                     }
                     break;
                 }
-                else if (start >= _gt.Length && data.Slice(start - _gt.Length, _gt.Length).SequenceEqual(_gt))
+                else if (IsInvalidNS(data, start))
                 {
                     break;
                 }
-                else if (start >= _quot.Length && data.Slice(start - _quot.Length, _quot.Length).SequenceEqual(_quot))
-                {
-                    break;
-                }
-                else if (start >= _apos.Length && data.Slice(start - _apos.Length, _apos.Length).SequenceEqual(_apos))
-                {
-                    break;
-                }
-                else
-                {
-                    //TODO: спорное решение для байтов переменной длины
-                    start -= _size;
-                }
-            } while (start >= startClosingLength);
+            } while (start >= sizeDouble);
         }
         ns = default;
         return false;
