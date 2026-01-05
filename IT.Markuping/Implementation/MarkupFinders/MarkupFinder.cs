@@ -110,10 +110,13 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
                 token = data[--start];
                 if (token.Equals(_tokens._lt))
                 {
-                    Debug.Assert(endNS > start + 1);
-
-                    ns = new(new StartEnd(start + 1, endNS));
-                    return true;
+                    var startNS = start + 1;
+                    if (endNS > startNS)
+                    {
+                        ns = new(new StartEnd(startNS, endNS));
+                        return true;
+                    }
+                    break;
                 }
                 else if (token.Equals(_tokens._slash) || IsInvalidNS(token))
                 {
@@ -167,10 +170,12 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
                 {
                     if (data[--start].Equals(_tokens._lt))
                     {
-                        Debug.Assert(endNS > start + 2);
-
-                        ns = new(new StartEnd(start + 2, endNS));
-                        return true;
+                        var startNS = start + 2;
+                        if (endNS > startNS)
+                        {
+                            ns = new(new StartEnd(startNS, endNS));
+                            return true;
+                        }
                     }
                     break;
                 }

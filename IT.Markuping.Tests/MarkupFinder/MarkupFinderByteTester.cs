@@ -154,6 +154,8 @@ internal class MarkupFinderByteTester
             FailClosing($"</ns/:{tagData}>", tagData);
             FailClosing($"</:{tagData}>", tagData);
             FailClosing($"</=:{tagData}>", tagData);
+            FailClosing($"</n:s:{tagData}>", tagData);
+            FailClosing($" </:{tagData}>", tagData);
         }
     }
 
@@ -345,6 +347,9 @@ internal class MarkupFinderByteTester
             FailFirstLast($"<b c=':{tagData} \r\n\t d=\">\">' />", tagData);
             FailFirstLast($"<b c='ns:{tagData} \r\n\t d=\">\">' />", tagData);
             FailFirstLast($"<:{tagData}>", tagData);
+            FailFirstLast($" <:{tagData}>", tagData);
+            FailFirstLast($"<=:{tagData}>", tagData);
+            FailFirstLast($"<n:s:{tagData}>", tagData);
         }
 
         var encoding = _encoding;

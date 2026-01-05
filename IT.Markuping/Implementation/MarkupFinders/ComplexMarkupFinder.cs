@@ -112,10 +112,13 @@ public class ComplexMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, I
                 start -= _size;
                 if (IsSeq(data, _lt, start))
                 {
-                    Debug.Assert(endNS > start + _lt.Length);
-
-                    ns = new(new StartEnd(start + _lt.Length, endNS));
-                    return true;
+                    var startNS = start + _lt.Length;
+                    if (endNS > startNS)
+                    {
+                        ns = new(new StartEnd(startNS, endNS));
+                        return true;
+                    }
+                    break;
                 }
                 else if (IsSeq(data, _slash, start) || IsInvalidNS(data, start))
                 {
@@ -182,10 +185,12 @@ public class ComplexMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, I
                     start -= _size;
                     if (IsSeq(data, _lt, start))
                     {
-                        Debug.Assert(endNS > start + sizeDouble);
-
-                        ns = new(new StartEnd(start + sizeDouble, endNS));
-                        return true;
+                        var startNS = start + sizeDouble;
+                        if (endNS > startNS)
+                        {
+                            ns = new(new StartEnd(startNS, endNS));
+                            return true;
+                        }
                     }
                     break;
                 }
