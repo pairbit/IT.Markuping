@@ -1,12 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace IT.Markuping.Tests;
 
 internal class SystemTextEncodingTest
 {
-    [Test]
+    class EncodingMap
+    {
+        public List<int> CodePages { get; set; } = new();
+
+        public byte[] Bytes { get; set; } = [];
+
+        public bool IsSingle { get; set; }
+
+        public bool HasDuplicates { get; set; }
+    }
+
+    //[Test]
     public void Xml_GetEncodings_Test()
     {
         //<>/: \"'=!-[]?\r\n\t
@@ -81,5 +93,123 @@ internal class SystemTextEncodingTest
             var encoding = Encoding.GetEncoding(codePage);
             Console.WriteLine($"{codePage,5} | {encoding.EncodingName,40} | {encoding.WebName,25} | {encoding.HeaderName,25} | {encoding.BodyName,25}");
         }
+    }
+    
+    [Test]
+    public void UnknownTest()
+    {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+        var encoding = Encoding.GetEncoding(29001);
+        Assert.That(encoding.WebName, Is.EqualTo("x-europa"));
+
+        byte[] unknown = [63];
+        Assert.That(encoding.GetBytes("?").SequenceEqual(unknown), Is.True);
+        Assert.That(encoding.GetBytes("\r").SequenceEqual(unknown), Is.True);
+        Assert.That(encoding.GetBytes("\n").SequenceEqual(unknown), Is.True);
+        Assert.That(encoding.GetBytes("\t").SequenceEqual(unknown), Is.True);
+
+        //x-ia5-
+        for (int codePage = 20106; codePage <= 20108; codePage++)
+        {
+            encoding = Encoding.GetEncoding(codePage);
+            Assert.That(encoding.WebName.StartsWith("x-ia5-"), Is.True);
+            Assert.That(encoding.GetBytes("?").SequenceEqual(unknown), Is.True);
+            Assert.That(encoding.GetBytes("[").SequenceEqual(unknown), Is.True);
+            Assert.That(encoding.GetBytes("]").SequenceEqual(unknown), Is.True);
+        }
+
+        encoding = Encoding.GetEncoding(20420);
+        Assert.That(encoding.EncodingName, Is.EqualTo("IBM EBCDIC (Arabic)"));
+        unknown = [111];
+        Assert.That(encoding.GetBytes("?").SequenceEqual(unknown), Is.True);
+        Assert.That(encoding.GetBytes("[").SequenceEqual(unknown), Is.True);
+        Assert.That(encoding.GetBytes("]").SequenceEqual(unknown), Is.True);
+    }
+
+    [Test]
+    public void MappingTest()
+    {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+        //<>/: \"'=!-[]?xmlns\r\n\t
+        //<>/: \"'=!-[]?\r\n\t
+        //<>/: \"'=!-?xmlns\r\n\t (ok)
+        //<>/: \"'=xmlns\r\n\t (ok)
+        //<>/: \"'=\r\n\t
+        var abc = "<>/: \"'=!-[]?xmlns\r\n\t";
+        var maps = GetMaps(abc).OrderByDescending(x => x.CodePages.Count);
+
+        Console.WriteLine($"Abc#{abc.Length}: '{abc}' ");
+        foreach (var map in maps)
+        {
+            Console.WriteLine($"\nSingle: {map.IsSingle}, HasDuplicates: {map.HasDuplicates}");
+            Console.WriteLine($"Bytes: {string.Join(", ", map.Bytes)}");
+            Console.WriteLine($"CodePages: {string.Join(", ", map.CodePages)}");
+            foreach (var codePage in map.CodePages)
+            {
+                var encoding = Encoding.GetEncoding(codePage);
+                Console.WriteLine($"{codePage,5} | {encoding.EncodingName,40} | {encoding.WebName,25} | {encoding.HeaderName,25} | {encoding.BodyName,25}");
+            }
+        }
+    }
+
+    private static List<EncodingMap> GetMaps(string abc)
+    {
+        var maps = new List<EncodingMap>();
+        var encodingInfos = Encoding.GetEncodings();
+        foreach (var encodingInfo in encodingInfos)
+        {
+            var codePage = encodingInfo.CodePage;
+            if (codePage == 1200 || codePage == 1201 ||
+                codePage == 12000 || codePage == 12001 ||
+                codePage == 65000) continue;
+
+            var encoding = encodingInfo.GetEncoding();
+            var bytes = encoding.GetBytes(abc);
+            if (TryFindMap(maps, bytes, out var map))
+            {
+                map.CodePages.Add(codePage);
+            }
+            else
+            {
+                maps.Add(new()
+                {
+                    Bytes = bytes,
+                    CodePages = new() { codePage },
+                    IsSingle = bytes.Length == abc.Length,
+                    HasDuplicates = bytes.Distinct().Count() != abc.Length
+                });
+            }
+        }
+
+        foreach (var map in maps)
+        {
+            map.CodePages.Sort();
+        }
+
+        return maps;
+    }
+
+    private static bool TryFindMap(IList<EncodingMap> maps, byte[] bytes,
+#if NET
+        [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)]
+#endif
+    out EncodingMap map)
+    {
+        for (int i = 0; i < maps.Count; i++)
+        {
+            map = maps[i];
+            if (map.Bytes.SequenceEqual(bytes))
+            {
+                return true;
+            }
+        }
+        map = null
+#if !NET
+        !
+#endif
+            ;
+        return false;
     }
 }

@@ -19,23 +19,8 @@ internal class MarkupFinderByteTester
 
     public void Test()
     {
-        InternalTest();
         Test(new(_encoding, "a"));
         Test(new(_encoding, "a", "n"));
-    }
-
-    private void InternalTest()
-    {
-        var startOpeningNS = _encoding.GetBytes("<ns:");
-        var startClosing = _encoding.GetBytes("</");
-        var startClosingNS = _encoding.GetBytes("</ns:");
-        var ns = _encoding.GetBytes("ns");
-        //if (_finder is MarkupFinder<byte> finder)
-        //{
-        //    Assert.That(finder.IsStartClosing(startClosing, 0), Is.True);
-        //    Assert.That(finder.IsStartClosing(startClosingNS, 0, ns), Is.True);
-        //    Assert.That(finder.IsStartOpening(startOpeningNS, 0, ns), Is.True);
-        //}
     }
 
     public void Test(TagData tagData)
@@ -150,6 +135,7 @@ internal class MarkupFinderByteTester
         FirstLastClosing($"</{tagData} >", tagData, hasSpace: true);
         FirstLastClosing($"</{tagData}\n\r\t >", tagData, hasSpace: true);
 
+        FailClosing($"</tag>{tagData}>", tagData);
         FailClosing($"</{tagData}\n\r\t b>", tagData);
         FailClosing($"</{tagData}\n\r\t ", tagData);
         FailClosing($"/{tagData}>", tagData);
@@ -160,14 +146,16 @@ internal class MarkupFinderByteTester
 
         if (!tagData.HasNamespace)
         {
-            //TODO: =
-            //FailClosing($"<tag></tag><b c=:{tagData}> />", tagData);
+            FailClosing($"<tag></tag><b c=:{tagData}> />", tagData);
             FailClosing($"<tag></tag><b c=\":{tagData}>\" />", tagData);
             FailClosing($"<tag></tag><b c=\"ns:{tagData}>\" />", tagData);
             FailClosing($"<tag></tag><b c=':{tagData} \r\n\t>' />", tagData);
             FailClosing($"<tag></tag><b c='ns:{tagData} \r\n\t>' />", tagData);
             FailClosing($"</ns/:{tagData}>", tagData);
             FailClosing($"</:{tagData}>", tagData);
+            FailClosing($"</=:{tagData}>", tagData);
+            FailClosing($"</n:s:{tagData}>", tagData);
+            FailClosing($" </:{tagData}>", tagData);
         }
     }
 
@@ -300,6 +288,7 @@ internal class MarkupFinderByteTester
         var endingName2 = _encoding.GetBytes($"<{tagData}\r");
         var attributeStart = _encoding.GetBytes($"<{tagData}\r\n\t");
 
+        FailFirstLast($"<tag>{tagData}>", tagData);
         FailFirstLast($"<br {tagData}>", tagData);
         FailFirstLast($"<br\r{tagData}>", tagData);
         FailFirstLast($"<br\n{tagData}>", tagData);
@@ -348,8 +337,7 @@ internal class MarkupFinderByteTester
 
         if (!tagData.HasNamespace)
         {
-            //TODO: =
-            //FailFirstLast($"<b c=:{tagData}> />", tagData);
+            FailFirstLast($"<b c=:{tagData}> />", tagData);
             FailFirstLast($"<b c=\":{tagData}>\" />", tagData);
             FailFirstLast($"<b c=\"ns:{tagData}>\" />", tagData);
             FailFirstLast($"<b c=':{tagData} \r\n\t>' />", tagData);
@@ -359,6 +347,9 @@ internal class MarkupFinderByteTester
             FailFirstLast($"<b c=':{tagData} \r\n\t d=\">\">' />", tagData);
             FailFirstLast($"<b c='ns:{tagData} \r\n\t d=\">\">' />", tagData);
             FailFirstLast($"<:{tagData}>", tagData);
+            FailFirstLast($" <:{tagData}>", tagData);
+            FailFirstLast($"<=:{tagData}>", tagData);
+            FailFirstLast($"<n:s:{tagData}>", tagData);
         }
 
         var encoding = _encoding;

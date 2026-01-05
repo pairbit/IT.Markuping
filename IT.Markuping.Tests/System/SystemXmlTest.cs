@@ -58,7 +58,7 @@ public class SystemXmlTest
             "'<', hexadecimal value 0x3C, is an invalid attribute character. Line 1, position 7."));
 #endif
 
-        ex = Assert.Throws<XmlException>(()=>LoadXml(@"
+        ex = Assert.Throws<XmlException>(() => LoadXml(@"
 <root>
     <my:Signature>1</my:Signature>
     <my:Signature xmlns:my='uri2'>2</my:Signature>
@@ -67,6 +67,11 @@ public class SystemXmlTest
 #if NET
         Assert.That(ex.Message, Is.EqualTo(
             "'my' is an undeclared prefix. Line 3, position 6."));
+#endif
+        ex = Assert.Throws<XmlException>(() => LoadXml("<:root></:root>"));
+#if NET
+        Assert.That(ex.Message, Is.EqualTo(
+            "Name cannot begin with the ':' character, hexadecimal value 0x3A. Line 1, position 2."));
 #endif
     }
 
@@ -98,6 +103,9 @@ public class SystemXmlTest
         Assert.That(ToStrict("<a b='/ns:c>' />"), Is.EqualTo("<a b=\"/ns:c&gt;\" />"));
 
         Assert.That(ToStrict("<b c=\":a>\" />"), Is.EqualTo("<b c=\":a&gt;\" />"));
+
+        Assert.That(ToStrict("<a>:tag></a>"), Is.EqualTo("<a>:tag&gt;</a>"));
+        Assert.That(ToStrict("<a><b></b>:tag></a>"), Is.EqualTo("<a><b></b>:tag&gt;</a>"));
     }
 
     [Test]
