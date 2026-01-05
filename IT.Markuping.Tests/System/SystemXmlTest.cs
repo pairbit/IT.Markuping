@@ -98,6 +98,9 @@ public class SystemXmlTest
         Assert.That(ToStrict("<a b='/ns:c>' />"), Is.EqualTo("<a b=\"/ns:c&gt;\" />"));
 
         Assert.That(ToStrict("<b c=\":a>\" />"), Is.EqualTo("<b c=\":a&gt;\" />"));
+
+        Assert.That(ToStrict("<a>:tag></a>"), Is.EqualTo("<a>:tag&gt;</a>"));
+        Assert.That(ToStrict("<a><b></b>:tag></a>"), Is.EqualTo("<a><b></b>:tag&gt;</a>"));
     }
 
     [Test]

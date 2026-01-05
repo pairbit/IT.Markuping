@@ -19,6 +19,21 @@ internal class MarkupFinderByteTester
 
     public void Test()
     {
+        var tagName = _encoding.GetBytes("a");
+
+        var data = _encoding.GetBytes("</c>:a > b").AsSpan();
+        var tagClosing = _finder.LastTagClosing(data, tagName, out var ns);
+        Assert.That(tagClosing.IsEmpty, Is.True);
+        Assert.That(ns.IsEmpty, Is.True);
+
+        data = _encoding.GetBytes("<c>:a > b").AsSpan();
+        var tag = _finder.LastTag(data, tagName, out ns);
+        Assert.That(tag.IsEmpty, Is.True);
+        Assert.That(ns.IsEmpty, Is.True);
+
+        Assert.That(_finder.FirstTag(data, tagName, out var ns2).IsEmpty, Is.True);
+        Assert.That(ns2.IsEmpty, Is.True);
+
         InternalTest();
         Test(new(_encoding, "a"));
         Test(new(_encoding, "a", "n"));
@@ -150,6 +165,7 @@ internal class MarkupFinderByteTester
         FirstLastClosing($"</{tagData} >", tagData, hasSpace: true);
         FirstLastClosing($"</{tagData}\n\r\t >", tagData, hasSpace: true);
 
+        FailClosing($"</tag>{tagData}>", tagData);
         FailClosing($"</{tagData}\n\r\t b>", tagData);
         FailClosing($"</{tagData}\n\r\t ", tagData);
         FailClosing($"/{tagData}>", tagData);
@@ -160,8 +176,7 @@ internal class MarkupFinderByteTester
 
         if (!tagData.HasNamespace)
         {
-            //TODO: =
-            //FailClosing($"<tag></tag><b c=:{tagData}> />", tagData);
+            FailClosing($"<tag></tag><b c=:{tagData}> />", tagData);
             FailClosing($"<tag></tag><b c=\":{tagData}>\" />", tagData);
             FailClosing($"<tag></tag><b c=\"ns:{tagData}>\" />", tagData);
             FailClosing($"<tag></tag><b c=':{tagData} \r\n\t>' />", tagData);
@@ -300,6 +315,7 @@ internal class MarkupFinderByteTester
         var endingName2 = _encoding.GetBytes($"<{tagData}\r");
         var attributeStart = _encoding.GetBytes($"<{tagData}\r\n\t");
 
+        FailFirstLast($"<tag>{tagData}>", tagData);
         FailFirstLast($"<br {tagData}>", tagData);
         FailFirstLast($"<br\r{tagData}>", tagData);
         FailFirstLast($"<br\n{tagData}>", tagData);
@@ -348,8 +364,7 @@ internal class MarkupFinderByteTester
 
         if (!tagData.HasNamespace)
         {
-            //TODO: =
-            //FailFirstLast($"<b c=:{tagData}> />", tagData);
+            FailFirstLast($"<b c=:{tagData}> />", tagData);
             FailFirstLast($"<b c=\":{tagData}>\" />", tagData);
             FailFirstLast($"<b c=\"ns:{tagData}>\" />", tagData);
             FailFirstLast($"<b c=':{tagData} \r\n\t>' />", tagData);

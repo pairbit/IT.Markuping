@@ -59,6 +59,14 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
     protected virtual bool Equals(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.SequenceEqual(value);
 
+    protected virtual bool IsInvalidNS(T token) => 
+        IsSpace(token) ||
+        token.Equals(_tokens._gt) ||
+        token.Equals(_tokens._colon) ||
+        token.Equals(_tokens._eq) ||
+        token.Equals(_tokens._quot) ||
+        token.Equals(_tokens._apos);
+
     protected override int IndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.IndexOf(value);
 
@@ -107,8 +115,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
                     ns = new(new StartEnd(start + 1, endNS));
                     return true;
                 }
-                //TODO: add colon || gt || eq?
-                else if (IsSpace(token) || token.Equals(_tokens._slash) || token.Equals(_tokens._quot) || token.Equals(_tokens._apos))
+                else if (token.Equals(_tokens._slash) || IsInvalidNS(token))
                 {
                     break;
                 }
@@ -167,8 +174,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
                     }
                     break;
                 }
-                //TODO: add IsSpace || colon || gt || eq?
-                else if (token.Equals(_tokens._quot) || token.Equals(_tokens._apos))
+                else if (IsInvalidNS(token))
                 {
                     break;
                 }

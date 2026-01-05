@@ -54,6 +54,14 @@ public class ComplexMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, I
         _spaces = abc.IsStrict ? [abc.Space.ToArray()] : [abc.Space.ToArray(), abc.CR.ToArray(), abc.LF.ToArray(), abc.Tab.ToArray()];
     }
 
+    protected virtual bool IsInvalidNS(ReadOnlySpan<T> data, int start) =>
+        IsSpace(data, ref start) ||
+        IsSeq(data, _gt, start) ||
+        IsSeq(data, _colon, start) ||
+        IsSeq(data, _eq, start) ||
+        IsSeq(data, _quot, start) || 
+        IsSeq(data, _apos, start);
+
     protected override int IndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.IndexOf(value);
 
@@ -109,11 +117,7 @@ public class ComplexMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, I
                     ns = new(new StartEnd(start + _lt.Length, endNS));
                     return true;
                 }
-                else if (IsSpace(data, ref start))
-                {
-                    break;
-                }
-                else if (IsSeq(data, _slash, start) || IsSeq(data, _quot, start) || IsSeq(data, _apos, start))
+                else if (IsSeq(data, _slash, start) || IsInvalidNS(data, start))
                 {
                     break;
                 }
@@ -182,6 +186,10 @@ public class ComplexMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, I
                         start -= startClosingLength;
                         return true;
                     }
+                    break;
+                }
+                else if (start >= _gt.Length && data.Slice(start - _gt.Length, _gt.Length).SequenceEqual(_gt))
+                {
                     break;
                 }
                 else if (start >= _quot.Length && data.Slice(start - _quot.Length, _quot.Length).SequenceEqual(_quot))
