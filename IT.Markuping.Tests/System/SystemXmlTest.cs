@@ -161,6 +161,12 @@ public class SystemXmlTest
         Assert.That(xml.SelectSingleNode("//b")!.OuterXml, Is.EqualTo("<b><inner>inner text</inner></b>"));
 
         Assert.That(xml.SelectSingleNode("//b/node()")!.OuterXml, Is.EqualTo("<inner>inner text</inner>"));
+
+        xml = LoadXml("<root><a id=\"myid\"></a><b id=\"myid\"></b></root>");
+        Assert.That(xml.SelectSingleNode("//*[@id='myid']")!.OuterXml, Is.EqualTo("<a id=\"myid\"></a>"));
+        
+        xml = LoadXml("<root><a ID=\"myid\"></a><b id=\"myid\"></b></root>");
+        Assert.That(xml.SelectSingleNode("//*[@id='myid']")!.OuterXml, Is.EqualTo("<b id=\"myid\"></b>"));
     }
 
     private static void StrictTest(string xml, bool preserveWhitespace = true)
