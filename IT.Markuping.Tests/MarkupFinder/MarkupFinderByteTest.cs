@@ -30,7 +30,15 @@ internal class MarkupFinderByteTest
 
             if (MarkupFinders.TryGet(codePage, out var finder))
             {
-                Test(finder, encoding);
+                try
+                {
+                    Test(finder, encoding);
+                }
+                catch
+                {
+                    Console.WriteLine($"CodePage {codePage,5} error");
+                    throw;
+                }
             }
             else
             {
@@ -41,7 +49,7 @@ internal class MarkupFinderByteTest
 #endif
             }
 
-            if (MarkupCodePages.Utf8.AsSpan().IndexOf(codePage) > -1)
+            if (MarkupFinders.CodePages.Utf8.AsSpan().IndexOf(codePage) > -1)
             {
                 Test(MarkupFinders.OtherSpaces.Utf8, encoding);
             }
@@ -49,7 +57,7 @@ internal class MarkupFinderByteTest
             {
                 Test(MarkupFinders.OtherSpaces.Europa, encoding);
             }
-            else if (MarkupCodePages.EBCDIC.AsSpan().IndexOf(codePage) > -1)
+            else if (MarkupFinders.CodePages.EBCDIC.AsSpan().IndexOf(codePage) > -1)
             {
                 Test(MarkupFinders.OtherSpaces.EBCDIC, encoding);
             }
@@ -59,7 +67,7 @@ internal class MarkupFinderByteTest
             }
             else if (codePage == 1047 || codePage == 20924)
             {
-                Test(MarkupFinders.OtherSpaces.IBM_Latin1, encoding);
+                Test(MarkupFinders.OtherSpaces.EBCDIC_IBM_Latin1, encoding);
             }
             else if (codePage == 1200)
             {

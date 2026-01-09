@@ -162,10 +162,11 @@ internal class SystemTextEncodingTest
         //<>/: \"=!-[]?'\r\n\t
         //<>/: \"=!-?xmlns'\r\n\t (ok)
         //<>/: \"=xmlns'\r\n\t (ok)
-        //<>/: \"='\r\n\t
 
-        //<>/: \"=!-[]?xmlnsid'\r\n\t (full)
-        //<>/: \"=!-[]?xmlnsid (strict)
+        //<>/: \"='\r\n\t (2.0.4)
+        //<>/: \"= (2.0.4 strict)
+        //<>/: \"=!-[]?xmlnsid'\r\n\t (full 2.0.5)
+        //<>/: \"=!-[]?xmlnsid (strict 2.0.5)
         var abc = "<>/: \"=!-[]?xmlnsid'\r\n\t";
         var maps = GetMaps(abc).OrderByDescending(x => x.CodePages.Count);
 

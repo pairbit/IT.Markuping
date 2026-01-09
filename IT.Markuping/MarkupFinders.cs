@@ -1,6 +1,5 @@
 ﻿using IT.Markuping.Implementation;
 using IT.Markuping.Interfaces;
-using IT.Markuping.Internal;
 using System;
 using System.Diagnostics;
 
@@ -8,13 +7,26 @@ namespace IT.Markuping;
 
 public static class MarkupFinders
 {
+    internal static class CodePages
+    {
+        public static readonly int[] Utf8 =
+            [437, 708, 720, 737, 775, 850, 852, 855, 857, 858, 860, 861, 862, 863, 864, 865, 866, 869, 874, 932, 936, 949, 950, 1250, 1251, 1252, 1253, 1254, 1255, 1256, 1257, 1258, 1361, 10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10010, 10017, 10021, 10029, 10079, 10081, 10082, 20000, 20001, 20002, 20003, 20004, 20005, 20105, 20106, 20107, 20108, 20127, 20261, 20269, 20866, 20932, 20936, 20949, 21866, 28591, 28592, 28593, 28594, 28595, 28596, 28597, 28598, 28599, 28603, 28605, 38598, 50220, 50221, 50222, 50225, 50227, 51932, 51936, 51949, 52936, 54936, 57002, 57003, 57004, 57005, 57006, 57007, 57008, 57009, 57010, 57011, 65001];
+
+        public static readonly int[] EBCDIC =
+            [37, 500, 870, 875, 1140, 1141, 1142, 1143, 1144, 1145, 1146, 1147, 1148, 1149, 20273, 20277, 20278, 20280, 20284, 20285, 20290, 20297, 20420, 20423, 20424, 20833, 20838, 20871, 20880, 21025];
+
+        public static readonly int[] EBCDIC_Turkish = [1026, 20905];
+
+        public static readonly int[] EBCDIC_IBM_Latin1 = [1047, 20924];
+    }
+
     internal static class OtherSpaces
     {
         public static readonly OtherSpacesMarkupFinder<byte> Utf8 = new((MarkupTokens<byte>)MarkupAlphabets.Byte.Utf8);
         public static readonly OtherSpaceMarkupFinder<byte> Europa = new((MarkupTokens<byte>)MarkupAlphabets.Byte.Europa);
         public static readonly OtherSpacesMarkupFinder<byte> EBCDIC = new((MarkupTokens<byte>)MarkupAlphabets.Byte.EBCDIC);
         public static readonly OtherSpacesMarkupFinder<byte> EBCDIC_Turkish = new((MarkupTokens<byte>)MarkupAlphabets.Byte.EBCDIC_Turkish);
-        public static readonly OtherSpacesMarkupFinder<byte> IBM_Latin1 = new((MarkupTokens<byte>)MarkupAlphabets.Byte.IBM_Latin1);
+        public static readonly OtherSpacesMarkupFinder<byte> EBCDIC_IBM_Latin1 = new((MarkupTokens<byte>)MarkupAlphabets.Byte.EBCDIC_IBM_Latin1);
     }
 
     internal static class Complex
@@ -58,7 +70,7 @@ public static class MarkupFinders
         out IMarkupFinder<byte> finder
     )
     {
-        if (MarkupCodePages.Utf8.AsSpan().IndexOf(codePage) > -1)
+        if (CodePages.Utf8.AsSpan().IndexOf(codePage) > -1)
         {
             finder = Utf8;
             return true;
@@ -68,20 +80,20 @@ public static class MarkupFinders
             finder = Europa;
             return true;
         }
-        if (MarkupCodePages.EBCDIC.AsSpan().IndexOf(codePage) > -1)
+        if (CodePages.EBCDIC.AsSpan().IndexOf(codePage) > -1)
         {
             finder = EBCDIC;
             return true;
         }
         if (codePage == 1026 || codePage == 20905)
         {
-            Debug.Assert(MarkupCodePages.EBCDIC_Turkish.IndexOf(codePage) > -1);
+            Debug.Assert(CodePages.EBCDIC_Turkish.IndexOf(codePage) > -1);
             finder = EBCDIC_Turkish;
             return true;
         }
         if (codePage == 1047 || codePage == 20924)
         {
-            Debug.Assert(MarkupCodePages.IBM_Latin1.IndexOf(codePage) > -1);
+            Debug.Assert(CodePages.EBCDIC_IBM_Latin1.IndexOf(codePage) > -1);
             finder = IBM_Latin1;
             return true;
         }

@@ -1,7 +1,14 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace IT.Markuping;
+
+internal static class MarkupAlphabet
+{
+    public const int Length = 23;
+    public const int StrictLength = Length - 4;
+}
 
 public readonly struct MarkupAlphabet<T> where T : unmanaged
 {
@@ -16,7 +23,7 @@ public readonly struct MarkupAlphabet<T> where T : unmanaged
 
     public bool IsComplex => _size > 1;
 
-    public bool IsStrict => _abc.Length == 7 * _size;
+    public bool IsStrict => _abc.Length == MarkupAlphabet.StrictLength * _size;
 
     /// <summary>
     /// &lt;
@@ -52,7 +59,7 @@ public readonly struct MarkupAlphabet<T> where T : unmanaged
     /// =
     /// </summary>
     public ReadOnlySpan<T> Eq => GetByIndex(6);
-    /*
+
     /// <summary>
     /// !
     /// </summary>
@@ -85,29 +92,26 @@ public readonly struct MarkupAlphabet<T> where T : unmanaged
     public ReadOnlySpan<T> S => GetByIndex(16);
     public ReadOnlySpan<T> I => GetByIndex(17);
     public ReadOnlySpan<T> D => GetByIndex(18);
-    */
 
     /// <summary>
     /// '
     /// </summary>
-    public ReadOnlySpan<T> Apos => GetByIndex(7);
+    public ReadOnlySpan<T> Apos => GetByIndex(19);
 
     /// <summary>
     /// \r
     /// </summary>
-    public ReadOnlySpan<T> CR => GetByIndex(8);
+    public ReadOnlySpan<T> CR => GetByIndex(20);
 
     /// <summary>
     /// \n
     /// </summary>
-    public ReadOnlySpan<T> LF => GetByIndex(9);
+    public ReadOnlySpan<T> LF => GetByIndex(21);
 
     /// <summary>
     /// \t
     /// </summary>
-    public ReadOnlySpan<T> Tab => GetByIndex(10);
-
-    //public bool HasOtherSpaces => !_cr.Equals(default) && !_lf.Equals(default) && !_tab.Equals(default);
+    public ReadOnlySpan<T> Tab => GetByIndex(22);
 
     #endregion Props
 
@@ -116,7 +120,9 @@ public readonly struct MarkupAlphabet<T> where T : unmanaged
         if (size < 1) throw new ArgumentOutOfRangeException(nameof(size));
         if (abc == null) throw new ArgumentNullException(nameof(abc));
         var length = abc.Length;
-        if (length != 7 * size && length != 11 * size) throw new ArgumentOutOfRangeException(nameof(abc));
+        if (length != MarkupAlphabet.StrictLength * size && 
+            length != MarkupAlphabet.Length * size) 
+            throw new ArgumentOutOfRangeException(nameof(abc));
 
         _size = size;
         _abc = abc;
@@ -134,13 +140,20 @@ public readonly struct MarkupAlphabet<T> where T : unmanaged
     {
         if (!alphabet.IsComplex)
         {
+            Debug.Assert(alphabet._size == 1);
+
             var abc = alphabet._abc;
-            if (abc.Length == 7)
+            var length = abc.Length;
+            if (length == MarkupAlphabet.StrictLength)
             {
-                return new(abc[0], abc[1], abc[2], abc[3], abc[4], abc[5], abc[6], default, default, default, default);
+                Span<T> full = stackalloc T[MarkupAlphabet.Length];
+                abc.AsSpan().CopyTo(full);
+                return Unsafe.As<T, MarkupTokens<T>>(ref full[0]);
             }
-            if (abc.Length * Unsafe.SizeOf<T>() == Unsafe.SizeOf<MarkupTokens<T>>())
+            if (length == MarkupAlphabet.Length)
             {
+                Debug.Assert(abc.Length * Unsafe.SizeOf<T>() == Unsafe.SizeOf<MarkupTokens<T>>());
+
                 return Unsafe.As<T, MarkupTokens<T>>(ref abc[0]);
             }
         }
