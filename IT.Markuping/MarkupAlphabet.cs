@@ -56,27 +56,35 @@ public readonly struct MarkupAlphabet<T> where T : unmanaged
     /// <summary>
     /// !
     /// </summary>
-    public ReadOnlySpan<T> Excl => _abc.AsSpan(0, _size);
+    public ReadOnlySpan<T> Excl => GetByIndex(7);
 
     /// <summary>
     /// -
     /// </summary>
-    public ReadOnlySpan<T> Dash => _abc.AsSpan(0, _size);
+    public ReadOnlySpan<T> Dash => GetByIndex(8);
 
     /// <summary>
     /// [
     /// </summary>
-    public ReadOnlySpan<T> LSQB => _abc.AsSpan(0, _size);
+    public ReadOnlySpan<T> LSQB => GetByIndex(9);
 
     /// <summary>
     /// ]
     /// </summary>
-    public ReadOnlySpan<T> RSQB => _abc.AsSpan(0, _size);
+    public ReadOnlySpan<T> RSQB => GetByIndex(10);
 
     /// <summary>
     /// ?
     /// </summary>
-    public ReadOnlySpan<T> Quest => _abc.AsSpan(0, _size);
+    public ReadOnlySpan<T> Quest => GetByIndex(11);
+
+    public ReadOnlySpan<T> X => GetByIndex(12);
+    public ReadOnlySpan<T> M => GetByIndex(13);
+    public ReadOnlySpan<T> L => GetByIndex(14);
+    public ReadOnlySpan<T> N => GetByIndex(15);
+    public ReadOnlySpan<T> S => GetByIndex(16);
+    public ReadOnlySpan<T> I => GetByIndex(17);
+    public ReadOnlySpan<T> D => GetByIndex(18);
     */
 
     /// <summary>
