@@ -48,10 +48,6 @@ internal class BOMTest
     private static readonly byte[] Decl_EBCDIC = [76, 111, 167, 148];
     private static readonly byte[] Decl_EBCDIC_Japanese_katakana = [76, 111, 183, 117];
 
-    //<
-    private static readonly byte LT_Utf8 = 60;
-    private static readonly byte LT_EBCDIC = 76;
-
     private static BOM GetBOM(int codePage)
     {
         if (codePage == 65000) return BOM.None;
@@ -110,7 +106,8 @@ internal class BOMTest
                 return BOM.None;
             }
 
-            if (first == LT_Utf8)
+            //<
+            if (first == 60)
             {
                 if (len > 1)
                 {
@@ -126,13 +123,14 @@ internal class BOMTest
                 return BOM.Utf8;
             }
 
-            if (first == LT_EBCDIC)
+            //<
+            if (first == 76)
             {
                 //if (len > 3)
                 //{
-                    //76, 111, 183, 117
-                    //if (xml[1] == 111 && xml[2] == 183 && xml[3] == 117)
-                    //    return BOM.EBCDIC_Japanese_katakana;
+                //76, 111, 183, 117
+                //if (xml[1] == 111 && xml[2] == 183 && xml[3] == 117)
+                //    return BOM.EBCDIC_Japanese_katakana;
                 //}
                 return BOM.EBCDIC;
             }
