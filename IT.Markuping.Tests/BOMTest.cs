@@ -183,7 +183,7 @@ internal class BOMTest
     enum BOM
     {
         None = 0,
-        Utf7,
+        //Utf7,
         Utf8,
         Utf16,
         Utf16BE,
