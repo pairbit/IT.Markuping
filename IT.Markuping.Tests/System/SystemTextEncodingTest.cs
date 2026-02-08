@@ -167,14 +167,14 @@ internal class SystemTextEncodingTest
         //<>/: \"= (2.0.4 strict)
         //<>/: \"=!-[]?xmlnsid'\r\n\t (full 2.0.5)
         //<>/: \"=!-[]?xmlnsid (strict 2.0.5)
-        var abc = "<>/: \"=!-[]?xmlnsid'\r\n\t";
+        var abc = "<?xm";
         var maps = GetMaps(abc).OrderByDescending(x => x.CodePages.Count);
 
         Console.WriteLine($"Abc#{abc.Length}: '{abc}' ");
         foreach (var map in maps)
         {
             Console.WriteLine($"\nSingle: {map.IsSingle}, HasDuplicates: {map.HasDuplicates}");
-            Console.WriteLine($"Bytes: {string.Join(", ", map.Bytes)}");
+            Console.WriteLine($"Bytes (#{map.Bytes.Length}): {string.Join(", ", map.Bytes)}");
             Console.WriteLine($"CodePages: {string.Join(", ", map.CodePages)}");
             foreach (var codePage in map.CodePages)
             {
@@ -192,8 +192,8 @@ internal class SystemTextEncodingTest
         {
             var codePage = encodingInfo.CodePage;
             if (codePage == 1200 || codePage == 1201 ||
-                codePage == 12000 || codePage == 12001 ||
-                codePage == 65000) continue;
+                codePage == 65000 ||
+                codePage == 12000 || codePage == 12001) continue;
 
             var encoding = encodingInfo.GetEncoding();
             var bytes = encoding.GetBytes(abc);
