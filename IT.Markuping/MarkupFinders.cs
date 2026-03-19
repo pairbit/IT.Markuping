@@ -124,47 +124,4 @@ public static class MarkupFinders
             ;
         return false;
     }
-
-    /*
-     public static bool TryGetStrict(int codePage, [MaybeNullWhen(false)] out IMarkupFinder<byte> finder)
-    {
-        if (Utf8_Strict.CodePages.IndexOf(codePage) > -1)
-        {
-            finder = Utf8_Strict;
-            return true;
-        }
-        if (EBCDIC_Strict.CodePages.IndexOf(codePage) > -1)
-        {
-            finder = EBCDIC_Strict;
-            return true;
-        }
-        if (codePage == 1026 || codePage == 20905)
-        {
-            finder = EBCDIC_Turkish_Strict;
-            return true;
-        }
-        if (codePage == 1200)
-        {
-            finder = Utf16_Strict;
-            return true;
-        }
-        if (codePage == 1201)
-        {
-            finder = Utf16BE_Strict;
-            return true;
-        }
-        if (codePage == 12000)
-        {
-            finder = Utf32_Strict;
-            return true;
-        }
-        if (codePage == 12001)
-        {
-            finder = Utf32BE_Strict;
-            return true;
-        }
-        finder = null;
-        return false;
-    }
-     */
 }
