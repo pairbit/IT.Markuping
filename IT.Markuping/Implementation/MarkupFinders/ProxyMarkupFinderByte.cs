@@ -11,6 +11,8 @@ public class ProxyMarkupFinderByte<T> : IMarkupFinder<byte> where T : unmanaged
 
     private readonly IMarkupFinder<T> _proxy;
 
+    public IMarkupFinder<T> Proxy => _proxy;
+
     static ProxyMarkupFinderByte()
     {
         if (typeof(T) == typeof(byte))
