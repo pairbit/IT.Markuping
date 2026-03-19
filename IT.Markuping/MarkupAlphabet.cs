@@ -85,13 +85,19 @@ public readonly struct MarkupAlphabet<T> where T : unmanaged
     /// </summary>
     public ReadOnlySpan<T> Quest => GetByIndex(11);
 
-    public ReadOnlySpan<T> X => GetByIndex(12);
-    public ReadOnlySpan<T> M => GetByIndex(13);
-    public ReadOnlySpan<T> L => GetByIndex(14);
-    public ReadOnlySpan<T> N => GetByIndex(15);
-    public ReadOnlySpan<T> S => GetByIndex(16);
-    public ReadOnlySpan<T> I => GetByIndex(17);
-    public ReadOnlySpan<T> D => GetByIndex(18);
+    public ReadOnlySpan<T> x => GetByIndex(12);
+
+    public ReadOnlySpan<T> m => GetByIndex(13);
+
+    public ReadOnlySpan<T> l => GetByIndex(14);
+
+    public ReadOnlySpan<T> n => GetByIndex(15);
+
+    public ReadOnlySpan<T> s => GetByIndex(16);
+
+    public ReadOnlySpan<T> i => GetByIndex(17);
+
+    public ReadOnlySpan<T> d => GetByIndex(18);
 
     /// <summary>
     /// '

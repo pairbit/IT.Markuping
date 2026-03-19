@@ -87,13 +87,13 @@ internal class MarkupAlphabetsTest
         Assert.That(alphabet.LSQB.SequenceEqual(lsqb), Is.True);
         Assert.That(alphabet.RSQB.SequenceEqual(rsqb), Is.True);
         Assert.That(alphabet.Quest.SequenceEqual(quest), Is.True);
-        Assert.That(alphabet.X.SequenceEqual(x), Is.True);
-        Assert.That(alphabet.M.SequenceEqual(m), Is.True);
-        Assert.That(alphabet.L.SequenceEqual(l), Is.True);
-        Assert.That(alphabet.N.SequenceEqual(n), Is.True);
-        Assert.That(alphabet.S.SequenceEqual(s), Is.True);
-        Assert.That(alphabet.I.SequenceEqual(i), Is.True);
-        Assert.That(alphabet.D.SequenceEqual(d), Is.True);
+        Assert.That(alphabet.x.SequenceEqual(x), Is.True);
+        Assert.That(alphabet.m.SequenceEqual(m), Is.True);
+        Assert.That(alphabet.l.SequenceEqual(l), Is.True);
+        Assert.That(alphabet.n.SequenceEqual(n), Is.True);
+        Assert.That(alphabet.s.SequenceEqual(s), Is.True);
+        Assert.That(alphabet.i.SequenceEqual(i), Is.True);
+        Assert.That(alphabet.d.SequenceEqual(d), Is.True);
 
         if (alphabet.IsStrict)
         {
@@ -187,13 +187,13 @@ internal class MarkupAlphabetsTest
         var lsqb = Cast<T>(abcByte.LSQB);
         var rsqb = Cast<T>(abcByte.RSQB);
         var quest = Cast<T>(abcByte.Quest);
-        var x = Cast<T>(abcByte.X);
-        var m = Cast<T>(abcByte.M);
-        var l = Cast<T>(abcByte.L);
-        var n = Cast<T>(abcByte.N);
-        var s = Cast<T>(abcByte.S);
-        var i = Cast<T>(abcByte.I);
-        var d = Cast<T>(abcByte.D);
+        var x = Cast<T>(abcByte.x);
+        var m = Cast<T>(abcByte.m);
+        var l = Cast<T>(abcByte.l);
+        var n = Cast<T>(abcByte.n);
+        var s = Cast<T>(abcByte.s);
+        var i = Cast<T>(abcByte.i);
+        var d = Cast<T>(abcByte.d);
 
         Assert.That(abc.LT.SequenceEqual(lt), Is.True);
         Assert.That(abc.GT.SequenceEqual(gt), Is.True);
@@ -208,13 +208,13 @@ internal class MarkupAlphabetsTest
         Assert.That(abc.LSQB.SequenceEqual(lsqb), Is.True);
         Assert.That(abc.RSQB.SequenceEqual(rsqb), Is.True);
         Assert.That(abc.Quest.SequenceEqual(quest), Is.True);
-        Assert.That(abc.X.SequenceEqual(x), Is.True);
-        Assert.That(abc.M.SequenceEqual(m), Is.True);
-        Assert.That(abc.L.SequenceEqual(l), Is.True);
-        Assert.That(abc.N.SequenceEqual(n), Is.True);
-        Assert.That(abc.S.SequenceEqual(s), Is.True);
-        Assert.That(abc.I.SequenceEqual(i), Is.True);
-        Assert.That(abc.D.SequenceEqual(d), Is.True);
+        Assert.That(abc.x.SequenceEqual(x), Is.True);
+        Assert.That(abc.m.SequenceEqual(m), Is.True);
+        Assert.That(abc.l.SequenceEqual(l), Is.True);
+        Assert.That(abc.n.SequenceEqual(n), Is.True);
+        Assert.That(abc.s.SequenceEqual(s), Is.True);
+        Assert.That(abc.i.SequenceEqual(i), Is.True);
+        Assert.That(abc.d.SequenceEqual(d), Is.True);
 
         if (abc.IsStrict)
         {
