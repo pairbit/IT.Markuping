@@ -124,6 +124,8 @@ public readonly struct MarkupAlphabet<T> where T : unmanaged
         _abc = abc;
     }
 
+    public bool Equals(MarkupAlphabet<T> other) => _abc == other._abc;
+
     private ReadOnlySpan<T> GetByIndex(int index)
     {
         var size = Size;

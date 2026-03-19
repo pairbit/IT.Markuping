@@ -2,7 +2,7 @@
 
 namespace IT.Markuping.Internal;
 
-internal readonly struct MarkupAlphabetInfo<T> where T : unmanaged
+public readonly struct MarkupAlphabetInfo<T> where T : unmanaged
 {
     private readonly int[] _codePages;
     private readonly MarkupAlphabet<T> _alphabet;

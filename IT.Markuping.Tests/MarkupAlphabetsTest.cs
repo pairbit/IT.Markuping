@@ -32,10 +32,17 @@ internal class MarkupAlphabetsTest
 
             if (MarkupAlphabets.Byte.TryGet(codePage, out var alphabet))
             {
+                Assert.That(MarkupAlphabets.Byte.TryGetInfo(codePage, out var alphabetInfo), Is.True);
+                Assert.That(alphabetInfo.Alphabet.Equals(alphabet), Is.True);
+                Assert.That(alphabetInfo.CodePages.IndexOf(codePage), Is.GreaterThan(-1));
+
                 ByteTest(alphabet, encoding);
             }
             else
             {
+                Assert.That(MarkupAlphabets.Byte.TryGetInfo(codePage, out var alphabetInfo), Is.False);
+                Assert.That(alphabetInfo.Alphabet.Equals(default), Is.True);
+                Assert.That(alphabetInfo.CodePages.IsEmpty, Is.True);
 #if NET
                 Assert.Fail($"CodePage {codePage,5} not supported");
 #else
