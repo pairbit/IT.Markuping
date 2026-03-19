@@ -40,7 +40,7 @@ public class ComplexMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, I
         _spaces = spaces;
     }
 
-    public ComplexMarkupFinder(MarkupAlphabet<T> abc)
+    public ComplexMarkupFinder(MarkupAlphabet<T> abc, bool isStrict = false)
     {
         _size = abc.Size;
         _lt = abc.LT.ToArray();
@@ -51,7 +51,7 @@ public class ComplexMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, I
         _quot = abc.Quot.ToArray();
         _apos = abc.Apos.ToArray();
         _eq = abc.Eq.ToArray();
-        _spaces = abc.IsStrict ? [abc.Space.ToArray()] : [abc.Space.ToArray(), abc.CR.ToArray(), abc.LF.ToArray(), abc.Tab.ToArray()];
+        _spaces = isStrict ? [abc.Space.ToArray()] : [abc.Space.ToArray(), abc.CR.ToArray(), abc.LF.ToArray(), abc.Tab.ToArray()];
     }
 
     protected virtual bool IsInvalidNS(ReadOnlySpan<T> data, int start) =>

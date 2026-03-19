@@ -9,131 +9,131 @@ public static partial class MarkupAlphabets
     {
         //<>/: "=!-[]?xmlnsid'\r\n\t
         public static readonly MarkupAlphabet<byte> Utf8 =
-            new(1, [(byte)'<', (byte)'>', (byte)'/', (byte)':', (byte)' ', (byte)'"', (byte)'=',
+            new([(byte)'<', (byte)'>', (byte)'/', (byte)':', (byte)' ', (byte)'"', (byte)'=',
                 (byte)'!', (byte)'-', (byte)'[', (byte)']', (byte)'?',
                 (byte)'x', (byte)'m', (byte)'l', (byte)'n', (byte)'s', (byte)'i', (byte)'d',
                 (byte)'\'', (byte)'\r', (byte)'\n', (byte)'\t']);
 
         //unknown '?'
         public static readonly MarkupAlphabet<byte> IA5 =
-            new(1, [(byte)'<', (byte)'>', (byte)'/', (byte)':', (byte)' ', (byte)'"', (byte)'=',
+            new([(byte)'<', (byte)'>', (byte)'/', (byte)':', (byte)' ', (byte)'"', (byte)'=',
                 (byte)'!', (byte)'-', (byte)'?', (byte)'?', (byte)'?',
                 (byte)'x', (byte)'m', (byte)'l', (byte)'n', (byte)'s', (byte)'i', (byte)'d',
                 (byte)'\'', (byte)'\r', (byte)'\n', (byte)'\t']);
 
         //unknown '?'
         public static readonly MarkupAlphabet<byte> Europa =
-            new(1, [(byte)'<', (byte)'>', (byte)'/', (byte)':', (byte)' ', (byte)'"', (byte)'=',
+            new([(byte)'<', (byte)'>', (byte)'/', (byte)':', (byte)' ', (byte)'"', (byte)'=',
                 (byte)'!', (byte)'-', (byte)'[', (byte)']', (byte)'?',
                 (byte)'x', (byte)'m', (byte)'l', (byte)'n', (byte)'s', (byte)'i', (byte)'d',
                 (byte)'\'', (byte)'?', (byte)'?', (byte)'?']);
 
         public static readonly MarkupAlphabet<byte> EBCDIC =
-            new(1, [76, 110, 97, 122, 64, 127, 126,
+            new([76, 110, 97, 122, 64, 127, 126,
                 79, 96, 74, 90, 111, 167, 148, 147, 149, 162, 137, 132,
                 125, 13, 37, 5]);
 
         public static readonly MarkupAlphabet<byte> EBCDIC_Canada_Hebrew =
-            new(1, [76, 110, 97, 122, 64, 127, 126,
+            new([76, 110, 97, 122, 64, 127, 126,
                 90, 96, 186, 187, 111, 167, 148, 147, 149, 162, 137, 132,
                 125, 13, 37, 5]);
 
         public static readonly MarkupAlphabet<byte> EBCDIC_IBM_Latin1 =
-            new(1, [76, 110, 97, 122, 64, 127, 126,
+            new([76, 110, 97, 122, 64, 127, 126,
                 90, 96, 173, 189, 111, 167, 148, 147, 149, 162, 137, 132,
                 125, 13, 21, 5]);
 
         public static readonly MarkupAlphabet<byte> EBCDIC_Germany =
-            new(1, [76, 110, 97, 122, 64, 127, 126,
+            new([76, 110, 97, 122, 64, 127, 126,
                 79, 96, 99, 252, 111, 167, 148, 147, 149, 162, 137, 132,
                 125, 13, 37, 5]);
 
         public static readonly MarkupAlphabet<byte> EBCDIC_Denmark_Norway =
-            new(1, [76, 110, 97, 122, 64, 127, 126,
+            new([76, 110, 97, 122, 64, 127, 126,
                 79, 96, 158, 159, 111, 167, 148, 147, 149, 162, 137, 132,
                 125, 13, 37, 5]);
 
         public static readonly MarkupAlphabet<byte> EBCDIC_Finland_Sweden =
-            new(1, [76, 110, 97, 122, 64, 127, 126,
+            new([76, 110, 97, 122, 64, 127, 126,
                 79, 96, 181, 159, 111, 167, 148, 147, 149, 162, 137, 132,
                 125, 13, 37, 5]);
 
         public static readonly MarkupAlphabet<byte> EBCDIC_Italy =
-            new(1, [76, 110, 97, 122, 64, 127, 126,
+            new([76, 110, 97, 122, 64, 127, 126,
                 79, 96, 144, 81, 111, 167, 148, 147, 149, 162, 137, 132,
                 125, 13, 37, 5]);
 
         public static readonly MarkupAlphabet<byte> EBCDIC_Spain =
-            new(1, [76, 110, 97, 122, 64, 127, 126,
+            new([76, 110, 97, 122, 64, 127, 126,
                 187, 96, 74, 90, 111, 167, 148, 147, 149, 162, 137, 132,
                 125, 13, 37, 5]);
 
         public static readonly MarkupAlphabet<byte> EBCDIC_UK =
-            new(1, [76, 110, 97, 122, 64, 127, 126,
+            new([76, 110, 97, 122, 64, 127, 126,
                 90, 96, 177, 187, 111, 167, 148, 147, 149, 162, 137, 132,
                 125, 13, 37, 5]);
 
         public static readonly MarkupAlphabet<byte> EBCDIC_France =
-            new(1, [76, 110, 97, 122, 64, 127, 126,
+            new([76, 110, 97, 122, 64, 127, 126,
                 79, 96, 144, 181, 111, 167, 148, 147, 149, 162, 137, 132,
                 125, 13, 37, 5]);
 
         public static readonly MarkupAlphabet<byte> EBCDIC_Icelandic =
-            new(1, [76, 110, 97, 122, 64, 127, 126,
+            new([76, 110, 97, 122, 64, 127, 126,
                 79, 96, 174, 158, 111, 167, 148, 147, 149, 162, 137, 132,
                 125, 13, 37, 5]);
 
         public static readonly MarkupAlphabet<byte> EBCDIC_Turkish_Latin5 =
-            new(1, [76, 110, 97, 122, 64, 252, 126,
+            new([76, 110, 97, 122, 64, 252, 126,
                 79, 96, 104, 172, 111, 167, 148, 147, 149, 162, 137, 132,
                 125, 13, 37, 5]);
 
         public static readonly MarkupAlphabet<byte> EBCDIC_Japanese_katakana =
-            new(1, [76, 110, 97, 122, 64, 127, 126,
+            new([76, 110, 97, 122, 64, 127, 126,
                 90, 96, 112, 128, 111, 183, 117, 116, 118, 171, 113, 101,
                 125, 13, 37, 5]);
 
         //unknown '?' = 111
         public static readonly MarkupAlphabet<byte> EBCDIC_Arabic =
-            new(1, [76, 110, 97, 122, 64, 127, 126,
+            new([76, 110, 97, 122, 64, 127, 126,
                 90, 96, 111, 111, 111, 167, 148, 147, 149, 162, 137, 132,
                 125, 13, 37, 5]);
 
         public static readonly MarkupAlphabet<byte> EBCDIC_Korean_Extended =
-            new(1, [76, 110, 97, 122, 64, 127, 126,
+            new([76, 110, 97, 122, 64, 127, 126,
                 90, 96, 112, 128, 111, 167, 148, 147, 149, 162, 137, 132,
                 125, 13, 37, 5]);
 
         public static readonly MarkupAlphabet<byte> EBCDIC_Thai =
-            new(1, [76, 110, 97, 122, 64, 127, 126,
+            new([76, 110, 97, 122, 64, 127, 126,
                 90, 96, 73, 89, 111, 167, 148, 147, 149, 162, 137, 132,
                 125, 13, 37, 5]);
 
         public static readonly MarkupAlphabet<byte> EBCDIC_Turkish =
-            new(1, [76, 110, 97, 122, 64, 252, 126,
+            new([76, 110, 97, 122, 64, 252, 126,
                 79, 96, 104, 182, 111, 167, 148, 147, 149, 162, 137, 132,
                 125, 13, 37, 5]);
 
         public static readonly MarkupAlphabet<byte> Utf16 =
-            new(2, [(byte)'<', 0, (byte)'>', 0, (byte)'/', 0, (byte)':', 0, (byte)' ', 0, (byte)'"', 0, (byte)'=', 0,
+            new([(byte)'<', 0, (byte)'>', 0, (byte)'/', 0, (byte)':', 0, (byte)' ', 0, (byte)'"', 0, (byte)'=', 0,
                 (byte)'!', 0, (byte)'-', 0, (byte)'[', 0, (byte)']', 0, (byte)'?', 0,
                 (byte)'x', 0, (byte)'m', 0, (byte)'l', 0, (byte)'n', 0, (byte)'s', 0, (byte)'i', 0, (byte)'d', 0,
                 (byte)'\'', 0, (byte)'\r', 0, (byte)'\n', 0, (byte)'\t', 0]);
 
         public static readonly MarkupAlphabet<byte> Utf16BE =
-            new(2, [0, (byte)'<', 0, (byte)'>', 0, (byte)'/', 0, (byte)':', 0, (byte)' ', 0, (byte)'"', 0, (byte)'=',
+            new([0, (byte)'<', 0, (byte)'>', 0, (byte)'/', 0, (byte)':', 0, (byte)' ', 0, (byte)'"', 0, (byte)'=',
                 0, (byte)'!', 0, (byte)'-', 0, (byte)'[', 0, (byte)']', 0, (byte)'?',
                 0, (byte)'x', 0, (byte)'m', 0, (byte)'l', 0, (byte)'n', 0, (byte)'s', 0, (byte)'i', 0, (byte)'d',
                 0, (byte)'\'', 0, (byte)'\r', 0, (byte)'\n', 0, (byte)'\t']);
 
         public static readonly MarkupAlphabet<byte> Utf32 =
-            new(4, [(byte)'<', 0, 0, 0, (byte)'>', 0, 0, 0, (byte)'/', 0, 0, 0, (byte)':', 0, 0, 0, (byte)' ', 0, 0, 0, (byte)'"', 0, 0, 0, (byte)'=', 0, 0, 0,
+            new([(byte)'<', 0, 0, 0, (byte)'>', 0, 0, 0, (byte)'/', 0, 0, 0, (byte)':', 0, 0, 0, (byte)' ', 0, 0, 0, (byte)'"', 0, 0, 0, (byte)'=', 0, 0, 0,
                 (byte)'!', 0, 0, 0, (byte)'-', 0, 0, 0, (byte)'[', 0, 0, 0, (byte)']', 0, 0, 0, (byte)'?', 0, 0, 0,
                 (byte)'x', 0, 0, 0, (byte)'m', 0, 0, 0, (byte)'l', 0, 0, 0, (byte)'n', 0, 0, 0, (byte)'s', 0, 0, 0, (byte)'i', 0, 0, 0, (byte)'d', 0, 0, 0,
                 (byte)'\'', 0, 0, 0, (byte)'\r', 0, 0, 0, (byte)'\n', 0, 0, 0, (byte)'\t', 0, 0, 0]);
 
         public static readonly MarkupAlphabet<byte> Utf32BE =
-            new(4, [0, 0, 0, (byte)'<', 0, 0, 0, (byte)'>', 0, 0, 0, (byte)'/', 0, 0, 0, (byte)':', 0, 0, 0, (byte)' ', 0, 0, 0, (byte)'"', 0, 0, 0, (byte)'=',
+            new([0, 0, 0, (byte)'<', 0, 0, 0, (byte)'>', 0, 0, 0, (byte)'/', 0, 0, 0, (byte)':', 0, 0, 0, (byte)' ', 0, 0, 0, (byte)'"', 0, 0, 0, (byte)'=',
                 0, 0, 0, (byte)'!', 0, 0, 0, (byte)'-', 0, 0, 0, (byte)'[', 0, 0, 0, (byte)']', 0, 0, 0, (byte)'?',
                 0, 0, 0, (byte)'x', 0, 0, 0, (byte)'m', 0, 0, 0, (byte)'l', 0, 0, 0, (byte)'n', 0, 0, 0, (byte)'s', 0, 0, 0, (byte)'i', 0, 0, 0, (byte)'d',
                 0, 0, 0, (byte)'\'', 0, 0, 0, (byte)'\r', 0, 0, 0, (byte)'\n', 0, 0, 0, (byte)'\t']);

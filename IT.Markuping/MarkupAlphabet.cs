@@ -7,23 +7,22 @@ namespace IT.Markuping;
 internal static class MarkupAlphabet
 {
     public const int Length = 23;
-    public const int StrictLength = Length - 4;
+    //public const int StrictLength = Length - 4;
 }
 
 public readonly struct MarkupAlphabet<T> where T : unmanaged
 {
     private readonly T[] _abc;
-    private readonly int _size;
 
     #region Props
 
     public ReadOnlySpan<T> Abc => _abc;
 
-    public int Size => _size;
+    public int Size => _abc.Length / MarkupAlphabet.Length;
 
-    public bool IsComplex => _size > 1;
+    public bool IsComplex => _abc.Length != MarkupAlphabet.Length;
 
-    public bool IsStrict => _abc.Length == MarkupAlphabet.StrictLength * _size;
+    //public bool IsStrict => _abc.Length == MarkupAlphabet.StrictLength * _size;
 
     /// <summary>
     /// &lt;
@@ -121,48 +120,32 @@ public readonly struct MarkupAlphabet<T> where T : unmanaged
 
     #endregion Props
 
-    public MarkupAlphabet(int size, T[] abc)
+    public MarkupAlphabet(T[] abc)
     {
-        if (size < 1) throw new ArgumentOutOfRangeException(nameof(size));
         if (abc == null) throw new ArgumentNullException(nameof(abc));
-        var length = abc.Length;
-        if (length != MarkupAlphabet.StrictLength * size && 
-            length != MarkupAlphabet.Length * size) 
+        if (abc.Length % MarkupAlphabet.Length != 0) 
             throw new ArgumentOutOfRangeException(nameof(abc));
 
-        _size = size;
         _abc = abc;
     }
 
     private ReadOnlySpan<T> GetByIndex(int index)
     {
-        var start = _size * index;
-        if (_abc.Length < start + _size) return default;
+        var size = Size;
+        var start = size * index;
+        if (_abc.Length < start + size) return default;
 
-        return _abc.AsSpan(start, _size);
+        return _abc.AsSpan(start, size);
     }
 
     public static explicit operator MarkupTokens<T>(MarkupAlphabet<T> alphabet)
     {
-        if (!alphabet.IsComplex)
-        {
-            Debug.Assert(alphabet._size == 1);
+        if (alphabet.IsComplex) throw new InvalidCastException("Alphabet is complex.");
 
-            var abc = alphabet._abc;
-            var length = abc.Length;
-            if (length == MarkupAlphabet.StrictLength)
-            {
-                Span<T> full = stackalloc T[MarkupAlphabet.Length];
-                abc.AsSpan().CopyTo(full);
-                return Unsafe.As<T, MarkupTokens<T>>(ref full[0]);
-            }
-            if (length == MarkupAlphabet.Length)
-            {
-                Debug.Assert(abc.Length * Unsafe.SizeOf<T>() == Unsafe.SizeOf<MarkupTokens<T>>());
+        Debug.Assert(alphabet.Size == 1);
 
-                return Unsafe.As<T, MarkupTokens<T>>(ref abc[0]);
-            }
-        }
-        throw new InvalidCastException();
+        Debug.Assert(alphabet._abc.Length * Unsafe.SizeOf<T>() == Unsafe.SizeOf<MarkupTokens<T>>());
+
+        return Unsafe.As<T, MarkupTokens<T>>(ref alphabet._abc[0]);
     }
 }

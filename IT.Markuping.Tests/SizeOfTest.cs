@@ -22,8 +22,8 @@ internal class SizeOfTest
         Assert.That(Unsafe.SizeOf<MarkupFinder<int>.Tokens>(), Is.EqualTo(32));
         Assert.That(Unsafe.SizeOf<Tags>(), Is.EqualTo(16));
 
-        Assert.That(Unsafe.SizeOf<MarkupAlphabet<byte>>(), Is.EqualTo(16));
-        Assert.That(Unsafe.SizeOf<MarkupAlphabet<int>>(), Is.EqualTo(16));
+        Assert.That(Unsafe.SizeOf<MarkupAlphabet<byte>>(), Is.EqualTo(8));
+        Assert.That(Unsafe.SizeOf<MarkupAlphabet<int>>(), Is.EqualTo(8));
 
         Assert.That(Unsafe.SizeOf<MarkupTokens<byte>>(), Is.EqualTo(23));
         Assert.That(Unsafe.SizeOf<MarkupTokens<char>>(), Is.EqualTo(46));
