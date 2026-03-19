@@ -146,6 +146,26 @@ public static partial class MarkupAlphabets
                 alphabet = Utf8;
                 return true;
             }
+            if (codePage == CodePage.Utf16)
+            {
+                alphabet = Utf16;
+                return true;
+            }
+            if (codePage == CodePage.Utf16BE)
+            {
+                alphabet = Utf16BE;
+                return true;
+            }
+            if (codePage == CodePage.Utf32)
+            {
+                alphabet = Utf32;
+                return true;
+            }
+            if (codePage == CodePage.Utf32BE)
+            {
+                alphabet = Utf32BE;
+                return true;
+            }
             if (codePage == 20106 || codePage == 20107 || codePage == 20108)
             {
                 Debug.Assert(CodePages.IA5.AsSpan().IndexOf(codePage) > -1);
@@ -252,26 +272,6 @@ public static partial class MarkupAlphabets
                 alphabet = EBCDIC_Turkish;
                 return true;
             }
-            if (codePage == CodePage.Utf16)
-            {
-                alphabet = Utf16;
-                return true;
-            }
-            if (codePage == CodePage.Utf16BE)
-            {
-                alphabet = Utf16BE;
-                return true;
-            }
-            if (codePage == CodePage.Utf32)
-            {
-                alphabet = Utf32;
-                return true;
-            }
-            if (codePage == CodePage.Utf32BE)
-            {
-                alphabet = Utf32BE;
-                return true;
-            }
             alphabet = default;
             return false;
         }
@@ -281,6 +281,30 @@ public static partial class MarkupAlphabets
             if (CodePages.Utf8.AsSpan().IndexOf(codePage) > -1)
             {
                 alphabetInfo = new(Utf8, CodePages.Utf8);
+                return true;
+            }
+            if (codePage == CodePage.Utf16)
+            {
+                alphabetInfo = new(Utf16, CodePages.Utf16);
+                Debug.Assert(alphabetInfo.CodePages.IndexOf(codePage) > -1);
+                return true;
+            }
+            if (codePage == CodePage.Utf16BE)
+            {
+                alphabetInfo = new(Utf16BE, CodePages.Utf16BE);
+                Debug.Assert(alphabetInfo.CodePages.IndexOf(codePage) > -1);
+                return true;
+            }
+            if (codePage == CodePage.Utf32)
+            {
+                alphabetInfo = new(Utf32, CodePages.Utf32);
+                Debug.Assert(alphabetInfo.CodePages.IndexOf(codePage) > -1);
+                return true;
+            }
+            if (codePage == CodePage.Utf32BE)
+            {
+                alphabetInfo = new(Utf32BE, CodePages.Utf32BE);
+                Debug.Assert(alphabetInfo.CodePages.IndexOf(codePage) > -1);
                 return true;
             }
             if (codePage == 20106 || codePage == 20107 || codePage == 20108)
@@ -393,30 +417,6 @@ public static partial class MarkupAlphabets
             if (codePage == CodePage.EBCDIC_Turkish)
             {
                 alphabetInfo = new(EBCDIC_Turkish, CodePages.EBCDIC_Turkish);
-                Debug.Assert(alphabetInfo.CodePages.IndexOf(codePage) > -1);
-                return true;
-            }
-            if (codePage == CodePage.Utf16)
-            {
-                alphabetInfo = new(Utf16, CodePages.Utf16);
-                Debug.Assert(alphabetInfo.CodePages.IndexOf(codePage) > -1);
-                return true;
-            }
-            if (codePage == CodePage.Utf16BE)
-            {
-                alphabetInfo = new(Utf16BE, CodePages.Utf16BE);
-                Debug.Assert(alphabetInfo.CodePages.IndexOf(codePage) > -1);
-                return true;
-            }
-            if (codePage == CodePage.Utf32)
-            {
-                alphabetInfo = new(Utf32, CodePages.Utf32);
-                Debug.Assert(alphabetInfo.CodePages.IndexOf(codePage) > -1);
-                return true;
-            }
-            if (codePage == CodePage.Utf32BE)
-            {
-                alphabetInfo = new(Utf32BE, CodePages.Utf32BE);
                 Debug.Assert(alphabetInfo.CodePages.IndexOf(codePage) > -1);
                 return true;
             }

@@ -75,6 +75,26 @@ public static class MarkupFinders
             finder = Utf8;
             return true;
         }
+        if (codePage == 1200)
+        {
+            finder = Utf16;
+            return true;
+        }
+        if (codePage == 1201)
+        {
+            finder = Utf16BE;
+            return true;
+        }
+        if (codePage == 12000)
+        {
+            finder = Utf32;
+            return true;
+        }
+        if (codePage == 12001)
+        {
+            finder = Utf32BE;
+            return true;
+        }
         if (codePage == 29001)
         {
             finder = Europa;
@@ -95,26 +115,6 @@ public static class MarkupFinders
         {
             Debug.Assert(CodePages.EBCDIC_IBM_Latin1.IndexOf(codePage) > -1);
             finder = IBM_Latin1;
-            return true;
-        }
-        if (codePage == 1200)
-        {
-            finder = Utf16;
-            return true;
-        }
-        if (codePage == 1201)
-        {
-            finder = Utf16BE;
-            return true;
-        }
-        if (codePage == 12000)
-        {
-            finder = Utf32;
-            return true;
-        }
-        if (codePage == 12001)
-        {
-            finder = Utf32BE;
             return true;
         }
         finder = null
