@@ -12,12 +12,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-22.04, macos-latest, windows-latest]
+        os: [ubuntu-22.04, macos-latest, windows-latest, windows-11-arm, ubuntu-24.04-arm]
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Setup
-        uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v6
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: |
             3.1.x
@@ -39,7 +39,7 @@ jobs:
     needs: [build]
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Publish IT.Markuping
         uses: pairbit/publish-nuget@v2.6.1
         with:
