@@ -83,7 +83,7 @@ public readonly struct MarkupTokens<T> where T : unmanaged
     /// =
     /// </summary>
     public T Eq => _eq;
-    
+
     /// <summary>
     /// !
     /// </summary>
@@ -109,13 +109,19 @@ public readonly struct MarkupTokens<T> where T : unmanaged
     /// </summary>
     public T Quest => _quest;
 
-    public T X => _x;
-    public T M => _m;
-    public T L => _l;
-    public T N => _n;
-    public T S => _s;
-    public T I => _i;
-    public T D => _d;
+    public T x => _x;
+
+    public T m => _m;
+
+    public T l => _l;
+
+    public T n => _n;
+
+    public T s => _s;
+
+    public T i => _i;
+
+    public T d => _d;
 
     /// <summary>
     /// '

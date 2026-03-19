@@ -123,7 +123,7 @@ public readonly struct MarkupAlphabet<T> where T : unmanaged
     public MarkupAlphabet(T[] abc)
     {
         if (abc == null) throw new ArgumentNullException(nameof(abc));
-        if (abc.Length % MarkupAlphabet.Length != 0) 
+        if (abc.Length % MarkupAlphabet.Length != 0)
             throw new ArgumentOutOfRangeException(nameof(abc));
 
         _abc = abc;

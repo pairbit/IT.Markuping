@@ -124,13 +124,13 @@ internal class MarkupAlphabetsTest
             Assert.That(tokens.LSQB, Is.EqualTo(lsqb[0]));
             Assert.That(tokens.RSQB, Is.EqualTo(rsqb[0]));
             Assert.That(tokens.Quest, Is.EqualTo(quest[0]));
-            Assert.That(tokens.X, Is.EqualTo(x[0]));
-            Assert.That(tokens.M, Is.EqualTo(m[0]));
-            Assert.That(tokens.L, Is.EqualTo(l[0]));
-            Assert.That(tokens.N, Is.EqualTo(n[0]));
-            Assert.That(tokens.S, Is.EqualTo(s[0]));
-            Assert.That(tokens.I, Is.EqualTo(i[0]));
-            Assert.That(tokens.D, Is.EqualTo(d[0]));
+            Assert.That(tokens.x, Is.EqualTo(x[0]));
+            Assert.That(tokens.m, Is.EqualTo(m[0]));
+            Assert.That(tokens.l, Is.EqualTo(l[0]));
+            Assert.That(tokens.n, Is.EqualTo(n[0]));
+            Assert.That(tokens.s, Is.EqualTo(s[0]));
+            Assert.That(tokens.i, Is.EqualTo(i[0]));
+            Assert.That(tokens.d, Is.EqualTo(d[0]));
 
             Assert.That(tokens.Apos, Is.EqualTo(apos[0]));
             Assert.That(tokens.CR, Is.EqualTo(cr[0]));
@@ -210,13 +210,13 @@ internal class MarkupAlphabetsTest
         Assert.That(tokens.LSQB, Is.EqualTo(lsqb[0]));
         Assert.That(tokens.RSQB, Is.EqualTo(rsqb[0]));
         Assert.That(tokens.Quest, Is.EqualTo(quest[0]));
-        Assert.That(tokens.X, Is.EqualTo(x[0]));
-        Assert.That(tokens.M, Is.EqualTo(m[0]));
-        Assert.That(tokens.L, Is.EqualTo(l[0]));
-        Assert.That(tokens.N, Is.EqualTo(n[0]));
-        Assert.That(tokens.S, Is.EqualTo(s[0]));
-        Assert.That(tokens.I, Is.EqualTo(i[0]));
-        Assert.That(tokens.D, Is.EqualTo(d[0]));
+        Assert.That(tokens.x, Is.EqualTo(x[0]));
+        Assert.That(tokens.m, Is.EqualTo(m[0]));
+        Assert.That(tokens.l, Is.EqualTo(l[0]));
+        Assert.That(tokens.n, Is.EqualTo(n[0]));
+        Assert.That(tokens.s, Is.EqualTo(s[0]));
+        Assert.That(tokens.i, Is.EqualTo(i[0]));
+        Assert.That(tokens.d, Is.EqualTo(d[0]));
 
         Assert.That(tokens.Apos, Is.EqualTo(apos[0]));
         Assert.That(tokens.CR, Is.EqualTo(cr[0]));
