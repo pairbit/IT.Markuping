@@ -4,7 +4,7 @@ namespace IT.Markuping.Interfaces;
 
 public interface IMarkupFinder<T> where T : unmanaged
 {
-    //ReadOnlySpan<int> CodePages { get; }
+    ReadOnlySpan<int> CodePages { get; }
 
     Tags FirstTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, out int nodes);
 

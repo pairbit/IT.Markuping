@@ -38,7 +38,7 @@ internal class StrictMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, 
 
     protected override int LtSlashColonLength => 3;
 
-    public StrictMarkupFinder(Tokens tokens)
+    public StrictMarkupFinder(int[] codePages, Tokens tokens) : base(codePages)
     {
         _tokens = tokens;
     }

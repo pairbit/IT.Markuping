@@ -1045,17 +1045,17 @@ public class MarkupFinderByte : MarkupFinder<byte>
 
     #endregion static
 
-    public static readonly MarkupFinderByte Utf8 = new(new((MarkupTokens<byte>)MarkupAlphabets.Byte.Utf8), Utf8_WhiteSpaces);
-    public static readonly MarkupFinderByte Europa = new(new((MarkupTokens<byte>)MarkupAlphabets.Byte.Europa), Europa_WhiteSpaces);
-    public static readonly MarkupFinderByte EBCDIC = new(new((MarkupTokens<byte>)MarkupAlphabets.Byte.EBCDIC), EBCDIC_WhiteSpaces);
-    public static readonly MarkupFinderByte EBCDIC_Turkish = new(new((MarkupTokens<byte>)MarkupAlphabets.Byte.EBCDIC_Turkish), EBCDIC_WhiteSpaces);
-    public static readonly MarkupFinderByte EBCDIC_IBM_Latin1 = new(new((MarkupTokens<byte>)MarkupAlphabets.Byte.EBCDIC_IBM_Latin1), EBCDIC_IBM_Latin1_WhiteSpaces);
+    public static readonly MarkupFinderByte Utf8 = new(MarkupFinders.CodePages.Utf8, new((MarkupTokens<byte>)MarkupAlphabets.Byte.Utf8), Utf8_WhiteSpaces);
+    public static readonly MarkupFinderByte Europa = new(MarkupFinders.CodePages.Europa, new((MarkupTokens<byte>)MarkupAlphabets.Byte.Europa), Europa_WhiteSpaces);
+    public static readonly MarkupFinderByte EBCDIC = new(MarkupFinders.CodePages.EBCDIC, new((MarkupTokens<byte>)MarkupAlphabets.Byte.EBCDIC), EBCDIC_WhiteSpaces);
+    public static readonly MarkupFinderByte EBCDIC_Turkish = new(MarkupFinders.CodePages.EBCDIC_Turkish, new((MarkupTokens<byte>)MarkupAlphabets.Byte.EBCDIC_Turkish), EBCDIC_WhiteSpaces);
+    public static readonly MarkupFinderByte EBCDIC_IBM_Latin1 = new(MarkupFinders.CodePages.EBCDIC_IBM_Latin1, new((MarkupTokens<byte>)MarkupAlphabets.Byte.EBCDIC_IBM_Latin1), EBCDIC_IBM_Latin1_WhiteSpaces);
 
     private readonly bool[] _otherSpaces;
 
     public ReadOnlySpan<bool> OtherSpaces => _otherSpaces;
 
-    public MarkupFinderByte(Tokens tokens, bool[] otherSpaces) : base(tokens)
+    public MarkupFinderByte(int[] codePages, Tokens tokens, bool[] otherSpaces) : base(codePages, tokens)
     {
         if (otherSpaces == null) throw new ArgumentNullException(nameof(otherSpaces));
         if (otherSpaces.Length != 256) throw new ArgumentOutOfRangeException(nameof(otherSpaces));

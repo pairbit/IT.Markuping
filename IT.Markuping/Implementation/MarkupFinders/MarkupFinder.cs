@@ -49,7 +49,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
 
     protected override int LtSlashColonLength => 3;
 
-    public MarkupFinder(Tokens tokens)
+    public MarkupFinder(int[] codePages, Tokens tokens) : base(codePages)
     {
         _tokens = tokens;
     }

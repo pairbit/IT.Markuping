@@ -7,6 +7,8 @@ namespace IT.Markuping.Implementation;
 
 public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
 {
+    private readonly int[] _codePages;
+
     protected abstract int LtLength { get; }
 
     protected abstract int LtColonLength { get; }
@@ -14,6 +16,14 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
     protected abstract int LtSlashLength { get; }
 
     protected abstract int LtSlashColonLength { get; }
+
+    public BaseMarkupFinder(int[] codePages)
+    {
+        if (codePages == null) throw new ArgumentNullException(nameof(codePages));
+        if (codePages.Length == 0) throw new ArgumentException("empty", nameof(codePages));
+
+        _codePages = codePages;
+    }
 
     #region Protected Methods
 
@@ -46,6 +56,8 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
     #endregion Protected Methods
 
     #region IMarkupFinder
+
+    public ReadOnlySpan<int> CodePages => _codePages;
 
     public Tags FirstTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, out int nodes)
     {

@@ -6,12 +6,12 @@ public class OtherSpaceMarkupFinder<T> : MarkupFinder<T> where T : unmanaged, IE
 {
     private readonly T _otherSpace;
 
-    public OtherSpaceMarkupFinder(Tokens tokens, T otherSpace) : base(tokens)
+    public OtherSpaceMarkupFinder(int[] codePages, Tokens tokens, T otherSpace) : base(codePages, tokens)
     {
         _otherSpace = otherSpace;
     }
 
-    public OtherSpaceMarkupFinder(MarkupTokens<T> tokens) : base(new(tokens))
+    public OtherSpaceMarkupFinder(int[] codePages, MarkupTokens<T> tokens) : base(codePages, new(tokens))
     {
         if (!tokens._cr.Equals(tokens._lf) || !tokens._cr.Equals(tokens._tab)) throw new ArgumentOutOfRangeException(nameof(tokens));
 

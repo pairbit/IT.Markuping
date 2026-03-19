@@ -1,5 +1,4 @@
 ﻿using IT.Markuping.Interfaces;
-using IT.Markuping.Internal;
 using System;
 using System.Text;
 
@@ -90,6 +89,8 @@ internal class MarkupFinderByteTest
 
     private static void Test(IMarkupFinder<byte> finder, Encoding encoding)
     {
+        Assert.That(finder.CodePages.IndexOf(encoding.CodePage) > -1);
+
         var tester = new MarkupFinderByteTester(finder, encoding);
         tester.Test();
     }

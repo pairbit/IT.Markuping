@@ -25,8 +25,8 @@ public class ComplexMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, I
 
     protected override int LtSlashColonLength => _lt.Length + _slash.Length + _colon.Length;
 
-    public ComplexMarkupFinder(int length, T[] lt, T[] gt, T[] slash, T[] colon,
-        /*T[] space,*/ T[] quot, T[] eq, T[] apos, T[][] spaces)
+    public ComplexMarkupFinder(int[] codePages, int length, T[] lt, T[] gt, T[] slash, T[] colon,
+        /*T[] space,*/ T[] quot, T[] eq, T[] apos, T[][] spaces) : base(codePages)
     {
         _size = length;
         _lt = lt;
@@ -40,7 +40,7 @@ public class ComplexMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, I
         _spaces = spaces;
     }
 
-    public ComplexMarkupFinder(MarkupAlphabet<T> abc, bool isStrict = false)
+    public ComplexMarkupFinder(int[] codePages, MarkupAlphabet<T> abc, bool isStrict = false) : base(codePages)
     {
         _size = abc.Size;
         _lt = abc.LT.ToArray();

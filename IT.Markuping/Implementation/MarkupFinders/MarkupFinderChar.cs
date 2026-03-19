@@ -10,22 +10,22 @@ public class MarkupFinderChar : OtherSpacesMarkupFinder<char>
     private readonly StringComparison _comparison;
 #endif
 
-    public MarkupFinderChar(Tokens tokens, char cr, char lf, char tab
+    public MarkupFinderChar(int[] codePages, Tokens tokens, char cr, char lf, char tab
 #if NET
         , StringComparison comparison = StringComparison.Ordinal
 #endif
-        ) : base(tokens, cr, lf, tab)
+        ) : base(codePages, tokens, cr, lf, tab)
     {
 #if NET
         _comparison = comparison;
 #endif
     }
 
-    public MarkupFinderChar(MarkupTokens<char> tokens
+    public MarkupFinderChar(int[] codePages, MarkupTokens<char> tokens
 #if NET
         , StringComparison comparison = StringComparison.Ordinal
 #endif
-        ) : base(tokens)
+        ) : base(codePages, tokens)
     {
 #if NET
         _comparison = comparison;
