@@ -1049,7 +1049,7 @@ public class MarkupFinderByte : MarkupFinder<byte>
     public static readonly MarkupFinderByte Europa = new(new((MarkupTokens<byte>)MarkupAlphabets.Byte.Europa), Europa_WhiteSpaces);
     public static readonly MarkupFinderByte EBCDIC = new(new((MarkupTokens<byte>)MarkupAlphabets.Byte.EBCDIC), EBCDIC_WhiteSpaces);
     public static readonly MarkupFinderByte EBCDIC_Turkish = new(new((MarkupTokens<byte>)MarkupAlphabets.Byte.EBCDIC_Turkish), EBCDIC_WhiteSpaces);
-    public static readonly MarkupFinderByte IBM_Latin1 = new(new((MarkupTokens<byte>)MarkupAlphabets.Byte.EBCDIC_IBM_Latin1), EBCDIC_IBM_Latin1_WhiteSpaces);
+    public static readonly MarkupFinderByte EBCDIC_IBM_Latin1 = new(new((MarkupTokens<byte>)MarkupAlphabets.Byte.EBCDIC_IBM_Latin1), EBCDIC_IBM_Latin1_WhiteSpaces);
 
     private readonly bool[] _otherSpaces;
 

@@ -56,7 +56,7 @@ public static class MarkupFinders
     public static readonly MarkupFinderByte Europa = MarkupFinderByte.Europa;
     public static readonly MarkupFinderByte EBCDIC = MarkupFinderByte.EBCDIC;
     public static readonly MarkupFinderByte EBCDIC_Turkish = MarkupFinderByte.EBCDIC_Turkish;
-    public static readonly MarkupFinderByte IBM_Latin1 = MarkupFinderByte.IBM_Latin1;
+    public static readonly MarkupFinderByte EBCDIC_IBM_Latin1 = MarkupFinderByte.EBCDIC_IBM_Latin1;
 
     public static readonly ProxyMarkupFinderByte<char> Utf16 = new(Char.Utf16);
     public static readonly ProxyMarkupFinderByte<char> Utf16BE = new(Char.Utf16BE);
@@ -114,7 +114,7 @@ public static class MarkupFinders
         if (codePage == 1047 || codePage == 20924)
         {
             Debug.Assert(CodePages.EBCDIC_IBM_Latin1.IndexOf(codePage) > -1);
-            finder = IBM_Latin1;
+            finder = EBCDIC_IBM_Latin1;
             return true;
         }
         finder = null
