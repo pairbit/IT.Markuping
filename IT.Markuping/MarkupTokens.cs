@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IT.Markuping.Internal;
+using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -7,8 +8,6 @@ namespace IT.Markuping;
 //<>/: "=!-[]?xmlnsid'\r\n\t
 public readonly struct MarkupTokens<T> where T : unmanaged
 {
-    private const int Length = 23;
-
     #region Fields
 
     internal readonly T _lt;//<
@@ -147,7 +146,7 @@ public readonly struct MarkupTokens<T> where T : unmanaged
 
     public MarkupTokens(ReadOnlySpan<T> span)
     {
-        if (span.Length != Length) throw new ArgumentOutOfRangeException(nameof(span));
+        if (span.Length != MarkupAlphabet.Length) throw new ArgumentOutOfRangeException(nameof(span));
         this = Unsafe.As<T, MarkupTokens<T>>(ref MemoryMarshal.GetReference(span));
     }
 

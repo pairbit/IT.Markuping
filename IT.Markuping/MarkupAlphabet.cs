@@ -1,14 +1,9 @@
-﻿using System;
+﻿using IT.Markuping.Internal;
+using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace IT.Markuping;
-
-internal static class MarkupAlphabet
-{
-    public const int Length = 23;
-    //public const int StrictLength = Length - 4;
-}
 
 public readonly struct MarkupAlphabet<T> where T : unmanaged
 {
