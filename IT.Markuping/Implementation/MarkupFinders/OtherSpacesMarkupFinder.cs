@@ -8,14 +8,14 @@ public class OtherSpacesMarkupFinder<T> : MarkupFinder<T> where T : unmanaged, I
     private readonly T _lf;//\n
     private readonly T _tab;//\t
 
-    public OtherSpacesMarkupFinder(Tokens tokens, T cr, T lf, T tab) : base(tokens)
+    public OtherSpacesMarkupFinder(int[] codePages, Tokens tokens, T cr, T lf, T tab) : base(codePages, tokens)
     {
         _cr = cr;
         _lf = lf;
         _tab = tab;
     }
 
-    public OtherSpacesMarkupFinder(MarkupTokens<T> tokens) : base(new(tokens))
+    public OtherSpacesMarkupFinder(int[] codePages, MarkupTokens<T> tokens) : base(codePages, new(tokens))
     {
         _cr = tokens._cr;
         _lf = tokens._lf;

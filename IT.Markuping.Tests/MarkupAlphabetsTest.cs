@@ -11,13 +11,9 @@ internal class MarkupAlphabetsTest
     public void CastTest()
     {
         CastTest(MarkupAlphabets.Byte.Utf16, MarkupAlphabets.Char.Utf16);
-        CastTest(MarkupAlphabets.Byte.Utf16_Strict, MarkupAlphabets.Char.Utf16_Strict);
         CastTest(MarkupAlphabets.Byte.Utf16BE, MarkupAlphabets.Char.Utf16BE);
-        CastTest(MarkupAlphabets.Byte.Utf16BE_Strict, MarkupAlphabets.Char.Utf16BE_Strict);
         CastTest(MarkupAlphabets.Byte.Utf32, MarkupAlphabets.Int32.Utf32);
-        CastTest(MarkupAlphabets.Byte.Utf32_Strict, MarkupAlphabets.Int32.Utf32_Strict);
         CastTest(MarkupAlphabets.Byte.Utf32BE, MarkupAlphabets.Int32.Utf32BE);
-        CastTest(MarkupAlphabets.Byte.Utf32BE_Strict, MarkupAlphabets.Int32.Utf32BE_Strict);
     }
 
     [Test]
@@ -36,23 +32,17 @@ internal class MarkupAlphabetsTest
 
             if (MarkupAlphabets.Byte.TryGet(codePage, out var alphabet))
             {
-                ByteTest(alphabet, encoding);
-            }
-            else
-            {
-#if NET
-                Assert.Fail($"CodePage {codePage,5} not supported");
-#else
-                Console.WriteLine($"CodePage {codePage,5} not supported");
-#endif
-            }
+                Assert.That(MarkupAlphabets.Byte.TryGetInfo(codePage, out var alphabetInfo), Is.True);
+                Assert.That(alphabetInfo.Alphabet.Equals(alphabet), Is.True);
+                Assert.That(alphabetInfo.CodePages.IndexOf(codePage), Is.GreaterThan(-1));
 
-            if (MarkupAlphabets.Byte.TryGetStrict(codePage, out alphabet))
-            {
                 ByteTest(alphabet, encoding);
             }
             else
             {
+                Assert.That(MarkupAlphabets.Byte.TryGetInfo(codePage, out var alphabetInfo), Is.False);
+                Assert.That(alphabetInfo.Alphabet.Equals(default), Is.True);
+                Assert.That(alphabetInfo.CodePages.IsEmpty, Is.True);
 #if NET
                 Assert.Fail($"CodePage {codePage,5} not supported");
 #else
@@ -64,8 +54,6 @@ internal class MarkupAlphabetsTest
 
     private static void ByteTest(MarkupAlphabet<byte> alphabet, Encoding encoding)
     {
-        var size = alphabet.Size;
-
         var lt = encoding.GetBytes("<");
         var gt = encoding.GetBytes(">");
         var slash = encoding.GetBytes("/");
@@ -78,6 +66,19 @@ internal class MarkupAlphabetsTest
         var lf = encoding.GetBytes("\n");
         var tab = encoding.GetBytes("\t");
 
+        var excl = encoding.GetBytes("!");
+        var dash = encoding.GetBytes("-");
+        var lsqb = encoding.GetBytes("[");
+        var rsqb = encoding.GetBytes("]");
+        var quest = encoding.GetBytes("?");
+        var x = encoding.GetBytes("x");
+        var m = encoding.GetBytes("m");
+        var l = encoding.GetBytes("l");
+        var n = encoding.GetBytes("n");
+        var s = encoding.GetBytes("s");
+        var i = encoding.GetBytes("i");
+        var d = encoding.GetBytes("d");
+
         Assert.That(alphabet.LT.SequenceEqual(lt), Is.True);
         Assert.That(alphabet.GT.SequenceEqual(gt), Is.True);
         Assert.That(alphabet.Slash.SequenceEqual(slash), Is.True);
@@ -86,30 +87,28 @@ internal class MarkupAlphabetsTest
         Assert.That(alphabet.Quot.SequenceEqual(quot), Is.True);
         Assert.That(alphabet.Eq.SequenceEqual(eq), Is.True);
 
-        if (alphabet.IsStrict)
-        {
-            Assert.That(alphabet.Apos.IsEmpty, Is.True);
-            Assert.That(alphabet.CR.IsEmpty, Is.True);
-            Assert.That(alphabet.LF.IsEmpty, Is.True);
-            Assert.That(alphabet.Tab.IsEmpty, Is.True);
+        Assert.That(alphabet.Excl.SequenceEqual(excl), Is.True);
+        Assert.That(alphabet.Dash.SequenceEqual(dash), Is.True);
+        Assert.That(alphabet.LSQB.SequenceEqual(lsqb), Is.True);
+        Assert.That(alphabet.RSQB.SequenceEqual(rsqb), Is.True);
+        Assert.That(alphabet.Quest.SequenceEqual(quest), Is.True);
+        Assert.That(alphabet.x.SequenceEqual(x), Is.True);
+        Assert.That(alphabet.m.SequenceEqual(m), Is.True);
+        Assert.That(alphabet.l.SequenceEqual(l), Is.True);
+        Assert.That(alphabet.n.SequenceEqual(n), Is.True);
+        Assert.That(alphabet.s.SequenceEqual(s), Is.True);
+        Assert.That(alphabet.i.SequenceEqual(i), Is.True);
+        Assert.That(alphabet.d.SequenceEqual(d), Is.True);
 
-            Assert.That(alphabet.Abc.Length, Is.EqualTo(size * 7));
+        Assert.That(alphabet.Apos.SequenceEqual(apos), Is.True);
+        Assert.That(alphabet.CR.SequenceEqual(cr), Is.True);
+        Assert.That(alphabet.LF.SequenceEqual(lf), Is.True);
+        Assert.That(alphabet.Tab.SequenceEqual(tab), Is.True);
 
-            var abc = encoding.GetBytes("<>/: \"=");
-            Assert.That(alphabet.Abc.SequenceEqual(abc), Is.True);
-        }
-        else
-        {
-            Assert.That(alphabet.Apos.SequenceEqual(apos), Is.True);
-            Assert.That(alphabet.CR.SequenceEqual(cr), Is.True);
-            Assert.That(alphabet.LF.SequenceEqual(lf), Is.True);
-            Assert.That(alphabet.Tab.SequenceEqual(tab), Is.True);
-
-            Assert.That(alphabet.Abc.Length, Is.EqualTo(size * 11));
-
-            var abc = encoding.GetBytes("<>/: \"='\r\n\t");
-            Assert.That(alphabet.Abc.SequenceEqual(abc), Is.True);
-        }
+        //<>/: \"='\r\n\t
+        //<>/: \"=!-[]?xmlnsid'\r\n\t
+        var abc = encoding.GetBytes("<>/: \"=!-[]?xmlnsid'\r\n\t");
+        Assert.That(alphabet.Abc.SequenceEqual(abc), Is.True);
 
         if (alphabet.IsComplex)
         {
@@ -127,20 +126,23 @@ internal class MarkupAlphabetsTest
             Assert.That(tokens.Quot, Is.EqualTo(quot[0]));
             Assert.That(tokens.Eq, Is.EqualTo(eq[0]));
 
-            if (alphabet.IsStrict)
-            {
-                Assert.That(tokens.Apos, Is.Zero);
-                Assert.That(tokens.CR, Is.Zero);
-                Assert.That(tokens.LF, Is.Zero);
-                Assert.That(tokens.Tab, Is.Zero);
-            }
-            else
-            {
-                Assert.That(tokens.Apos, Is.EqualTo(apos[0]));
-                Assert.That(tokens.CR, Is.EqualTo(cr[0]));
-                Assert.That(tokens.LF, Is.EqualTo(lf[0]));
-                Assert.That(tokens.Tab, Is.EqualTo(tab[0]));
-            }
+            Assert.That(tokens.Excl, Is.EqualTo(excl[0]));
+            Assert.That(tokens.Dash, Is.EqualTo(dash[0]));
+            Assert.That(tokens.LSQB, Is.EqualTo(lsqb[0]));
+            Assert.That(tokens.RSQB, Is.EqualTo(rsqb[0]));
+            Assert.That(tokens.Quest, Is.EqualTo(quest[0]));
+            Assert.That(tokens.x, Is.EqualTo(x[0]));
+            Assert.That(tokens.m, Is.EqualTo(m[0]));
+            Assert.That(tokens.l, Is.EqualTo(l[0]));
+            Assert.That(tokens.n, Is.EqualTo(n[0]));
+            Assert.That(tokens.s, Is.EqualTo(s[0]));
+            Assert.That(tokens.i, Is.EqualTo(i[0]));
+            Assert.That(tokens.d, Is.EqualTo(d[0]));
+
+            Assert.That(tokens.Apos, Is.EqualTo(apos[0]));
+            Assert.That(tokens.CR, Is.EqualTo(cr[0]));
+            Assert.That(tokens.LF, Is.EqualTo(lf[0]));
+            Assert.That(tokens.Tab, Is.EqualTo(tab[0]));
         }
     }
 
@@ -158,6 +160,19 @@ internal class MarkupAlphabetsTest
         var lf = Cast<T>(abcByte.LF);
         var tab = Cast<T>(abcByte.Tab);
 
+        var excl = Cast<T>(abcByte.Excl);
+        var dash = Cast<T>(abcByte.Dash);
+        var lsqb = Cast<T>(abcByte.LSQB);
+        var rsqb = Cast<T>(abcByte.RSQB);
+        var quest = Cast<T>(abcByte.Quest);
+        var x = Cast<T>(abcByte.x);
+        var m = Cast<T>(abcByte.m);
+        var l = Cast<T>(abcByte.l);
+        var n = Cast<T>(abcByte.n);
+        var s = Cast<T>(abcByte.s);
+        var i = Cast<T>(abcByte.i);
+        var d = Cast<T>(abcByte.d);
+
         Assert.That(abc.LT.SequenceEqual(lt), Is.True);
         Assert.That(abc.GT.SequenceEqual(gt), Is.True);
         Assert.That(abc.Slash.SequenceEqual(slash), Is.True);
@@ -166,21 +181,23 @@ internal class MarkupAlphabetsTest
         Assert.That(abc.Quot.SequenceEqual(quot), Is.True);
         Assert.That(abc.Eq.SequenceEqual(eq), Is.True);
 
-        if (abc.IsStrict)
-        {
-            Assert.That(abcByte.IsStrict, Is.True);
-            Assert.That(abc.Apos.IsEmpty, Is.EqualTo(abcByte.Apos.IsEmpty));
-            Assert.That(abc.CR.IsEmpty, Is.EqualTo(abcByte.CR.IsEmpty));
-            Assert.That(abc.LF.IsEmpty, Is.EqualTo(abcByte.LF.IsEmpty));
-            Assert.That(abc.Tab.IsEmpty, Is.EqualTo(abcByte.Tab.IsEmpty));
-        }
-        else
-        {
-            Assert.That(abc.Apos.SequenceEqual(apos), Is.True);
-            Assert.That(abc.CR.SequenceEqual(cr), Is.True);
-            Assert.That(abc.LF.SequenceEqual(lf), Is.True);
-            Assert.That(abc.Tab.SequenceEqual(tab), Is.True);
-        }
+        Assert.That(abc.Excl.SequenceEqual(excl), Is.True);
+        Assert.That(abc.Dash.SequenceEqual(dash), Is.True);
+        Assert.That(abc.LSQB.SequenceEqual(lsqb), Is.True);
+        Assert.That(abc.RSQB.SequenceEqual(rsqb), Is.True);
+        Assert.That(abc.Quest.SequenceEqual(quest), Is.True);
+        Assert.That(abc.x.SequenceEqual(x), Is.True);
+        Assert.That(abc.m.SequenceEqual(m), Is.True);
+        Assert.That(abc.l.SequenceEqual(l), Is.True);
+        Assert.That(abc.n.SequenceEqual(n), Is.True);
+        Assert.That(abc.s.SequenceEqual(s), Is.True);
+        Assert.That(abc.i.SequenceEqual(i), Is.True);
+        Assert.That(abc.d.SequenceEqual(d), Is.True);
+
+        Assert.That(abc.Apos.SequenceEqual(apos), Is.True);
+        Assert.That(abc.CR.SequenceEqual(cr), Is.True);
+        Assert.That(abc.LF.SequenceEqual(lf), Is.True);
+        Assert.That(abc.Tab.SequenceEqual(tab), Is.True);
 
         Assert.That(abcByte.IsComplex, Is.True);
         Assert.That(abc.IsComplex, Is.False);
@@ -195,20 +212,23 @@ internal class MarkupAlphabetsTest
         Assert.That(tokens.Quot, Is.EqualTo(quot[0]));
         Assert.That(tokens.Eq, Is.EqualTo(eq[0]));
 
-        if (abc.IsStrict)
-        {
-            Assert.That(tokens.Apos, Is.Zero);
-            Assert.That(tokens.CR, Is.Zero);
-            Assert.That(tokens.LF, Is.Zero);
-            Assert.That(tokens.Tab, Is.Zero);
-        }
-        else
-        {
-            Assert.That(tokens.Apos, Is.EqualTo(apos[0]));
-            Assert.That(tokens.CR, Is.EqualTo(cr[0]));
-            Assert.That(tokens.LF, Is.EqualTo(lf[0]));
-            Assert.That(tokens.Tab, Is.EqualTo(tab[0]));
-        }
+        Assert.That(tokens.Excl, Is.EqualTo(excl[0]));
+        Assert.That(tokens.Dash, Is.EqualTo(dash[0]));
+        Assert.That(tokens.LSQB, Is.EqualTo(lsqb[0]));
+        Assert.That(tokens.RSQB, Is.EqualTo(rsqb[0]));
+        Assert.That(tokens.Quest, Is.EqualTo(quest[0]));
+        Assert.That(tokens.x, Is.EqualTo(x[0]));
+        Assert.That(tokens.m, Is.EqualTo(m[0]));
+        Assert.That(tokens.l, Is.EqualTo(l[0]));
+        Assert.That(tokens.n, Is.EqualTo(n[0]));
+        Assert.That(tokens.s, Is.EqualTo(s[0]));
+        Assert.That(tokens.i, Is.EqualTo(i[0]));
+        Assert.That(tokens.d, Is.EqualTo(d[0]));
+
+        Assert.That(tokens.Apos, Is.EqualTo(apos[0]));
+        Assert.That(tokens.CR, Is.EqualTo(cr[0]));
+        Assert.That(tokens.LF, Is.EqualTo(lf[0]));
+        Assert.That(tokens.Tab, Is.EqualTo(tab[0]));
     }
 
     private static ReadOnlySpan<T> Cast<T>(ReadOnlySpan<byte> span) where T : unmanaged

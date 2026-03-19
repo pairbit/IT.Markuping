@@ -1,7 +1,6 @@
 ﻿using IT.Markuping.Internal;
 using System;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace IT.Markuping.Implementation;
 
@@ -30,12 +29,13 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
             _apos = apos;
         }
 
-        public Tokens(MarkupTokens<T> tokens)
+        public Tokens(MarkupTokens<T> tokens) :
+            this(tokens._lt, tokens._gt, tokens._slash, tokens._colon, tokens._space, tokens._quot, tokens._eq, tokens._apos)
         {
-            if (Unsafe.SizeOf<MarkupTokens<T>>() < Unsafe.SizeOf<Tokens>())
-                throw new ArgumentOutOfRangeException(nameof(tokens));
+            //if (Unsafe.SizeOf<MarkupTokens<T>>() < Unsafe.SizeOf<Tokens>())
+            //    throw new ArgumentOutOfRangeException(nameof(tokens));
 
-            this = Unsafe.As<MarkupTokens<T>, Tokens>(ref tokens);
+            //this = Unsafe.As<MarkupTokens<T>, Tokens>(ref tokens);
         }
     }
 
@@ -49,7 +49,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
 
     protected override int LtSlashColonLength => 3;
 
-    public MarkupFinder(Tokens tokens)
+    public MarkupFinder(int[] codePages, Tokens tokens) : base(codePages)
     {
         _tokens = tokens;
     }
