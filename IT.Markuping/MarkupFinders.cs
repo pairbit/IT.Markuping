@@ -140,4 +140,12 @@ public static class MarkupFinders
             ;
         return false;
     }
+
+    /// <exception cref="NotSupportedException">MarkupFinder does not support code page</exception>
+    public static IMarkupFinder<byte> Get(int codePage)
+    {
+        if (TryGet(codePage, out var decl)) return decl;
+
+        throw new NotSupportedException($"MarkupFinder does not support code page {codePage}.");
+    }
 }
