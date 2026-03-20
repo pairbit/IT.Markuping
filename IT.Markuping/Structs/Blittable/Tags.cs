@@ -25,6 +25,8 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
 
     public int Start => _opening.Start;
 
+    public int End => _closing.End;
+
     public int Length => _closing.End - _opening.Start;
 
     public bool IsEmpty => _closing.End == _opening.Start;
