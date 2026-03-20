@@ -188,12 +188,15 @@ internal class SystemTextEncodingTest
     {
         var maps = new List<EncodingMap>();
         var encodingInfos = Encoding.GetEncodings();
+        Console.WriteLine($"Encodings: {encodingInfos.Length}");
         foreach (var encodingInfo in encodingInfos)
         {
             var codePage = encodingInfo.CodePage;
-            if (codePage == 1200 || codePage == 1201 ||
-                codePage == 65000 ||
-                codePage == 12000 || codePage == 12001) continue;
+            if (
+                codePage == 1200 || codePage == 1201 ||
+                codePage == 65000 || 
+                codePage == 12000 || codePage == 12001
+                ) continue;
 
             var encoding = encodingInfo.GetEncoding();
             var bytes = encoding.GetBytes(abc);
