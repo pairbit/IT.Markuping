@@ -1,4 +1,5 @@
-﻿using IT.Markuping.Internal;
+﻿using IT.Markuping.Interfaces;
+using IT.Markuping.Internal;
 using System;
 using System.Diagnostics;
 
@@ -312,9 +313,9 @@ public class ComplexMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, I
         return TagEnding.None;
     }
 
-    protected override Tag FirstTagById(ReadOnlySpan<T> data, ReadOnlySpan<T> id, HasId<T> hasId, out TagNS tagName)
+    protected override Tag FirstTagByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, INameEquatable name, out TagNS tagName)
     {
-        throw new NotImplementedException("FirstTagById Complex");
+        throw new NotImplementedException("FirstTagByAttribute Complex");
     }
 
     #region Private

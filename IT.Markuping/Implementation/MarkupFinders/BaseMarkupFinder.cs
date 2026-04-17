@@ -63,7 +63,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
     //<Tag>id='myid'</Tag>
     //<Tag id=" id='myid' "/>
 
-    protected abstract Tag FirstTagById(ReadOnlySpan<T> data, ReadOnlySpan<T> id, HasId<T> hasId, out TagNS tagName);
+    protected abstract Tag FirstTagByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, INameEquatable name, out TagNS tagName);
 
     #endregion Protected Methods
 
@@ -71,9 +71,9 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
 
     public ReadOnlySpan<int> CodePages => _codePages;
 
-    public Tags FirstTagsById(ReadOnlySpan<T> data, ReadOnlySpan<T> id, HasId<T> hasId, out int nodes)
+    public Tags FirstTagsByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, INameEquatable name, out int nodes)
     {
-        var tag = FirstTagById(data, id, hasId ?? throw new ArgumentNullException(nameof(hasId)), out var tagName);
+        var tag = FirstTagByAttribute(data, value, name ?? throw new ArgumentNullException(nameof(name)), out var tagName);
         if (!tag.IsEmpty)
         {
             if (((TagOpening)tag).IsSelfClosing)

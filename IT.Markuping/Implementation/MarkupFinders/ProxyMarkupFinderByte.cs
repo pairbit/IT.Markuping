@@ -28,9 +28,9 @@ public class ProxyMarkupFinderByte<T> : IMarkupFinder<byte> where T : unmanaged
 
     public ReadOnlySpan<int> CodePages => _proxy.CodePages;
 
-    public Tags FirstTagsById(ReadOnlySpan<byte> data, ReadOnlySpan<byte> id, HasId<byte> hasId, out int nodes)
+    public Tags FirstTagsByAttribute(ReadOnlySpan<byte> data, ReadOnlySpan<byte> value, INameEquatable name, out int nodes)
     {
-        var tags = _proxy.FirstTagsById(Cast(data), Cast(id), name => hasId(MemoryMarshal.AsBytes(name)), out nodes);
+        var tags = _proxy.FirstTagsByAttribute(Cast(data), Cast(value), name, out nodes);
 
         return tags.MultipleOffset(Size);
     }

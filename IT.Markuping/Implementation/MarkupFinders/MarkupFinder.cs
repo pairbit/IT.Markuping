@@ -1,4 +1,5 @@
-﻿using IT.Markuping.Internal;
+﻿using IT.Markuping.Interfaces;
+using IT.Markuping.Internal;
 using System;
 using System.Diagnostics;
 
@@ -306,10 +307,10 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
         return TagEnding.None;
     }
 
-    protected override Tag FirstTagById(ReadOnlySpan<T> data, ReadOnlySpan<T> id, HasId<T> hasId, out TagNS tagName)
+    protected override Tag FirstTagByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, INameEquatable name, out TagNS tagName)
     {
-        var idlen = id.Length;
-        Debug.Assert(idlen > 0);
+        var valen = value.Length;
+        Debug.Assert(valen > 0);
 
         var len = data.Length;
         //<a b=
@@ -317,14 +318,14 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
         do
         {
             //case sensitive always
-            var index = data.IndexOf(id);
+            var index = data.IndexOf(value);
             if (index < 0) break;
 
             //-check quotes "" or apos '' (если значение не имеет пробелов, то может быть без ковычек)
             //-find LastIndexOf LT
             //ищем tagName до пробела
             //ищем attrName с указанным value
-            var end = index + idlen;
+            var end = index + valen;
             if (index >= min)
             {
                 throw new NotImplementedException();
