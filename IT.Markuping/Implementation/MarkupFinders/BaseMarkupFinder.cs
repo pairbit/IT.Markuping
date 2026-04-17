@@ -53,10 +53,17 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
 
     protected abstract TagEnding GetEndingHasAttributes(ReadOnlySpan<T> data, ref int end);
 
-    //<Tag id = 'myid' other />
+    //<Tag id = 'my id' other />
+    //<Tag id = "my id" other></Tag>
+
+    //not implement без quotes (значение не должно содержать пробелов)
+    //<Tag id=myid />
+
+    //invalid
     //<Tag>id='myid'</Tag>
     //<Tag id=" id='myid' "/>
-    protected abstract Tag FirstTagByAttrValue(ReadOnlySpan<T> data, ReadOnlySpan<T> attrValue, out TagNS attrName, out TagNS tagName);
+
+    protected abstract Tag FirstTagById(ReadOnlySpan<T> data, ReadOnlySpan<T> value, TagId id, out TagNS tagName);
 
     #endregion Protected Methods
 
@@ -64,9 +71,9 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
 
     public ReadOnlySpan<int> CodePages => _codePages;
 
-    public Tags FirstTagsByAttrValue(ReadOnlySpan<T> data, ReadOnlySpan<T> attrValue, out TagNS attrName, out int nodes)
+    public Tags FirstTagsById(ReadOnlySpan<T> data, ReadOnlySpan<T> value, out int nodes, TagId id = default)
     {
-        var tag = FirstTagByAttrValue(data, attrValue, out attrName, out var tagName);
+        var tag = FirstTagById(data, value, id, out var tagName);
         if (!tag.IsEmpty)
         {
             if (((TagOpening)tag).IsSelfClosing)

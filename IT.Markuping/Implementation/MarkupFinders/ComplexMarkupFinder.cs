@@ -312,9 +312,9 @@ public class ComplexMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, I
         return TagEnding.None;
     }
 
-    protected override Tag FirstTagByAttrValue(ReadOnlySpan<T> data, ReadOnlySpan<T> attrValue, out TagNS attrName, out TagNS tagName)
+    protected override Tag FirstTagById(ReadOnlySpan<T> data, ReadOnlySpan<T> value, TagId id, out TagNS tagName)
     {
-        throw new NotImplementedException("FirstTagByAttrValue Complex");
+        throw new NotImplementedException("FirstTagById Complex");
     }
 
     #region Private

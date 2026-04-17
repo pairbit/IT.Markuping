@@ -268,8 +268,8 @@ internal class StrictMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, 
         return TagEnding.None;
     }
 
-    protected override Tag FirstTagByAttrValue(ReadOnlySpan<T> data, ReadOnlySpan<T> attrValue, out TagNS attrName, out TagNS tagName)
+    protected override Tag FirstTagById(ReadOnlySpan<T> data, ReadOnlySpan<T> value, TagId id, out TagNS tagName)
     {
-        throw new NotImplementedException("FirstTagByAttrValue Strict");
+        throw new NotImplementedException("FirstTagById Strict");
     }
 }

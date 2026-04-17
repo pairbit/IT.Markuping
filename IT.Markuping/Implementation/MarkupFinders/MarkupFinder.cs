@@ -67,9 +67,11 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
         token.Equals(_tokens._quot) ||
         token.Equals(_tokens._apos);
 
+    //TagName
     protected override int IndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.IndexOf(value);
-
+    
+    //TagName
     protected override int LastIndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.LastIndexOf(value);
 
@@ -304,12 +306,41 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
         return TagEnding.None;
     }
 
-    protected override Tag FirstTagByAttrValue(ReadOnlySpan<T> data, ReadOnlySpan<T> attrValue, out TagNS attrName, out TagNS tagName)
+    protected override Tag FirstTagById(ReadOnlySpan<T> data, ReadOnlySpan<T> value, TagId id, out TagNS tagName)
     {
+        var valen = value.Length;
+        Debug.Assert(valen > 0);
 
+        var len = data.Length;
+        //<a b=
+        var min = 5;
+        do
+        {
+            //case sensitive always
+            var index = data.IndexOf(value);
+            if (index < 0) break;
 
+            //-check quotes "" or apos '' (если значение не имеет пробелов, то может быть без ковычек)
+            //-find LastIndexOf LT
+            //ищем tagName до пробела
+            //ищем attrName с указанным value
+            var end = index + valen;
+            if (index >= min)
+            {
+                throw new NotImplementedException();
 
-        attrName = default;
+                //var tag = GetTag(data, index, end, endings, out ns);
+                //if (!tag.IsEmpty)
+                //{
+                //    tagName = default;
+                //    var offset = len - data.Length;
+                //    return tag.AddOffset(offset);
+                //}
+            }
+
+            data = data.Slice(end);
+        } while (true);
+
         tagName = default;
         return default;
     }
