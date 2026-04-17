@@ -167,7 +167,9 @@ internal class SystemTextEncodingTest
         //<>/: \"= (2.0.4 strict)
         //<>/: \"=!-[]?xmlnsid'\r\n\t (full 2.0.5)
         //<>/: \"=!-[]?xmlnsid (strict 2.0.5)
-        var abc = "<?xm";
+
+        //<>/: \"=!-[]?xmlnsidID'\r\n\t (full 2.0.7)
+        var abc = "<>/: \"=!-[]?xmlnsidID'\r\n\t";
         var maps = GetMaps(abc).OrderByDescending(x => x.CodePages.Count);
 
         Console.WriteLine($"Abc#{abc.Length}: '{abc}' ");

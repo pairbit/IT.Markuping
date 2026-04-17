@@ -93,25 +93,29 @@ public readonly struct MarkupAlphabet<T> where T : unmanaged
 
     public ReadOnlySpan<T> d => GetByIndex(18);
 
+    public ReadOnlySpan<T> I => GetByIndex(19);
+
+    public ReadOnlySpan<T> D => GetByIndex(20);
+
     /// <summary>
     /// '
     /// </summary>
-    public ReadOnlySpan<T> Apos => GetByIndex(19);
+    public ReadOnlySpan<T> Apos => GetByIndex(21);
 
     /// <summary>
     /// \r
     /// </summary>
-    public ReadOnlySpan<T> CR => GetByIndex(20);
+    public ReadOnlySpan<T> CR => GetByIndex(22);
 
     /// <summary>
     /// \n
     /// </summary>
-    public ReadOnlySpan<T> LF => GetByIndex(21);
+    public ReadOnlySpan<T> LF => GetByIndex(23);
 
     /// <summary>
     /// \t
     /// </summary>
-    public ReadOnlySpan<T> Tab => GetByIndex(22);
+    public ReadOnlySpan<T> Tab => GetByIndex(24);
 
     #endregion Props
 
