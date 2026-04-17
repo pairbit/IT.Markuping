@@ -8,7 +8,7 @@ namespace IT.Markuping.Implementation;
 public class ProxyMarkupFinderByte<T> : IMarkupFinder<byte> where T : unmanaged
 {
     private static readonly int Size = Unsafe.SizeOf<T>();
-    
+
     private readonly IMarkupFinder<T> _proxy;
 
     public IMarkupFinder<T> Proxy => _proxy;
@@ -28,9 +28,9 @@ public class ProxyMarkupFinderByte<T> : IMarkupFinder<byte> where T : unmanaged
 
     public ReadOnlySpan<int> CodePages => _proxy.CodePages;
 
-    public Tags FirstTagsById(ReadOnlySpan<byte> data, ReadOnlySpan<byte> value, out int nodes, TagId id = default)
+    public Tags FirstTagsById(ReadOnlySpan<byte> data, ReadOnlySpan<byte> id, HasId<byte> hasId, out int nodes)
     {
-        var tags = _proxy.FirstTagsById(Cast(data), Cast(value), out nodes, id);
+        var tags = _proxy.FirstTagsById(Cast(data), Cast(id), name => hasId(MemoryMarshal.AsBytes(name)), out nodes);
 
         return tags.MultipleOffset(Size);
     }
