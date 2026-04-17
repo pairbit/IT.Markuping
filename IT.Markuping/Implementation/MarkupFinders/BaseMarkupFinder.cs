@@ -53,11 +53,32 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
 
     protected abstract TagEnding GetEndingHasAttributes(ReadOnlySpan<T> data, ref int end);
 
+    //<Tag id = 'myid' other>
+    //<Tag>id='myid'</Tag>
+    //<Tag id=" id='myid' "/>
+    //protected abstract Tag FirstTagByAttrValue(ReadOnlySpan<T> data, ReadOnlySpan<T> attrValue, out TagNS attrName, out TagNS tagName);
+
     #endregion Protected Methods
 
     #region IMarkupFinder
 
     public ReadOnlySpan<int> CodePages => _codePages;
+
+    public Tags FirstTagsByAttrValue(ReadOnlySpan<T> data, ReadOnlySpan<T> attrValue, out TagNS attrName, out int nodes)
+    {
+        throw new NotImplementedException();
+        //var opening = FirstTagByAttrValue(data, attrValue, out attrName, out var tagName);
+        //if (!opening.IsEmpty)
+        //{
+        //    var closing = FirstClosing(data, data.Slice(tagName.Start, tagName.Length), default, opening.End, out nodes);
+        //    if (!closing.IsEmpty)
+        //    {
+        //        return new(opening, closing);
+        //    }
+        //}
+        //nodes = default;
+        //return default;
+    }
 
     public Tags FirstTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, out int nodes)
     {
