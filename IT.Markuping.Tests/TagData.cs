@@ -3,6 +3,21 @@ using System.Text;
 
 namespace IT.Markuping.Tests;
 
+internal class AttrName
+{
+    public byte[] Bytes { get; }
+
+    public string String { get; }
+
+    public AttrName(Encoding encoding, string name)
+    {
+        String = name;
+        Bytes = encoding.GetBytes(name);
+    }
+
+    public override string ToString() => String;
+}
+
 internal class TagData
 {
     private byte[] NameBytes { get; }

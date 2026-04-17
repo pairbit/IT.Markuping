@@ -6,11 +6,17 @@ namespace IT.Markuping.Tests;
 
 internal class MarkupFinderByteTest
 {
-    //[Test]
+    private static readonly INameEquatable _nameUtf8 = new IdEquatabe<byte>(MarkupAlphabets.Byte.Utf8);
+    private static readonly INameEquatable _nameUtf16 = new IdEquatabe<char>(MarkupAlphabets.Char.Utf16);
+    private static readonly INameEquatable _nameUtf16BE = new IdEquatabe<char>(MarkupAlphabets.Char.Utf16BE);
+    private static readonly INameEquatable _nameUtf32 = new IdEquatabe<int>(MarkupAlphabets.Int32.Utf32);
+    private static readonly INameEquatable _nameUtf32BE = new IdEquatabe<int>(MarkupAlphabets.Int32.Utf32BE);
+
+    [Test]
     public void Tester_Utf()
     {
-        Test(MarkupFinders.Utf8, Encoding.UTF8);
-        Test(MarkupFinders.Utf16, Encoding.Unicode);
+        Test(MarkupFinders.Utf8, Encoding.UTF8, _nameUtf8);
+        Test(MarkupFinders.Utf16, Encoding.Unicode, _nameUtf16);
     }
 
     [Test]
@@ -31,7 +37,7 @@ internal class MarkupFinderByteTest
             {
                 try
                 {
-                    Test(finder, encoding);
+                    Test(finder, encoding, GetName(codePage));
                 }
                 catch
                 {
@@ -50,48 +56,66 @@ internal class MarkupFinderByteTest
 
             if (MarkupFinders.CodePages.Utf8.AsSpan().IndexOf(codePage) > -1)
             {
-                Test(MarkupFinders.OtherSpaces.Utf8, encoding);
+                Test(MarkupFinders.OtherSpaces.Utf8, encoding, _nameUtf8);
             }
             else if (codePage == 29001)
             {
-                Test(MarkupFinders.OtherSpaces.Europa, encoding);
+                Test(MarkupFinders.OtherSpaces.Europa, encoding, _nameUtf8);
             }
             else if (MarkupFinders.CodePages.EBCDIC.AsSpan().IndexOf(codePage) > -1)
             {
-                Test(MarkupFinders.OtherSpaces.EBCDIC, encoding);
+                Test(MarkupFinders.OtherSpaces.EBCDIC, encoding, _nameUtf8);
             }
             else if (codePage == 1026 || codePage == 20905)
             {
-                Test(MarkupFinders.OtherSpaces.EBCDIC_Turkish, encoding);
+                Test(MarkupFinders.OtherSpaces.EBCDIC_Turkish, encoding, _nameUtf8);
             }
             else if (codePage == 1047 || codePage == 20924)
             {
-                Test(MarkupFinders.OtherSpaces.EBCDIC_IBM_Latin1, encoding);
+                Test(MarkupFinders.OtherSpaces.EBCDIC_IBM_Latin1, encoding, _nameUtf8);
             }
             else if (codePage == 1200)
             {
-                Test(MarkupFinders.Complex.Utf16, encoding);
+                Test(MarkupFinders.Complex.Utf16, encoding, null!);
             }
             else if (codePage == 1201)
             {
-                Test(MarkupFinders.Complex.Utf16BE, encoding);
+                Test(MarkupFinders.Complex.Utf16BE, encoding, null!);
             }
             else if (codePage == 12000)
             {
-                Test(MarkupFinders.Complex.Utf32, encoding);
+                Test(MarkupFinders.Complex.Utf32, encoding, null!);
             }
             else if (codePage == 12001)
             {
-                Test(MarkupFinders.Complex.Utf32BE, encoding);
+                Test(MarkupFinders.Complex.Utf32BE, encoding, null!);
             }
         }
     }
 
-    private static void Test(IMarkupFinder<byte> finder, Encoding encoding)
+    private static void Test(IMarkupFinder<byte> finder, Encoding encoding, INameEquatable name)
     {
         Assert.That(finder.CodePages.IndexOf(encoding.CodePage) > -1);
 
-        var tester = new MarkupFinderByteTester(finder, encoding);
+        var tester = new MarkupFinderByteTester(finder, encoding, name);
         tester.Test();
+    }
+
+    private static INameEquatable GetName(int codePage)
+    {
+        if (codePage == 1200) return _nameUtf16;
+
+        if (codePage == 1201) return _nameUtf16BE;
+
+        if (codePage == 12000) return _nameUtf32;
+
+        if (codePage == 12001) return _nameUtf32BE;
+
+        if (MarkupAlphabets.Byte.TryGet(codePage, out var alphabet))
+        {
+            return new IdEquatabe<byte>(alphabet);
+        }
+
+        throw new NotImplementedException($"CodePage {codePage,5}");
     }
 }

@@ -10,17 +10,26 @@ internal class MarkupFinderByteTester
 {
     private readonly IMarkupFinder<byte> _finder;
     private readonly Encoding _encoding;
+    private readonly INameEquatable _name;
 
-    public MarkupFinderByteTester(IMarkupFinder<byte> finder, Encoding encoding)
+    public MarkupFinderByteTester(IMarkupFinder<byte> finder, Encoding encoding, INameEquatable name)
     {
         _finder = finder;
         _encoding = encoding;
+        _name = name;
     }
 
     public void Test()
     {
         Test(new(_encoding, "a"));
         Test(new(_encoding, "a", "n"));
+
+        //if (_name != null)
+        //{
+        //    TagsById(new(_encoding, "id"));
+        //    TagsById(new(_encoding, "Id"));
+        //    TagsById(new(_encoding, "ID"));
+        //}
     }
 
     public void Test(TagData tagData)
@@ -33,6 +42,18 @@ internal class MarkupFinderByteTester
     }
 
     #region TagsTest
+
+    public void TagsById(AttrName name)
+    {
+        FirstTagsById($"<a {name}='id1'></a>", "id1");
+        FirstTagsById($"<a ID='id2' {name}=\"id2\" />", "id2");
+        //FirstTagsById($"<a {name}=id3 />", "id3");
+
+        FirstTagsById($"<a myp:{name} \r = \t 'id4'></a>", "id4");
+
+        FirstTagsById($"<a>{name}='id1'</a>", "id1", "");
+        FirstTagsById($"<a {name}=\"{name}='id1'\"></a>", "id1", "");
+    }
 
     public void TagsTest(TagData tagData)
     {
@@ -68,6 +89,28 @@ internal class MarkupFinderByteTester
 
         FirstLastTags($"<{tagData}><{tagData}><{tagData}>1</{tagData}><{tagData}>2</{tagData}></{tagData}><{tagData}><{tagData}>3</{tagData}><{tagData}>4</{tagData}></{tagData}></{tagData}>", tagData,
             $"<{tagData}><{tagData}>1</{tagData}><{tagData}>2</{tagData}></{tagData}><{tagData}><{tagData}>3</{tagData}><{tagData}>4</{tagData}></{tagData}>", nodesCount: 6);
+    }
+
+    private void FirstTagsById(string data, string value, string? outer = null, int nodesCount = 0)
+    {
+        var bytes = _encoding.GetBytes(data);
+        var tags = _finder.FirstTagsByAttribute(bytes, _encoding.GetBytes(value), _name, out var nodes);
+
+        Assert.That(nodes, Is.EqualTo(nodesCount));
+
+        if (outer == null)
+        {
+            Assert.That(tags.Start, Is.EqualTo(0));
+            Assert.That(tags.Length, Is.EqualTo(bytes.Length));
+        }
+        else if (outer.Length == 0)
+        {
+            Assert.That(tags.IsEmpty, Is.True);
+        }
+        else
+        {
+            Assert.That(bytes.AsSpan(tags.Start, tags.Length).SequenceEqual(_encoding.GetBytes(outer)), Is.True);
+        }
     }
 
     private void FirstLastTags(string data, TagData tagData, string inner, string? outer = null, int nodesCount = 0)
