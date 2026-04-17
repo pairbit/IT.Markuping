@@ -53,6 +53,15 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
 
     #region Ctors
 
+    internal Tags(Tag tag)
+    {
+        Debug.Assert(((TagOpening)tag).IsSelfClosing);
+        Debug.Assert(tag.Start < tag.End);
+
+        _opening = (TagOpening)tag;
+        _closing = new(tag.Start, tag.End);
+    }
+
     internal Tags(Tag tag, TagClosing closing)
     {
         Debug.Assert(!((TagOpening)tag).IsSelfClosing);
@@ -79,6 +88,7 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
     public Tags(TagOpening opening)
     {
         if (!opening.IsSelfClosing) throw new ArgumentException("Tag is not self-closing.", nameof(opening));
+        if (opening.Start >= opening.End) throw new ArgumentOutOfRangeException(nameof(opening), "Start >= End");
 
         _opening = opening;
         _closing = new(opening.Start, opening.End);

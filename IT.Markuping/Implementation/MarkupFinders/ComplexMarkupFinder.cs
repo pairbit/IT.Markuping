@@ -312,6 +312,11 @@ public class ComplexMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, I
         return TagEnding.None;
     }
 
+    protected override Tag FirstTagByAttrValue(ReadOnlySpan<T> data, ReadOnlySpan<T> attrValue, out TagNS attrName, out TagNS tagName)
+    {
+        throw new NotImplementedException("FirstTagByAttrValue Complex");
+    }
+
     #region Private
 
     private bool IsSpace(ReadOnlySpan<T> span, ref int start)

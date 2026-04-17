@@ -28,6 +28,17 @@ public class ProxyMarkupFinderByte<T> : IMarkupFinder<byte> where T : unmanaged
 
     public ReadOnlySpan<int> CodePages => _proxy.CodePages;
 
+    public Tags FirstTagsByAttrValue(ReadOnlySpan<byte> data, ReadOnlySpan<byte> attrValue, out TagNS attrName, out int nodes)
+    {
+        var tags = _proxy.FirstTagsByAttrValue(Cast(data), Cast(attrValue), out attrName, out nodes);
+
+        var size = Size;
+
+        attrName = attrName.MultipleOffset(size);
+
+        return tags.MultipleOffset(size);
+    }
+
     public Tags FirstTags(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out TagNS ns, out int nodes)
     {
         var tags = _proxy.FirstTags(Cast(data), Cast(name), out ns, out nodes);

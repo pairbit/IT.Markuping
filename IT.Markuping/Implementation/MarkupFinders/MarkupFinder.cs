@@ -303,4 +303,14 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
 
         return TagEnding.None;
     }
+
+    protected override Tag FirstTagByAttrValue(ReadOnlySpan<T> data, ReadOnlySpan<T> attrValue, out TagNS attrName, out TagNS tagName)
+    {
+
+
+
+        attrName = default;
+        tagName = default;
+        return default;
+    }
 }
