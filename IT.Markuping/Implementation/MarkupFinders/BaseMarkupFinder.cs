@@ -76,6 +76,10 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         var tag = FirstTagByAttribute(data, value, name ?? throw new ArgumentNullException(nameof(name)), out var tagName);
         if (!tag.IsEmpty)
         {
+#if DEBUG && NET
+            var str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data.Slice(tag.Start, tag.Length)));
+            var strTagName = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data.Slice(tagName.Start, tagName.Length)));
+#endif
             if (((TagOpening)tag).IsSelfClosing)
             {
                 nodes = 0;

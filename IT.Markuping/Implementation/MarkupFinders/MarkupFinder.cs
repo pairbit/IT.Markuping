@@ -60,7 +60,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
     protected virtual bool Equals(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.SequenceEqual(value);
 
-    protected virtual bool IsInvalidNS(T token) => 
+    protected virtual bool IsInvalidNS(T token) =>
         IsSpace(token) ||
         token.Equals(_tokens._gt) ||
         token.Equals(_tokens._colon) ||
@@ -68,10 +68,19 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
         token.Equals(_tokens._quot) ||
         token.Equals(_tokens._apos);
 
+    protected virtual int IndexOfSpace(ReadOnlySpan<T> data)
+    {
+        for (int i = 0; i < data.Length; i++)
+        {
+            if (IsSpace(data[i])) return i;
+        }
+        return -1;
+    }
+
     //TagName
     protected override int IndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.IndexOf(value);
-    
+
     //TagName
     protected override int LastIndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.LastIndexOf(value);
@@ -270,8 +279,8 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
 
         //TODO: _gt, _slash и space был проверен ранее
         //стоит пропустить этот символ?
-        Debug.Assert(!data[end].Equals(_tokens._gt));
-        Debug.Assert(!data[end].Equals(_tokens._slash));
+        //Debug.Assert(!data[end].Equals(_tokens._gt));
+        //Debug.Assert(!data[end].Equals(_tokens._slash));
 
         do
         {
@@ -314,29 +323,40 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
 
         var len = data.Length;
         //<a b=
-        var min = 5;
+        const int min = 5;
         do
         {
+#if DEBUG && NET
+            var str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data));
+#endif
             //case sensitive always
             var index = data.IndexOf(value);
             if (index < 0) break;
 
-            //-check quotes "" or apos '' (если значение не имеет пробелов, то может быть без ковычек)
-            //-find LastIndexOf LT
             //ищем tagName до пробела
-            //ищем attrName с указанным value
             var end = index + valen;
             if (index >= min)
             {
-                throw new NotImplementedException();
-
-                //var tag = GetTag(data, index, end, endings, out ns);
-                //if (!tag.IsEmpty)
-                //{
-                //    tagName = default;
-                //    var offset = len - data.Length;
-                //    return tag.AddOffset(offset);
-                //}
+                //-check quotes "" or apos '' (если значение не имеет пробелов, то может быть без ковычек)
+                if (end < data.Length && IsQuoted(data[index - 1], data[end]))
+                {
+                    index--;
+                    tagName = GetTagName(data.Slice(0, index));
+                    if (!tagName.IsEmpty)
+                    {
+                        index -= tagName.End + 1;
+                        if (TryFindAttrName(data.Slice(tagName.End + 1, index), name))
+                        {
+                            end++;
+                            var ending = GetEndingHasAttributes(data, ref end);
+                            if (ending != TagEnding.None)
+                            {
+                                var offset = len - data.Length;
+                                return new(checked(tagName.Start - 1 + offset), checked(end + offset), ending);
+                            }
+                        }
+                    }
+                }
             }
 
             data = data.Slice(end);
@@ -344,5 +364,102 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
 
         tagName = default;
         return default;
+    }
+
+    private bool IsQuoted(T first, T last) =>
+        first.Equals(_tokens._quot) && last.Equals(_tokens._quot) ||
+        first.Equals(_tokens._apos) && last.Equals(_tokens._apos);
+
+    private TagNS GetTagName(ReadOnlySpan<T> data)
+    {
+#if DEBUG && NET
+        var str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data));
+#endif
+        //find LT
+        var tagNameStart = data.LastIndexOf(_tokens._lt);
+        if (tagNameStart < 0) return default;
+
+        tagNameStart++;
+#if DEBUG && NET
+        str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data.Slice(tagNameStart)));
+#endif
+        //find any space
+        var tagNameEnd = IndexOfSpace(data.Slice(tagNameStart));
+        if (tagNameEnd < 0) return default;//imposible?
+
+#if DEBUG && NET
+        str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data.Slice(tagNameStart, tagNameEnd)));
+#endif
+
+        return new(new(tagNameStart, tagNameEnd + tagNameStart));
+    }
+
+    private bool TryFindAttrName(ReadOnlySpan<T> data, INameEquatable name)
+    {
+#if DEBUG && NET
+        var str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data));
+#endif
+        var nameStart = 0;
+        var nameLength = 0;
+        bool isSpace = true;
+        for (int i = 0; i < data.Length; i++)
+        {
+            var token = data[i];
+            if (token.Equals(_tokens._gt) || token.Equals(_tokens._slash))
+            {
+                return false;
+            }
+            else if (token.Equals(_tokens._eq))
+            {
+                if (nameLength == 0) return false;
+                i++;
+                if (IsEnd(data, ref i))
+                {
+#if DEBUG && NET
+                    str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data.Slice(nameStart, nameLength)));
+#endif
+                    if (name.Equals(data.Slice(nameStart, nameLength))) 
+                        return true;
+                }
+            }
+            else if (IsSpace(token))
+            {
+                isSpace = true;
+            }
+            else if (isSpace)
+            {
+                isSpace = false;
+                nameStart = i;
+                nameLength = 1;
+            }
+            else
+            {
+                nameLength++;
+            }
+        }
+
+        return false;
+    }
+
+    private bool IsEnd(ReadOnlySpan<T> data, ref int i)
+    {
+#if DEBUG && NET
+        var str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data.Slice(i)));
+#endif
+        for (; i < data.Length; i++)
+        {
+            var token = data[i];
+            if (token.Equals(_tokens._gt) || token.Equals(_tokens._slash) || token.Equals(_tokens._eq))
+            {
+                return false;
+            }
+            else if (IsSpace(token))
+            {
+
+            }
+            
+        }
+
+        return true;
     }
 }

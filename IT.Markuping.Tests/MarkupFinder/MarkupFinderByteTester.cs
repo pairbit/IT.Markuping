@@ -24,12 +24,12 @@ internal class MarkupFinderByteTester
         Test(new(_encoding, "a"));
         Test(new(_encoding, "a", "n"));
 
-        //if (_name != null)
-        //{
-        //    TagsById(new(_encoding, "id"));
-        //    TagsById(new(_encoding, "Id"));
-        //    TagsById(new(_encoding, "ID"));
-        //}
+        if (_name != null)
+        {
+            TagsById(new(_encoding, "id"));
+            TagsById(new(_encoding, "Id"));
+            TagsById(new(_encoding, "ID"));
+        }
     }
 
     public void Test(TagData tagData)
@@ -45,7 +45,7 @@ internal class MarkupFinderByteTester
 
     public void TagsById(AttrName name)
     {
-        FirstTagsById($"<a {name}='id1'></a>", "id1");
+        FirstTagsById($"<a {name} ='id1'></a>", "id1");
         FirstTagsById($"<a ID='id2' {name}=\"id2\" />", "id2");
         //FirstTagsById($"<a {name}=id3 />", "id3");
 
