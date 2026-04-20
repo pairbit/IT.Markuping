@@ -72,7 +72,9 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
     {
         for (int i = 0; i < data.Length; i++)
         {
-            if (IsSpace(data[i])) return i;
+            var token = data[i];
+            if (token.Equals(_tokens._gt)) break;
+            if (IsSpace(token)) return i;
         }
         return -1;
     }

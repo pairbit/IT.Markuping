@@ -32,6 +32,7 @@ internal class MarkupFinderByteTester
             TagsById(new(_encoding, "myp:id"));
 
             //invalid
+            FirstTagsById($"<a> id='i0'</a >", "i0", "");
             FirstTagsById($"<a>id='i1'</a>", "i1", "");
             FirstTagsById($"<a id=\"id='i2'\"></a>", "i2", "");
 
