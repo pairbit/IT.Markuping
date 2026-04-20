@@ -321,24 +321,26 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
         var valen = value.Length;
         Debug.Assert(valen > 0);
 
-        var len = data.Length;
         //<a b=
         const int min = 5;
+        int offset = 0;
         do
         {
 #if DEBUG && NET
-            var str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data));
+            var str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data.Slice(offset)));
 #endif
             //case sensitive always
-            var index = data.IndexOf(value);
+            var index = data.Slice(offset).IndexOf(value);
             if (index < 0) break;
 
+            index = checked(index + offset);
+
             //ищем tagName до пробела
-            var end = index + valen;
+            offset = index + valen;
             if (index >= min)
             {
                 //-check quotes "" or apos '' (если значение не имеет пробелов, то может быть без ковычек)
-                if (end < data.Length && IsQuoted(data[index - 1], data[end]))
+                if (offset < data.Length && IsQuoted(data[index - 1], data[offset]))
                 {
                     index--;
                     tagName = GetTagName(data.Slice(0, index));
@@ -347,19 +349,16 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
                         index -= tagName.End + 1;
                         if (TryFindAttrName(data.Slice(tagName.End + 1, index), name))
                         {
-                            end++;
-                            var ending = GetEndingHasAttributes(data, ref end);
+                            offset++;
+                            var ending = GetEndingHasAttributes(data, ref offset);
                             if (ending != TagEnding.None)
                             {
-                                var offset = len - data.Length;
-                                return new(checked(tagName.Start - 1 + offset), checked(end + offset), ending);
+                                return new(tagName.Start - 1, offset, ending);
                             }
                         }
                     }
                 }
             }
-
-            data = data.Slice(end);
         } while (true);
 
         tagName = default;
@@ -460,22 +459,22 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
             }
             else if (token.Equals(_tokens._quot))
             {
-                //Добавляем еще длину gt
-                if (i + 1 >= data.Length) return AttrValueState.Invalid;
+                if (i >= data.Length) return AttrValueState.Invalid;
 
                 var index = data.Slice(i).IndexOf(_tokens._quot);
                 if (index < 0) return AttrValueState.Invalid;
-                i += index + 1;
+                i += index;
+
                 return AttrValueState.Read;
             }
             else if (token.Equals(_tokens._apos))
             {
-                //Добавляем еще длину gt
-                if (i + 1 >= data.Length) return AttrValueState.Invalid;
+                if (i >= data.Length) return AttrValueState.Invalid;
 
                 var index = data.Slice(i).IndexOf(_tokens._apos);
                 if (index < 0) return AttrValueState.Invalid;
-                i += index + 1;
+                i += index;
+
                 return AttrValueState.Read;
             }
         }
