@@ -30,6 +30,20 @@ internal class MarkupFinderByteTester
             TagsById(new(_encoding, "Id"));
             TagsById(new(_encoding, "ID"));
             TagsById(new(_encoding, "myp:id"));
+
+            //invalid
+            FirstTagsById($"<a>id='i1'</a>", "i1", "");
+            FirstTagsById($"<a id=\"id='i2'\"></a>", "i2", "");
+
+            FirstTagsById($"< id='i3'/>", "i3", "");
+            FirstTagsById($"<aid='i4'/>", "i4", "");
+            FirstTagsById($"   <a 'i5'/>", "i5", "");
+            FirstTagsById($"   <a >'i6'</a>", "i6", "");
+            FirstTagsById($"   <a />'i7'", "i7", "");
+            FirstTagsById($"   <a ='i8'", "i8", "");
+            FirstTagsById($"   <a b=='i9'", "i9", "");
+            FirstTagsById($"   <a b=/>'i10'", "i10", "");
+            FirstTagsById($"   <a b=>'i10'", "i10", "");
         }
     }
 
@@ -54,14 +68,6 @@ internal class MarkupFinderByteTester
         FirstTagsById($"<root><a {name}='id5'>text</a></root>", "id5", $"<a {name}='id5'>text</a>");
         FirstTagsById($"<root><a><a {name}='id6'><a><a><a></a></a><a></a></a><a></a><a></a></a></a></root>", "id6", $"<a {name}='id6'><a><a><a></a></a><a></a></a><a></a><a></a></a>", 6);
         FirstTagsById($"<root><p:abcd\n{name}\n=\n'id7'\nab></p:abcd></root>", "id7", $"<p:abcd\n{name}\n=\n'id7'\nab></p:abcd>");
-
-        //invalid
-        FirstTagsById($"<a>{name}='i1'</a>", "i1", "");
-        FirstTagsById($"<a {name}=\"{name}='i2'\"></a>", "i2", "");
-
-        FirstTagsById($"< {name}='i3'/>", "i3", "");
-        FirstTagsById($"<a{name}='i3'/>", "i3", "");
-        FirstTagsById($"<a 'i3'/>", "i3", "");
     }
 
     public void TagsTest(TagData tagData)
