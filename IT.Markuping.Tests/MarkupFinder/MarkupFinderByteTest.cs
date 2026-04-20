@@ -13,9 +13,14 @@ internal class MarkupFinderByteTest
     private static readonly INameEquatable _nameUtf32BE = new IdEquatabe<int>(MarkupAlphabets.Int32.Utf32BE);
 
     [Test]
-    public void Tester_Utf()
+    public void Tester_Utf8()
     {
         Test(MarkupFinders.Utf8, Encoding.UTF8, _nameUtf8);
+    }
+
+    [Test]
+    public void Tester_Utf16()
+    {
         Test(MarkupFinders.Utf16, Encoding.Unicode, _nameUtf16);
     }
 

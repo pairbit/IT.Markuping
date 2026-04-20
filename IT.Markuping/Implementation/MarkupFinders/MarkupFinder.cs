@@ -383,14 +383,14 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
         str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data.Slice(tagNameStart)));
 #endif
         //find any space
-        var tagNameEnd = IndexOfSpace(data.Slice(tagNameStart));
-        if (tagNameEnd < 0) return default;//imposible?
+        var tagNameLength = IndexOfSpace(data.Slice(tagNameStart));
+        if (tagNameLength < 1) return default;//imposible?
 
 #if DEBUG && NET
-        str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data.Slice(tagNameStart, tagNameEnd)));
+        str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data.Slice(tagNameStart, tagNameLength)));
 #endif
 
-        return new(new(tagNameStart, tagNameEnd + tagNameStart));
+        return new(new(tagNameStart, tagNameLength + tagNameStart));
     }
 
     private bool TryFindAttrName(ReadOnlySpan<T> data, INameEquatable name)
