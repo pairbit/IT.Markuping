@@ -128,7 +128,13 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
     #endregion Ctors
 
     public Tags MultipleOffset(int offset)
-        => new((Tag)_opening.MultipleOffset(offset), _closing.MultipleOffset(offset));
+    {
+        if (IsEmpty) return this;
+
+        return _opening.IsSelfClosing
+            ? new((Tag)_opening.MultipleOffset(offset))
+            : new((Tag)_opening.MultipleOffset(offset), _closing.MultipleOffset(offset));
+    }
 
     #region Comparison
 
