@@ -44,7 +44,7 @@ internal class MarkupFinderByteTester
             FirstTagsById($"   <a ='i8'", "i8", "");
             FirstTagsById($"   <a b=='i9'", "i9", "");
             FirstTagsById($"   <a b=/>'i10'", "i10", "");
-            FirstTagsById($"   <a b=>'i10'", "i10", "");
+            FirstTagsById($"   <a b=c>'i11'", "i11", "");
         }
     }
 
