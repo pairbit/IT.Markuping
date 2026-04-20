@@ -46,7 +46,7 @@ internal class MarkupFinderByteTester
     public void TagsById(AttrName name)
     {
         FirstTagsById($"<a {name} ='id1'></a>", "id1");
-        FirstTagsById($"<a ID='id2' {name}=\"id2\" />", "id2");
+        FirstTagsById($"<a iD='id2' {name}=\"id2\" />", "id2");
         //FirstTagsById($"<a {name}=id3 />", "id3");
 
         FirstTagsById($"<a myp:{name} \r = \t 'id4'></a>", "id4");

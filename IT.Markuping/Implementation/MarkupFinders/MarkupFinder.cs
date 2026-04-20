@@ -419,8 +419,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
 #if DEBUG && NET
                     str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data.Slice(nameStart, nameLength)));
 #endif
-                    if (name.Equals(data.Slice(nameStart, nameLength))) 
-                        return true;
+                    return name.Equals(data.Slice(nameStart, nameLength));
                 }
                 if (state == AttrValueState.Invalid) return false;
             }
