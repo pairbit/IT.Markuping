@@ -400,7 +400,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
 #endif
         var nameStart = 0;
         var nameLength = 0;
-        bool isSpace = true;
+        bool isNew = true;
         for (int i = 0; i < data.Length; i++)
         {
             var token = data[i];
@@ -411,7 +411,6 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
             else if (token.Equals(_tokens._eq))
             {
                 if (nameLength == 0) return false;
-                i++;
                 var state = ReadAttrValue(data, ref i);
                 if (state == AttrValueState.End)
                 {
@@ -421,14 +420,15 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
                     return name.Equals(data.Slice(nameStart, nameLength));
                 }
                 if (state == AttrValueState.Invalid) return false;
+                isNew = true;
             }
             else if (IsSpace(token))
             {
-                isSpace = true;
+                isNew = true;
             }
-            else if (isSpace)
+            else if (isNew)
             {
-                isSpace = false;
+                isNew = false;
                 nameStart = i;
                 nameLength = 1;
             }
@@ -446,19 +446,17 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
 #if DEBUG && NET
         var str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data.Slice(i)));
 #endif
-        while (i < data.Length)
+        int length = 0;
+        while (++i < data.Length)
         {
-            var token = data[i++];
+            var token = data[i];
             if (token.Equals(_tokens._gt) || token.Equals(_tokens._slash) || token.Equals(_tokens._eq))
             {
                 return AttrValueState.Invalid;
             }
-            else if (IsSpace(token))
-            {
-
-            }
             else if (token.Equals(_tokens._quot))
             {
+                i++;
                 if (i >= data.Length) return AttrValueState.Invalid;
 
                 var index = data.Slice(i).IndexOf(_tokens._quot);
@@ -469,6 +467,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
             }
             else if (token.Equals(_tokens._apos))
             {
+                i++;
                 if (i >= data.Length) return AttrValueState.Invalid;
 
                 var index = data.Slice(i).IndexOf(_tokens._apos);
@@ -476,6 +475,15 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
                 i += index;
 
                 return AttrValueState.Read;
+            }
+            else if (IsSpace(token))
+            {
+                if (length > 0) 
+                    return AttrValueState.Read;
+            }
+            else
+            {
+                length++;
             }
         }
         return AttrValueState.End;

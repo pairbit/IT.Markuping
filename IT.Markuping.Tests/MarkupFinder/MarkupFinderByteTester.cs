@@ -29,6 +29,7 @@ internal class MarkupFinderByteTester
             TagsById(new(_encoding, "id"));
             TagsById(new(_encoding, "Id"));
             TagsById(new(_encoding, "ID"));
+            TagsById(new(_encoding, "myp:id"));
         }
     }
 
@@ -45,11 +46,11 @@ internal class MarkupFinderByteTester
 
     public void TagsById(AttrName name)
     {
-        FirstTagsById($"<a {name} ='id1'></a>", "id1");
+        FirstTagsById($"<a {name}='id1'></a>", "id1");
         FirstTagsById($"<a iD='id2' {name}=\"id2\" />", "id2");
         //FirstTagsById($"<a {name}=id3 />", "id3");
 
-        FirstTagsById($"<a myp:{name} \r = \t 'id4'></a>", "id4");
+        FirstTagsById($"<a b c=1 {name} \r = \t 'id4'></a>", "id4");
 
         FirstTagsById($"<a>{name}='id1'</a>", "id1", "");
         FirstTagsById($"<a {name}=\"{name}='id1'\"></a>", "id1", "");
