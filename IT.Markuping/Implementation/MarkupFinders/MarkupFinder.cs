@@ -478,7 +478,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
             }
             else if (IsSpace(token))
             {
-                if (length > 0) 
+                if (length > 0)
                     return AttrValueState.Read;
             }
             else
