@@ -53,16 +53,6 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
 
     protected abstract TagEnding GetEndingHasAttributes(ReadOnlySpan<T> data, ref int end);
 
-    //<Tag id = 'my id' other />
-    //<Tag id = "my id" other></Tag>
-
-    //not implement без quotes (значение не должно содержать пробелов)
-    //<Tag id=myid />
-
-    //invalid
-    //<Tag>id='myid'</Tag>
-    //<Tag id=" id='myid' "/>
-
     protected abstract Tag FirstTagByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, INameEquatable name, out TagNS tagName);
 
     #endregion Protected Methods
