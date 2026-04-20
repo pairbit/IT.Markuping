@@ -413,7 +413,8 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
             {
                 if (nameLength == 0) return false;
                 i++;
-                if (IsEnd(data, ref i))
+                var state = ReadAttrValue(data, ref i);
+                if (state == AttrValueState.End)
                 {
 #if DEBUG && NET
                     str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data.Slice(nameStart, nameLength)));
@@ -421,6 +422,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
                     if (name.Equals(data.Slice(nameStart, nameLength))) 
                         return true;
                 }
+                if (state == AttrValueState.Invalid) return false;
             }
             else if (IsSpace(token))
             {
@@ -441,25 +443,50 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
         return false;
     }
 
-    private bool IsEnd(ReadOnlySpan<T> data, ref int i)
+    private AttrValueState ReadAttrValue(ReadOnlySpan<T> data, ref int i)
     {
 #if DEBUG && NET
         var str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data.Slice(i)));
 #endif
-        for (; i < data.Length; i++)
+        while (i < data.Length)
         {
-            var token = data[i];
+            var token = data[i++];
             if (token.Equals(_tokens._gt) || token.Equals(_tokens._slash) || token.Equals(_tokens._eq))
             {
-                return false;
+                return AttrValueState.Invalid;
             }
             else if (IsSpace(token))
             {
 
             }
-            
-        }
+            else if (token.Equals(_tokens._quot))
+            {
+                //Добавляем еще длину gt
+                if (i + 1 >= data.Length) return AttrValueState.Invalid;
 
-        return true;
+                var index = data.Slice(i).IndexOf(_tokens._quot);
+                if (index < 0) return AttrValueState.Invalid;
+                i += index + 1;
+                return AttrValueState.Read;
+            }
+            else if (token.Equals(_tokens._apos))
+            {
+                //Добавляем еще длину gt
+                if (i + 1 >= data.Length) return AttrValueState.Invalid;
+
+                var index = data.Slice(i).IndexOf(_tokens._apos);
+                if (index < 0) return AttrValueState.Invalid;
+                i += index + 1;
+                return AttrValueState.Read;
+            }
+        }
+        return AttrValueState.End;
+    }
+
+    enum AttrValueState
+    {
+        Read = 0,
+        Invalid,
+        End,
     }
 }
