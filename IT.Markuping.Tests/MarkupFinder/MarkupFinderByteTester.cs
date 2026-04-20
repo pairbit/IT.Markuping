@@ -51,10 +51,9 @@ internal class MarkupFinderByteTester
         //FirstTagsById($"<a {name}=id3 />", "id3");
 
         FirstTagsById($"<a b c=1 {name} \r = \t 'id4'></a>", "id4");
-
         FirstTagsById($"<root><a {name}='id5'>text</a></root>", "id5", $"<a {name}='id5'>text</a>");
-
         FirstTagsById($"<root><a><a {name}='id6'><a><a><a></a></a><a></a></a><a></a><a></a></a></a></root>", "id6", $"<a {name}='id6'><a><a><a></a></a><a></a></a><a></a><a></a></a>", 6);
+        FirstTagsById($"<a\n{name}\n=\n'id7'\nab></a>", "id7");
 
         FirstTagsById($"<a>{name}='idi1'</a>", "idi1", "");
         FirstTagsById($"<a {name}=\"{name}='idi2'\"></a>", "idi2", "");
