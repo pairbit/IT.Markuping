@@ -342,7 +342,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
             if (index >= min)
             {
                 //-check quotes "" or apos '' (если значение не имеет пробелов, то может быть без ковычек)
-                if (offset < data.Length && IsQuoted(data[index - 1], data[offset]))
+                if (offset + 1 < data.Length && IsQuoted(data[index - 1], data[offset]))
                 {
                     index--;
                     tagName = GetTagName(data.Slice(0, index));
