@@ -4,12 +4,6 @@ public static partial class MarkupAlphabets
 {
     public static class Int32
     {
-        public static readonly MarkupAlphabet<int> Utf32 =
-            new(['<', '>', '/', ':', ' ', '"', '=',
-                '!', '-', '[', ']', '?',
-                'x', 'm', 'l', 'n', 's', 'i', 'd', 'I', 'D',
-                '\'', '\r', '\n', '\t']);
-
         public static readonly MarkupAlphabet<int> Utf32BE =
             new([1006632960, 1040187392, 788529152, 973078528, 536870912, 570425344, 1023410176,
                 553648128, 754974720, 1526726656, 1560281088, 1056964608,

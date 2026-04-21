@@ -57,9 +57,13 @@ public static class MarkupFinders
         public static readonly OtherSpacesMarkupFinder<short> Utf16BE = new(CodePages.Utf16BE, (MarkupTokens<short>)MarkupAlphabets.Int16.Utf16BE);
     }
 
+    public static class UInt32
+    {
+        public static readonly OtherSpacesMarkupFinder<uint> Utf32 = new(CodePages.Utf32, (MarkupTokens<uint>)MarkupAlphabets.UInt32.Utf32);
+    }
+
     public static class Int32
     {
-        public static readonly OtherSpacesMarkupFinder<int> Utf32 = new(CodePages.Utf32, (MarkupTokens<int>)MarkupAlphabets.Int32.Utf32);
         public static readonly OtherSpacesMarkupFinder<int> Utf32BE = new(CodePages.Utf32BE, (MarkupTokens<int>)MarkupAlphabets.Int32.Utf32BE);
     }
 
@@ -75,7 +79,7 @@ public static class MarkupFinders
 
     public static readonly ProxyMarkupFinderByte<char> Utf16 = new(Char.Utf16);
     public static readonly ProxyMarkupFinderByte<short> Utf16BE = new(Int16.Utf16BE);
-    public static readonly ProxyMarkupFinderByte<int> Utf32 = new(Int32.Utf32);
+    public static readonly ProxyMarkupFinderByte<uint> Utf32 = new(UInt32.Utf32);
     public static readonly ProxyMarkupFinderByte<int> Utf32BE = new(Int32.Utf32BE);
 
     public static bool TryGet(int codePage,

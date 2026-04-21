@@ -9,8 +9,9 @@ internal class MarkupFinderByteTest
     private static readonly INameEquatable _nameUtf8 = new IdEquatabe<byte>(MarkupAlphabets.Byte.Utf8);
     private static readonly INameEquatable _nameUtf16 = new IdEquatabe<char>(MarkupAlphabets.Char.Utf16);
     private static readonly INameEquatable _nameUtf16BE = new IdEquatabe<short>(MarkupAlphabets.Int16.Utf16BE);
-    private static readonly INameEquatable _nameUtf32 = new IdEquatabe<int>(MarkupAlphabets.Int32.Utf32);
+    private static readonly INameEquatable _nameUtf32 = new IdEquatabe<uint>(MarkupAlphabets.UInt32.Utf32);
     private static readonly INameEquatable _nameUtf32BE = new IdEquatabe<int>(MarkupAlphabets.Int32.Utf32BE);
+    private static readonly INameEquatable _nameEBCDIC = new IdEquatabe<byte>(MarkupAlphabets.Byte.EBCDIC);
 
     [Test]
     public void Tester_Utf8()
@@ -19,9 +20,34 @@ internal class MarkupFinderByteTest
     }
 
     [Test]
+    public void Tester_EBCDIC()
+    {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        Test(MarkupFinders.EBCDIC, Encoding.GetEncoding(500), _nameEBCDIC);
+    }
+
+    [Test]
     public void Tester_Utf16()
     {
         Test(MarkupFinders.Utf16, Encoding.Unicode, _nameUtf16);
+    }
+
+    [Test]
+    public void Tester_Utf16BE()
+    {
+        Test(MarkupFinders.Utf16BE, Encoding.BigEndianUnicode, _nameUtf16BE);
+    }
+
+    [Test]
+    public void Tester_Utf32()
+    {
+        Test(MarkupFinders.Utf32, Encoding.UTF32, _nameUtf32);
+    }
+
+    [Test]
+    public void Tester_Utf32BE()
+    {
+        Test(MarkupFinders.Utf32BE, Encoding.GetEncoding(12001), _nameUtf32BE);
     }
 
     [Test]
