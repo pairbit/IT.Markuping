@@ -318,7 +318,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
         return TagEnding.None;
     }
 
-    protected override Tag FirstTagByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, INameEquatable name, out TagNS tagName)
+    protected override Tag FirstTagByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, IAttName name, out TagNS tagName)
     {
         var valen = value.Length;
         Debug.Assert(valen > 0);
@@ -350,16 +350,21 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
                     {
                         index -= tagName.End + 1;
                         var attrName = GetAttrName(data.Slice(tagName.End + 1, index));
-                        if (!attrName.IsEmpty && name.Equals(attrName))
+                        if (!attrName.IsEmpty)
                         {
 #if DEBUG && NET
-                            var attrNameStr = Info.ToString(attrName);
+                            var tagNameStr = Info.ToString(data.Slice(tagName.Start, tagName.Length));
+                            var attNameStr = Info.ToString(attrName);
 #endif
-                            offset++;
-                            var ending = GetEndingHasAttributes(data, ref offset);
-                            if (ending != TagEnding.None)
+                            //TODO: replace data to dtd
+                            if (name.Equals(data.Slice(tagName.Start, tagName.Length), attrName, data))
                             {
-                                return new(tagName.Start - 1, offset, ending);
+                                offset++;
+                                var ending = GetEndingHasAttributes(data, ref offset);
+                                if (ending != TagEnding.None)
+                                {
+                                    return new(tagName.Start - 1, offset, ending);
+                                }
                             }
                         }
                     }

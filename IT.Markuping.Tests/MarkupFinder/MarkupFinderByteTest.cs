@@ -6,12 +6,12 @@ namespace IT.Markuping.Tests;
 
 internal class MarkupFinderByteTest
 {
-    private static readonly INameEquatable _nameUtf8 = new IdEquatabe<byte>(MarkupAlphabets.Byte.Utf8);
-    private static readonly INameEquatable _nameUtf16 = new IdEquatabe<char>(MarkupAlphabets.Char.Utf16);
-    private static readonly INameEquatable _nameUtf16BE = new IdEquatabe<short>(MarkupAlphabets.Int16.Utf16BE);
-    private static readonly INameEquatable _nameUtf32 = new IdEquatabe<uint>(MarkupAlphabets.UInt32.Utf32);
-    private static readonly INameEquatable _nameUtf32BE = new IdEquatabe<int>(MarkupAlphabets.Int32.Utf32BE);
-    private static readonly INameEquatable _nameEBCDIC = new IdEquatabe<byte>(MarkupAlphabets.Byte.EBCDIC);
+    private static readonly IAttName _nameUtf8 = new IdEquatabe<byte>(MarkupAlphabets.Byte.Utf8);
+    private static readonly IAttName _nameUtf16 = new IdEquatabe<char>(MarkupAlphabets.Char.Utf16);
+    private static readonly IAttName _nameUtf16BE = new IdEquatabe<short>(MarkupAlphabets.Int16.Utf16BE);
+    private static readonly IAttName _nameUtf32 = new IdEquatabe<uint>(MarkupAlphabets.UInt32.Utf32);
+    private static readonly IAttName _nameUtf32BE = new IdEquatabe<int>(MarkupAlphabets.Int32.Utf32BE);
+    private static readonly IAttName _nameEBCDIC = new IdEquatabe<byte>(MarkupAlphabets.Byte.EBCDIC);
 
     [Test]
     public void Tester_Utf8()
@@ -125,7 +125,7 @@ internal class MarkupFinderByteTest
         }
     }
 
-    private static void Test(IMarkupFinder<byte> finder, Encoding encoding, INameEquatable name)
+    private static void Test(IMarkupFinder<byte> finder, Encoding encoding, IAttName name)
     {
         Assert.That(finder.CodePages.IndexOf(encoding.CodePage) > -1);
 
@@ -133,7 +133,7 @@ internal class MarkupFinderByteTest
         tester.Test();
     }
 
-    private static INameEquatable GetName(int codePage)
+    private static IAttName GetName(int codePage)
     {
         if (codePage == 1200) return _nameUtf16;
 

@@ -53,7 +53,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
 
     protected abstract TagEnding GetEndingHasAttributes(ReadOnlySpan<T> data, ref int end);
 
-    protected abstract Tag FirstTagByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, INameEquatable name, out TagNS tagName);
+    protected abstract Tag FirstTagByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, IAttName name, out TagNS tagName);
 
     #endregion Protected Methods
 
@@ -61,7 +61,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
 
     public ReadOnlySpan<int> CodePages => _codePages;
 
-    public Tags FirstTagsByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, INameEquatable name, out int nodes)
+    public Tags FirstTagsByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, IAttName name, out int nodes)
     {
         var tag = FirstTagByAttribute(data, value, name ?? throw new ArgumentNullException(nameof(name)), out var tagName);
         if (!tag.IsEmpty)

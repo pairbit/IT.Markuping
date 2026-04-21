@@ -10,9 +10,9 @@ internal class MarkupFinderByteTester
 {
     private readonly IMarkupFinder<byte> _finder;
     private readonly Encoding _encoding;
-    private readonly INameEquatable _name;
+    private readonly IAttName _name;
 
-    public MarkupFinderByteTester(IMarkupFinder<byte> finder, Encoding encoding, INameEquatable name)
+    public MarkupFinderByteTester(IMarkupFinder<byte> finder, Encoding encoding, IAttName name)
     {
         _finder = finder;
         _encoding = encoding;
