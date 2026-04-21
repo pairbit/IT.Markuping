@@ -29,9 +29,9 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
 
     //protected abstract string GetString(ReadOnlySpan<T> data);
 
-    protected abstract int IndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value);
+    protected abstract int IndexOfTagName(ReadOnlySpan<T> data, ReadOnlySpan<T> value);
 
-    protected abstract int LastIndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value);
+    protected abstract int LastIndexOfTagName(ReadOnlySpan<T> data, ReadOnlySpan<T> value);
 
     protected abstract bool IsStartOpening(ReadOnlySpan<T> data, int start);
 
@@ -194,7 +194,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
 #if DEBUG && NET
             var str = Internal.Info.ToString(data);
 #endif
-            var index = IndexOf(data, name);
+            var index = IndexOfTagName(data, name);
             if (index < 0) break;
 
             var end = index + namelen;
@@ -230,7 +230,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         var min = LtLength;
         do
         {
-            var index = IndexOf(data, name);
+            var index = IndexOfTagName(data, name);
             if (index < 0) break;
 
             var end = index + namelen;
@@ -260,7 +260,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         int index = data.Length;
         do
         {
-            index = LastIndexOf(data.Slice(0, index), name);
+            index = LastIndexOfTagName(data.Slice(0, index), name);
             if (index < min) break;
 
             var tag = GetTag(data, index, index + namelen, endings, out ns);
@@ -288,7 +288,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         int index = data.Length;
         do
         {
-            index = LastIndexOf(data.Slice(0, index), name);
+            index = LastIndexOfTagName(data.Slice(0, index), name);
             if (index < min) break;
 
             var tag = GetTag(data, index - min, index + namelen, endings);
@@ -313,7 +313,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         var min = LtSlashLength;
         do
         {
-            var index = IndexOf(data, name);
+            var index = IndexOfTagName(data, name);
             if (index < 0) break;
 
             var end = index + namelen;
@@ -339,7 +339,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         var min = LtSlashLength;
         do
         {
-            var index = LastIndexOf(data, name);
+            var index = LastIndexOfTagName(data, name);
             if (index < min) break;
 
             var closing = GetClosing(data, index, index + namelen, out ns);
@@ -366,7 +366,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         var min = LtSlashLength;
         do
         {
-            var index = LastIndexOf(data, name);
+            var index = LastIndexOfTagName(data, name);
             if (index < min) break;
 
             var closing = GetClosing(data, index - min, index + namelen);
@@ -494,7 +494,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
 #if DEBUG && NET
             var str = Internal.Info.ToString(data);
 #endif
-            var index = IndexOf(data, name);
+            var index = IndexOfTagName(data, name);
             if (index < 0) break;
 
             var end = index + namelen;
@@ -527,7 +527,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         int index = data.Length;
         do
         {
-            index = LastIndexOf(data.Slice(0, index), name);
+            index = LastIndexOfTagName(data.Slice(0, index), name);
             if (index < min) break;
 
             var tag = GetTag(data, index - min, index + namelen, endings, ns);
@@ -552,7 +552,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         var min = nslen + LtSlashColonLength;//</ns:
         do
         {
-            var index = IndexOf(data, name);
+            var index = IndexOfTagName(data, name);
             if (index < 0) break;
 
             var end = index + namelen;
@@ -581,7 +581,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         var min = nslen + LtSlashColonLength;//</ns:
         do
         {
-            var index = LastIndexOf(data, name);
+            var index = LastIndexOfTagName(data, name);
             if (index < min) break;
 
             var closing = GetClosing(data, index - min, index + namelen, ns);

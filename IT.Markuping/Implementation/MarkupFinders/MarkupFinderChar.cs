@@ -36,10 +36,10 @@ public class MarkupFinderChar : OtherSpacesMarkupFinder<char>
     protected override bool Equals(ReadOnlySpan<char> data, ReadOnlySpan<char> value)
         => data.Equals(value, _comparison);
 
-    protected override int IndexOf(ReadOnlySpan<char> data, ReadOnlySpan<char> value)
+    protected override int IndexOfTagName(ReadOnlySpan<char> data, ReadOnlySpan<char> value)
         => data.IndexOf(value, _comparison);
 
-    protected override int LastIndexOf(ReadOnlySpan<char> data, ReadOnlySpan<char> value)
+    protected override int LastIndexOfTagName(ReadOnlySpan<char> data, ReadOnlySpan<char> value)
         => data.LastIndexOf(value, _comparison);
 #endif
 }

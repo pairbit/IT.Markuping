@@ -79,12 +79,10 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
         return -1;
     }
 
-    //TagName
-    protected override int IndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
+    protected override int IndexOfTagName(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.IndexOf(value);
 
-    //TagName
-    protected override int LastIndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
+    protected override int LastIndexOfTagName(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.LastIndexOf(value);
 
     protected override bool IsStartOpening(ReadOnlySpan<T> data, int start)

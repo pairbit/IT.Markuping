@@ -46,10 +46,10 @@ internal class StrictMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, 
 
     protected virtual bool IsSpace(T value) => value.Equals(_tokens._space);
 
-    protected override int IndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
+    protected override int IndexOfTagName(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.IndexOf(value);
 
-    protected override int LastIndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
+    protected override int LastIndexOfTagName(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.LastIndexOf(value);
 
     protected override bool IsStartOpening(ReadOnlySpan<T> data, int start)
