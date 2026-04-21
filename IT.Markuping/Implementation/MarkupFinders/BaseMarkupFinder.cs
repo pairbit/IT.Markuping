@@ -67,8 +67,8 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         if (!tag.IsEmpty)
         {
 #if DEBUG && NET
-            var str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data.Slice(tag.Start, tag.Length)));
-            var strTagName = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data.Slice(tagName.Start, tagName.Length)));
+            var str = Internal.Info.ToString(data.Slice(tag.Start, tag.Length));
+            var strTagName = Internal.Info.ToString(data.Slice(tagName.Start, tagName.Length));
 #endif
             if (((TagOpening)tag).IsSelfClosing)
             {

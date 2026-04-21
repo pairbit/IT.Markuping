@@ -329,7 +329,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
         do
         {
 #if DEBUG && NET
-            var str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data.Slice(offset)));
+            var str = Info.ToString(data.Slice(offset));
 #endif
             //case sensitive always
             var index = data.Slice(offset).IndexOf(value);
@@ -374,7 +374,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
     private TagNS GetTagName(ReadOnlySpan<T> data)
     {
 #if DEBUG && NET
-        var str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data));
+        var str = Info.ToString(data);
 #endif
         //find LT
         var tagNameStart = data.LastIndexOf(_tokens._lt);
@@ -382,14 +382,14 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
 
         tagNameStart++;
 #if DEBUG && NET
-        str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data.Slice(tagNameStart)));
+        str = Info.ToString(data.Slice(tagNameStart));
 #endif
         //find any space
         var tagNameLength = IndexOfSpace(data.Slice(tagNameStart));
         if (tagNameLength < 1) return default;//imposible?
 
 #if DEBUG && NET
-        str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data.Slice(tagNameStart, tagNameLength)));
+        str = Info.ToString(data.Slice(tagNameStart, tagNameLength));
 #endif
 
         return new(new(tagNameStart, tagNameLength + tagNameStart));
@@ -398,7 +398,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
     private bool TryFindAttrName(ReadOnlySpan<T> data, INameEquatable name)
     {
 #if DEBUG && NET
-        var str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data));
+        var str = Info.ToString(data);
 #endif
         var nameStart = 0;
         var nameLength = 0;
@@ -417,7 +417,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
                 if (state == AttrValueState.End)
                 {
 #if DEBUG && NET
-                    str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data.Slice(nameStart, nameLength)));
+                    str = Info.ToString(data.Slice(nameStart, nameLength));
 #endif
                     return name.Equals(data.Slice(nameStart, nameLength));
                 }
@@ -446,7 +446,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
     private AttrValueState ReadAttrValue(ReadOnlySpan<T> data, ref int i)
     {
 #if DEBUG && NET
-        var str = System.Text.Encoding.UTF8.GetString(System.Runtime.InteropServices.MemoryMarshal.AsBytes(data.Slice(i)));
+        var str = Info.ToString(data.Slice(i));
 #endif
         int length = 0;
         while (++i < data.Length)
