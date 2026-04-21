@@ -70,6 +70,8 @@ internal class MarkupFinderByteTester
         FirstTagsById($"<root><a {name}='id5'>text</a></root>", "id5", $"<a {name}='id5'>text</a>");
         FirstTagsById($"<root><a><a {name}='id6'><a><a><a></a></a><a></a></a><a></a><a></a></a></a></root>", "id6", $"<a {name}='id6'><a><a><a></a></a><a></a></a><a></a><a></a></a>", 6);
         FirstTagsById($"<root><p:abcd\n{name}\n=\n'id7'\nab></p:abcd></root>", "id7", $"<p:abcd\n{name}\n=\n'id7'\nab></p:abcd>");
+
+        FirstTagsById($"<root idref='id8'><a {name}='id8'></a></root>", "id8", $"<a {name}='id8'></a>");
     }
 
     public void TagsTest(TagData tagData)

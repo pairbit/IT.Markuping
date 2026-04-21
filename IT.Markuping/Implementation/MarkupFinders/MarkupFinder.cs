@@ -349,8 +349,12 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
                     if (!tagName.IsEmpty)
                     {
                         index -= tagName.End + 1;
-                        if (TryFindAttrName(data.Slice(tagName.End + 1, index), name))
+                        var attrName = GetAttrName(data.Slice(tagName.End + 1, index));
+                        if (!attrName.IsEmpty && name.Equals(attrName))
                         {
+#if DEBUG && NET
+                            var attrNameStr = Info.ToString(attrName);
+#endif
                             offset++;
                             var ending = GetEndingHasAttributes(data, ref offset);
                             if (ending != TagEnding.None)
@@ -395,7 +399,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
         return new(new(tagNameStart, tagNameLength + tagNameStart));
     }
 
-    private bool TryFindAttrName(ReadOnlySpan<T> data, INameEquatable name)
+    private ReadOnlySpan<T> GetAttrName(ReadOnlySpan<T> data)
     {
 #if DEBUG && NET
         var str = Info.ToString(data);
@@ -408,20 +412,20 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
             var token = data[i];
             if (token.Equals(_tokens._gt) || token.Equals(_tokens._slash))
             {
-                return false;
+                return default;
             }
             else if (token.Equals(_tokens._eq))
             {
-                if (nameLength == 0) return false;
+                if (nameLength == 0)
+                    return default;
+
                 var state = ReadAttrValue(data, ref i);
                 if (state == AttrValueState.End)
-                {
-#if DEBUG && NET
-                    str = Info.ToString(data.Slice(nameStart, nameLength));
-#endif
-                    return name.Equals(data.Slice(nameStart, nameLength));
-                }
-                if (state == AttrValueState.Invalid) return false;
+                    return data.Slice(nameStart, nameLength);
+                
+                if (state == AttrValueState.Invalid)
+                    return default;
+
                 isNew = true;
             }
             else if (IsSpace(token))
@@ -440,7 +444,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
             }
         }
 
-        return false;
+        return default;
     }
 
     private AttrValueState ReadAttrValue(ReadOnlySpan<T> data, ref int i)
