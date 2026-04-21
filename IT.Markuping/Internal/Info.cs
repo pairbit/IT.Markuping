@@ -40,7 +40,7 @@ internal static class Info
             if (span[1] == 0)
                 return Encoding.Unicode.GetString(span);
 
-            return Encoding.UTF8.GetString(span);
+            return Encoding.UTF8.GetString(span);//or EBCDIC
         }
 
         Debug.Assert(length >= 4);
@@ -74,7 +74,7 @@ internal static class Info
             return Encoding.Unicode.GetString(span);
         }
 
-        return Encoding.UTF8.GetString(span);
+        return Encoding.UTF8.GetString(span);//or EBCDIC
     }
 
     public static string ToString(ReadOnlySpan<char> span)
