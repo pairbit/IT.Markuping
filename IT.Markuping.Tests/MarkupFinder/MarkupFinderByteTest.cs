@@ -8,7 +8,7 @@ internal class MarkupFinderByteTest
 {
     private static readonly INameEquatable _nameUtf8 = new IdEquatabe<byte>(MarkupAlphabets.Byte.Utf8);
     private static readonly INameEquatable _nameUtf16 = new IdEquatabe<char>(MarkupAlphabets.Char.Utf16);
-    private static readonly INameEquatable _nameUtf16BE = new IdEquatabe<char>(MarkupAlphabets.Char.Utf16BE);
+    private static readonly INameEquatable _nameUtf16BE = new IdEquatabe<short>(MarkupAlphabets.Int16.Utf16BE);
     private static readonly INameEquatable _nameUtf32 = new IdEquatabe<int>(MarkupAlphabets.Int32.Utf32);
     private static readonly INameEquatable _nameUtf32BE = new IdEquatabe<int>(MarkupAlphabets.Int32.Utf32BE);
 

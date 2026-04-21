@@ -11,7 +11,7 @@ internal class MarkupAlphabetsTest
     public void CastTest()
     {
         CastTest(MarkupAlphabets.Byte.Utf16, MarkupAlphabets.Char.Utf16);
-        CastTest(MarkupAlphabets.Byte.Utf16BE, MarkupAlphabets.Char.Utf16BE);
+        CastTest(MarkupAlphabets.Byte.Utf16BE, MarkupAlphabets.Int16.Utf16BE);
         CastTest(MarkupAlphabets.Byte.Utf32, MarkupAlphabets.Int32.Utf32);
         CastTest(MarkupAlphabets.Byte.Utf32BE, MarkupAlphabets.Int32.Utf32BE);
     }

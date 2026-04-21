@@ -19,6 +19,7 @@ internal class SizeOfTest
         Assert.That(Unsafe.SizeOf<TagClosing>(), Is.EqualTo(8));
         Assert.That(Unsafe.SizeOf<MarkupFinder<byte>.Tokens>(), Is.EqualTo(8));
         Assert.That(Unsafe.SizeOf<MarkupFinder<char>.Tokens>(), Is.EqualTo(16));
+        Assert.That(Unsafe.SizeOf<MarkupFinder<short>.Tokens>(), Is.EqualTo(16));
         Assert.That(Unsafe.SizeOf<MarkupFinder<int>.Tokens>(), Is.EqualTo(32));
         Assert.That(Unsafe.SizeOf<Tags>(), Is.EqualTo(16));
 
@@ -30,6 +31,7 @@ internal class SizeOfTest
 
         Assert.That(Unsafe.SizeOf<MarkupTokens<byte>>(), Is.EqualTo(25));
         Assert.That(Unsafe.SizeOf<MarkupTokens<char>>(), Is.EqualTo(50));
+        Assert.That(Unsafe.SizeOf<MarkupTokens<short>>(), Is.EqualTo(50));
         Assert.That(Unsafe.SizeOf<MarkupTokens<int>>(), Is.EqualTo(100));
     }
 }
