@@ -348,16 +348,16 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
                     tagName = GetTagName(data.Slice(0, index));
                     if (!tagName.IsEmpty)
                     {
-                        index -= tagName.End + 1;
-                        var attrName = GetAttrName(data.Slice(tagName.End + 1, index));
-                        if (!attrName.IsEmpty)
+                        var attNameStart = tagName.End + 1;
+                        var attName = GetAttrName(data.Slice(attNameStart, index - attNameStart));
+                        if (!attName.IsEmpty)
                         {
 #if DEBUG && NET
                             var tagNameStr = Info.ToString(data.Slice(tagName.Start, tagName.Length));
-                            var attNameStr = Info.ToString(attrName);
+                            var attNameStr = Info.ToString(attName);
 #endif
                             //TODO: replace data to dtd
-                            if (name.Equals(data.Slice(tagName.Start, tagName.Length), attrName, data))
+                            if (name.Equals(data.Slice(tagName.Start, tagName.Length), attName, data))
                             {
                                 offset++;
                                 var ending = GetEndingHasAttributes(data, ref offset);
