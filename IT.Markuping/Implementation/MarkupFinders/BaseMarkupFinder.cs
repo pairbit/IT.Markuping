@@ -181,6 +181,9 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
 
+#if DEBUG && NET
+        var strName = Internal.Info.ToString(name);
+#endif
         var namelen = name.Length;
         Debug.Assert(namelen > 0);
 
@@ -188,6 +191,9 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         var min = LtLength;
         do
         {
+#if DEBUG && NET
+            var str = Internal.Info.ToString(data);
+#endif
             var index = IndexOf(data, name);
             if (index < 0) break;
 
@@ -470,7 +476,10 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
     private Tag FirstNS(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, TagEndings endings)
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
-
+#if DEBUG && NET
+        var nameStr = Internal.Info.ToString(name);
+        var nsStr = Internal.Info.ToString(ns);
+#endif
         var namelen = name.Length;
         var nslen = ns.Length;
 
@@ -482,6 +491,9 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         var min = nslen + LtColonLength;
         do
         {
+#if DEBUG && NET
+            var str = Internal.Info.ToString(data);
+#endif
             var index = IndexOf(data, name);
             if (index < 0) break;
 
