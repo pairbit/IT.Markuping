@@ -33,5 +33,6 @@ internal class SizeOfTest
         Assert.That(Unsafe.SizeOf<MarkupTokens<char>>(), Is.EqualTo(50));
         Assert.That(Unsafe.SizeOf<MarkupTokens<short>>(), Is.EqualTo(50));
         Assert.That(Unsafe.SizeOf<MarkupTokens<int>>(), Is.EqualTo(100));
+        Assert.That(Unsafe.SizeOf<MarkupTokens<uint>>(), Is.EqualTo(100));
     }
 }

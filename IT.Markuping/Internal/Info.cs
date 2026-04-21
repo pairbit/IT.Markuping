@@ -12,7 +12,7 @@ internal static class Info
     public static string ToString<T>(ReadOnlySpan<T> span) where T : unmanaged
     {
         if (typeof(T) == typeof(byte)) return ToString(MemoryMarshal.AsBytes(span));
-        if (typeof(T) == typeof(char)) return ToString(MemoryMarshal.Cast<T, char>(span));
+        if (typeof(T) == typeof(char)) return span.ToString();
         if (typeof(T) == typeof(short)) return ToString(MemoryMarshal.Cast<T, short>(span));
         if (typeof(T) == typeof(uint)) return ToString(MemoryMarshal.Cast<T, uint>(span));
         if (typeof(T) == typeof(int)) return ToString(MemoryMarshal.Cast<T, int>(span));
