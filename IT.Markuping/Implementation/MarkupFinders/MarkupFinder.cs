@@ -68,7 +68,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
         token.Equals(_tokens._quot) ||
         token.Equals(_tokens._apos);
 
-    protected virtual int IndexOfSpace(ReadOnlySpan<T> data)
+    protected virtual int GetTagNameEnd(ReadOnlySpan<T> data)
     {
         for (int i = 0; i < data.Length; i++)
         {
@@ -394,7 +394,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
         str = Info.ToString(data.Slice(tagNameStart));
 #endif
         //find any space
-        var tagNameLength = IndexOfSpace(data.Slice(tagNameStart));
+        var tagNameLength = GetTagNameEnd(data.Slice(tagNameStart));
         if (tagNameLength < 1) return default;//imposible?
 
 #if DEBUG && NET
