@@ -321,8 +321,6 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
         var valen = value.Length;
         Debug.Assert(valen > 0);
 
-        //<a b=
-        const int min = 5;
         int end = 0;
         do
         {
@@ -334,14 +332,11 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
             if (start < 0) break;
 
             start = checked(start + end);
-
-            //ищем tagName до пробела
             end = start + valen;
-            if (start >= min && end + 1 < data.Length)
-            {
-                var tag = GetTagByAttribute(data, name, start - 1, end, out tagName);
-                if (!tag.IsEmpty) return tag;
-            }
+
+            var tag = GetTagByAttribute(data, name, start, end, out tagName);
+            if (!tag.IsEmpty) return tag;
+
         } while (true);
 
         tagName = default;
@@ -350,31 +345,37 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
 
     private Tag GetTagByAttribute(ReadOnlySpan<T> data, IAttName name, int start, int end, out TagNS tagName)
     {
-        Debug.Assert(start >= 0 && start < data.Length);
-        Debug.Assert(end > start && end + 1 < data.Length);
+        Debug.Assert(end > start && start < data.Length);
 
-        //-check quotes "" or apos '' (если значение не имеет пробелов, то может быть без ковычек)
-        if (IsQuoted(data[start], data[end]))
+        //<a b=
+        const int minStart = 5;
+
+        if (start >= minStart && end + 1 < data.Length)
         {
-            tagName = GetTagName(data.Slice(0, start));
-            if (!tagName.IsEmpty)
+            start--;
+            //-check quotes "" or apos '' (если значение не имеет пробелов, то может быть без ковычек)
+            if (IsQuoted(data[start], data[end]))
             {
-                var attNameStart = tagName.End + 1;
-                var attName = GetAttrName(data.Slice(attNameStart, start - attNameStart));
-                if (!attName.IsEmpty)
+                tagName = GetTagName(data.Slice(0, start));
+                if (!tagName.IsEmpty)
                 {
-#if DEBUG && NET
-                    var tagNameStr = Info.ToString(data.Slice(tagName.Start, tagName.Length));
-                    var attNameStr = Info.ToString(attName);
-#endif
-                    //TODO: replace data to dtd
-                    if (name.Equals(data.Slice(tagName.Start, tagName.Length), attName, data))
+                    var attNameStart = tagName.End + 1;
+                    var attName = GetAttrName(data.Slice(attNameStart, start - attNameStart));
+                    if (!attName.IsEmpty)
                     {
-                        end++;
-                        var ending = GetEndingHasAttributes(data, ref end);
-                        if (ending != TagEnding.None)
+#if DEBUG && NET
+                        var tagNameStr = Info.ToString(data.Slice(tagName.Start, tagName.Length));
+                        var attNameStr = Info.ToString(attName);
+#endif
+                        //TODO: replace data to dtd
+                        if (name.Equals(data.Slice(tagName.Start, tagName.Length), attName, data))
                         {
-                            return new(tagName.Start - 1, end, ending);
+                            end++;
+                            var ending = GetEndingHasAttributes(data, ref end);
+                            if (ending != TagEnding.None)
+                            {
+                                return new(tagName.Start - 1, end, ending);
+                            }
                         }
                     }
                 }
