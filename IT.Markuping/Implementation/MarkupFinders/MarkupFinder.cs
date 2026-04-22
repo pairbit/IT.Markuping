@@ -323,53 +323,63 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
 
         //<a b=
         const int min = 5;
-        int offset = 0;
+        int end = 0;
         do
         {
 #if DEBUG && NET
-            var str = Info.ToString(data.Slice(offset));
+            var str = Info.ToString(data.Slice(end));
 #endif
             //case sensitive always
-            var index = data.Slice(offset).IndexOf(value);
-            if (index < 0) break;
+            var start = data.Slice(end).IndexOf(value);
+            if (start < 0) break;
 
-            index = checked(index + offset);
+            start = checked(start + end);
 
             //ищем tagName до пробела
-            offset = index + valen;
-            if (index >= min)
+            end = start + valen;
+            if (start >= min && end + 1 < data.Length)
             {
-                //-check quotes "" or apos '' (если значение не имеет пробелов, то может быть без ковычек)
-                if (offset + 1 < data.Length && IsQuoted(data[index - 1], data[offset]))
+                var tag = GetTagByAttribute(data, name, start - 1, end, out tagName);
+                if (!tag.IsEmpty) return tag;
+            }
+        } while (true);
+
+        tagName = default;
+        return default;
+    }
+
+    private Tag GetTagByAttribute(ReadOnlySpan<T> data, IAttName name, int start, int end, out TagNS tagName)
+    {
+        Debug.Assert(start >= 0 && start < data.Length);
+        Debug.Assert(end > start && end + 1 < data.Length);
+
+        //-check quotes "" or apos '' (если значение не имеет пробелов, то может быть без ковычек)
+        if (IsQuoted(data[start], data[end]))
+        {
+            tagName = GetTagName(data.Slice(0, start));
+            if (!tagName.IsEmpty)
+            {
+                var attNameStart = tagName.End + 1;
+                var attName = GetAttrName(data.Slice(attNameStart, start - attNameStart));
+                if (!attName.IsEmpty)
                 {
-                    index--;
-                    tagName = GetTagName(data.Slice(0, index));
-                    if (!tagName.IsEmpty)
-                    {
-                        var attNameStart = tagName.End + 1;
-                        var attName = GetAttrName(data.Slice(attNameStart, index - attNameStart));
-                        if (!attName.IsEmpty)
-                        {
 #if DEBUG && NET
-                            var tagNameStr = Info.ToString(data.Slice(tagName.Start, tagName.Length));
-                            var attNameStr = Info.ToString(attName);
+                    var tagNameStr = Info.ToString(data.Slice(tagName.Start, tagName.Length));
+                    var attNameStr = Info.ToString(attName);
 #endif
-                            //TODO: replace data to dtd
-                            if (name.Equals(data.Slice(tagName.Start, tagName.Length), attName, data))
-                            {
-                                offset++;
-                                var ending = GetEndingHasAttributes(data, ref offset);
-                                if (ending != TagEnding.None)
-                                {
-                                    return new(tagName.Start - 1, offset, ending);
-                                }
-                            }
+                    //TODO: replace data to dtd
+                    if (name.Equals(data.Slice(tagName.Start, tagName.Length), attName, data))
+                    {
+                        end++;
+                        var ending = GetEndingHasAttributes(data, ref end);
+                        if (ending != TagEnding.None)
+                        {
+                            return new(tagName.Start - 1, end, ending);
                         }
                     }
                 }
             }
-        } while (true);
-
+        }
         tagName = default;
         return default;
     }
@@ -425,7 +435,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
                 var state = ReadAttrValue(data, ref i);
                 if (state == AttrValueState.End)
                     return data.Slice(nameStart, nameLength);
-                
+
                 if (state == AttrValueState.Invalid)
                     return default;
 
