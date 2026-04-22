@@ -1,4 +1,5 @@
-﻿using IT.Markuping.Internal;
+﻿using IT.Markuping.Interfaces;
+using IT.Markuping.Internal;
 using System;
 using System.Diagnostics;
 
@@ -45,10 +46,10 @@ internal class StrictMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, 
 
     protected virtual bool IsSpace(T value) => value.Equals(_tokens._space);
 
-    protected override int IndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
+    protected override int IndexOfTagName(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.IndexOf(value);
 
-    protected override int LastIndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
+    protected override int LastIndexOfTagName(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.LastIndexOf(value);
 
     protected override bool IsStartOpening(ReadOnlySpan<T> data, int start)
@@ -266,5 +267,10 @@ internal class StrictMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, 
         } while (end < data.Length);
 
         return TagEnding.None;
+    }
+
+    protected override Tag FirstTagByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, IAttName name, out TagNS tagName)
+    {
+        throw new NotImplementedException("FirstTagByAttribute Strict");
     }
 }

@@ -11,8 +11,8 @@ internal class MarkupAlphabetsTest
     public void CastTest()
     {
         CastTest(MarkupAlphabets.Byte.Utf16, MarkupAlphabets.Char.Utf16);
-        CastTest(MarkupAlphabets.Byte.Utf16BE, MarkupAlphabets.Char.Utf16BE);
-        CastTest(MarkupAlphabets.Byte.Utf32, MarkupAlphabets.Int32.Utf32);
+        CastTest(MarkupAlphabets.Byte.Utf16BE, MarkupAlphabets.Int16.Utf16BE);
+        CastTest(MarkupAlphabets.Byte.Utf32, MarkupAlphabets.UInt32.Utf32);
         CastTest(MarkupAlphabets.Byte.Utf32BE, MarkupAlphabets.Int32.Utf32BE);
     }
 
@@ -78,6 +78,8 @@ internal class MarkupAlphabetsTest
         var s = encoding.GetBytes("s");
         var i = encoding.GetBytes("i");
         var d = encoding.GetBytes("d");
+        var I = encoding.GetBytes("I");
+        var D = encoding.GetBytes("D");
 
         Assert.That(alphabet.LT.SequenceEqual(lt), Is.True);
         Assert.That(alphabet.GT.SequenceEqual(gt), Is.True);
@@ -99,6 +101,8 @@ internal class MarkupAlphabetsTest
         Assert.That(alphabet.s.SequenceEqual(s), Is.True);
         Assert.That(alphabet.i.SequenceEqual(i), Is.True);
         Assert.That(alphabet.d.SequenceEqual(d), Is.True);
+        Assert.That(alphabet.I.SequenceEqual(I), Is.True);
+        Assert.That(alphabet.D.SequenceEqual(D), Is.True);
 
         Assert.That(alphabet.Apos.SequenceEqual(apos), Is.True);
         Assert.That(alphabet.CR.SequenceEqual(cr), Is.True);
@@ -107,7 +111,8 @@ internal class MarkupAlphabetsTest
 
         //<>/: \"='\r\n\t
         //<>/: \"=!-[]?xmlnsid'\r\n\t
-        var abc = encoding.GetBytes("<>/: \"=!-[]?xmlnsid'\r\n\t");
+        //<>/: \"=!-[]?xmlnsidID'\r\n\t
+        var abc = encoding.GetBytes("<>/: \"=!-[]?xmlnsidID'\r\n\t");
         Assert.That(alphabet.Abc.SequenceEqual(abc), Is.True);
 
         if (alphabet.IsComplex)
@@ -138,6 +143,8 @@ internal class MarkupAlphabetsTest
             Assert.That(tokens.s, Is.EqualTo(s[0]));
             Assert.That(tokens.i, Is.EqualTo(i[0]));
             Assert.That(tokens.d, Is.EqualTo(d[0]));
+            Assert.That(tokens.I, Is.EqualTo(I[0]));
+            Assert.That(tokens.D, Is.EqualTo(D[0]));
 
             Assert.That(tokens.Apos, Is.EqualTo(apos[0]));
             Assert.That(tokens.CR, Is.EqualTo(cr[0]));
@@ -172,6 +179,8 @@ internal class MarkupAlphabetsTest
         var s = Cast<T>(abcByte.s);
         var i = Cast<T>(abcByte.i);
         var d = Cast<T>(abcByte.d);
+        var I = Cast<T>(abcByte.I);
+        var D = Cast<T>(abcByte.D);
 
         Assert.That(abc.LT.SequenceEqual(lt), Is.True);
         Assert.That(abc.GT.SequenceEqual(gt), Is.True);
@@ -193,6 +202,8 @@ internal class MarkupAlphabetsTest
         Assert.That(abc.s.SequenceEqual(s), Is.True);
         Assert.That(abc.i.SequenceEqual(i), Is.True);
         Assert.That(abc.d.SequenceEqual(d), Is.True);
+        Assert.That(abc.I.SequenceEqual(I), Is.True);
+        Assert.That(abc.D.SequenceEqual(D), Is.True);
 
         Assert.That(abc.Apos.SequenceEqual(apos), Is.True);
         Assert.That(abc.CR.SequenceEqual(cr), Is.True);
@@ -224,6 +235,8 @@ internal class MarkupAlphabetsTest
         Assert.That(tokens.s, Is.EqualTo(s[0]));
         Assert.That(tokens.i, Is.EqualTo(i[0]));
         Assert.That(tokens.d, Is.EqualTo(d[0]));
+        Assert.That(tokens.I, Is.EqualTo(I[0]));
+        Assert.That(tokens.D, Is.EqualTo(D[0]));
 
         Assert.That(tokens.Apos, Is.EqualTo(apos[0]));
         Assert.That(tokens.CR, Is.EqualTo(cr[0]));

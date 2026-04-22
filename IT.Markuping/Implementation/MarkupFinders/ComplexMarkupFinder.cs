@@ -1,4 +1,5 @@
-﻿using IT.Markuping.Internal;
+﻿using IT.Markuping.Interfaces;
+using IT.Markuping.Internal;
 using System;
 using System.Diagnostics;
 
@@ -62,10 +63,10 @@ public class ComplexMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, I
         IsSeq(data, _quot, start) ||
         IsSeq(data, _apos, start);
 
-    protected override int IndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
+    protected override int IndexOfTagName(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.IndexOf(value);
 
-    protected override int LastIndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
+    protected override int LastIndexOfTagName(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.LastIndexOf(value);
 
     protected override bool IsStartOpening(ReadOnlySpan<T> data, int start)
@@ -310,6 +311,11 @@ public class ComplexMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, I
         } while (end < data.Length);
 
         return TagEnding.None;
+    }
+
+    protected override Tag FirstTagByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, IAttName name, out TagNS tagName)
+    {
+        throw new NotImplementedException("FirstTagByAttribute Complex");
     }
 
     #region Private

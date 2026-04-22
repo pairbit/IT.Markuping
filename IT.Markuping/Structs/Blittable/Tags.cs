@@ -32,16 +32,18 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
     public bool IsEmpty => _closing.End == _opening.Start;
 
 #if !NETSTANDARD2_0
-    public Range Inner => new(_opening.End, _closing.Start);
+    public Range Inner => _opening.IsSelfClosing ? default : new(_opening.End, _closing.Start);
 #endif
 
-    public int InnerStart => _opening.End;
+    public int InnerStart => _opening.IsSelfClosing ? 0 : _opening.End;
 
-    public int InnerLength => _closing.Start - _opening.End;
+    public int InnerLength => _opening.IsSelfClosing ? 0 : _closing.Start - _opening.End;
 
     //public bool HasNamespace => _closing.HasNamespace;
 
     public bool HasAttributes => _opening.HasAttributes;
+
+    public bool IsSelfClosing => _opening.IsSelfClosing;
 
     public bool IsTree => _closing.IsTree;
 
@@ -50,6 +52,15 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
     #endregion Props
 
     #region Ctors
+
+    internal Tags(Tag tag)
+    {
+        Debug.Assert(((TagOpening)tag).IsSelfClosing);
+        Debug.Assert(tag.Start < tag.End);
+
+        _opening = (TagOpening)tag;
+        _closing = new(tag.Start, tag.End);
+    }
 
     internal Tags(Tag tag, TagClosing closing)
     {
@@ -74,9 +85,18 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
         _closing = isTree ? closing.AsTree() : closing;
     }
 
+    public Tags(TagOpening opening)
+    {
+        if (!opening.IsSelfClosing) throw new ArgumentException("Tag is not self-closing.", nameof(opening));
+        if (opening.Start >= opening.End) throw new ArgumentOutOfRangeException(nameof(opening), "Start >= End");
+
+        _opening = opening;
+        _closing = new(opening.Start, opening.End);
+    }
+
     public Tags(TagOpening opening, TagClosing closing)
     {
-        if (opening.IsSelfClosing) throw new ArgumentException("SelfClosing", nameof(opening));
+        if (opening.IsSelfClosing) throw new ArgumentException("Tag is self-closing.", nameof(opening));
 
         var openingEnd = opening.End;
         if (opening.Start >= openingEnd) throw new ArgumentOutOfRangeException(nameof(opening), "Start >= End");
@@ -91,8 +111,8 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
 
     public Tags(TagOpening opening, TagClosing closing, bool isTree)
     {
-        if (closing.IsTree) throw new ArgumentException("Tree", nameof(closing));
-        if (opening.IsSelfClosing) throw new ArgumentException("SelfClosing", nameof(opening));
+        if (closing.IsTree) throw new ArgumentException("Tag is tree.", nameof(closing));
+        if (opening.IsSelfClosing) throw new ArgumentException("Tag is self-closing.", nameof(opening));
 
         var openingEnd = opening.End;
         if (opening.Start >= openingEnd) throw new ArgumentOutOfRangeException(nameof(opening), "Start >= End");
@@ -108,7 +128,13 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
     #endregion Ctors
 
     public Tags MultipleOffset(int offset)
-        => new((Tag)_opening.MultipleOffset(offset), _closing.MultipleOffset(offset));
+    {
+        if (IsEmpty) return this;
+
+        return _opening.IsSelfClosing
+            ? new((Tag)_opening.MultipleOffset(offset))
+            : new((Tag)_opening.MultipleOffset(offset), _closing.MultipleOffset(offset));
+    }
 
     #region Comparison
 
@@ -133,6 +159,8 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
 
     public override string ToString()
     {
+        if (IsSelfClosing) return _opening.ToString();
+
 #if NETSTANDARD2_0
         return _opening.ToString() + _closing.ToString();
 #else
@@ -149,6 +177,8 @@ public readonly struct Tags : IComparable<Tags>, IEquatable<Tags>, IFormattable
 #if !NETSTANDARD2_0
     public bool TryFormat(Span<char> chars, out int written, bool clear = true)
     {
+        if (IsSelfClosing) return _opening.TryFormat(chars, out written, clear);
+
         //<0..3></3..5>
         //<0..3></3..5 >
         //min-max = 13-50

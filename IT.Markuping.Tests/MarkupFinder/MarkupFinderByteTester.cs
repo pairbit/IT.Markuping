@@ -10,17 +10,43 @@ internal class MarkupFinderByteTester
 {
     private readonly IMarkupFinder<byte> _finder;
     private readonly Encoding _encoding;
+    private readonly IAttName _name;
 
-    public MarkupFinderByteTester(IMarkupFinder<byte> finder, Encoding encoding)
+    public MarkupFinderByteTester(IMarkupFinder<byte> finder, Encoding encoding, IAttName name)
     {
         _finder = finder;
         _encoding = encoding;
+        _name = name;
     }
 
     public void Test()
     {
         Test(new(_encoding, "a"));
         Test(new(_encoding, "a", "n"));
+
+        if (_name != null)
+        {
+            TagsById(new(_encoding, "id"));
+            TagsById(new(_encoding, "Id"));
+            TagsById(new(_encoding, "ID"));
+            TagsById(new(_encoding, "myp:id"));
+
+            //invalid
+            FirstTagsById($"<a id='i'", "i", "");
+            FirstTagsById($"<a> id='i0'</a >", "i0", "");
+            FirstTagsById($"<a>id='i1'</a>", "i1", "");
+            FirstTagsById($"<a id=\"id='i2'\"></a>", "i2", "");
+
+            FirstTagsById($"< id='i3'/>", "i3", "");
+            FirstTagsById($"<aid='i4'/>", "i4", "");
+            FirstTagsById($"   <a 'i5'/>", "i5", "");
+            FirstTagsById($"   <a >'i6'</a>", "i6", "");
+            FirstTagsById($"   <a />'i7'", "i7", "");
+            FirstTagsById($"   <a ='i8'", "i8", "");
+            FirstTagsById($"   <a b=='i9'", "i9", "");
+            FirstTagsById($"   <a b=/>'i10'", "i10", "");
+            FirstTagsById($"   <a b=c>'i11'", "i11", "");
+        }
     }
 
     public void Test(TagData tagData)
@@ -33,6 +59,20 @@ internal class MarkupFinderByteTester
     }
 
     #region TagsTest
+
+    public void TagsById(AttrName name)
+    {
+        FirstTagsById($"<a {name}='id1'></a>", "id1");
+        FirstTagsById($"<a iD='id2' {name}=\"id2\" />", "id2");
+        //FirstTagsById($"<a {name}=id3 />", "id3");
+
+        FirstTagsById($"<a b c=1 {name} \r = \t 'id4'></a>", "id4");
+        FirstTagsById($"<root><a {name}='id5'>text</a></root>", "id5", $"<a {name}='id5'>text</a>");
+        FirstTagsById($"<root><a><a {name}='id6'><a><a><a></a></a><a></a></a><a></a><a></a></a></a></root>", "id6", $"<a {name}='id6'><a><a><a></a></a><a></a></a><a></a><a></a></a>", 6);
+        FirstTagsById($"<root><p:abcd\n{name}\n=\n'id7'\nab></p:abcd></root>", "id7", $"<p:abcd\n{name}\n=\n'id7'\nab></p:abcd>");
+
+        FirstTagsById($"<root idref='id8'><a {name}='id8'></a></root>", "id8", $"<a {name}='id8'></a>");
+    }
 
     public void TagsTest(TagData tagData)
     {
@@ -68,6 +108,28 @@ internal class MarkupFinderByteTester
 
         FirstLastTags($"<{tagData}><{tagData}><{tagData}>1</{tagData}><{tagData}>2</{tagData}></{tagData}><{tagData}><{tagData}>3</{tagData}><{tagData}>4</{tagData}></{tagData}></{tagData}>", tagData,
             $"<{tagData}><{tagData}>1</{tagData}><{tagData}>2</{tagData}></{tagData}><{tagData}><{tagData}>3</{tagData}><{tagData}>4</{tagData}></{tagData}>", nodesCount: 6);
+    }
+
+    private void FirstTagsById(string data, string value, string? outer = null, int nodesCount = 0)
+    {
+        var bytes = _encoding.GetBytes(data);
+        var tags = _finder.FirstTagsByAttribute(bytes, _encoding.GetBytes(value), _name, out var nodes);
+
+        Assert.That(nodes, Is.EqualTo(nodesCount));
+
+        if (outer == null)
+        {
+            Assert.That(tags.Start, Is.EqualTo(0));
+            Assert.That(tags.Length, Is.EqualTo(bytes.Length));
+        }
+        else if (outer.Length == 0)
+        {
+            Assert.That(tags.IsEmpty, Is.True);
+        }
+        else
+        {
+            Assert.That(bytes.AsSpan(tags.Start, tags.Length).SequenceEqual(_encoding.GetBytes(outer)), Is.True);
+        }
     }
 
     private void FirstLastTags(string data, TagData tagData, string inner, string? outer = null, int nodesCount = 0)

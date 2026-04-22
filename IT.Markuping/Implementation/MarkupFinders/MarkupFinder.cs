@@ -1,4 +1,5 @@
-﻿using IT.Markuping.Internal;
+﻿using IT.Markuping.Interfaces;
+using IT.Markuping.Internal;
 using System;
 using System.Diagnostics;
 
@@ -59,7 +60,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
     protected virtual bool Equals(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.SequenceEqual(value);
 
-    protected virtual bool IsInvalidNS(T token) => 
+    protected virtual bool IsInvalidNS(T token) =>
         IsSpace(token) ||
         token.Equals(_tokens._gt) ||
         token.Equals(_tokens._colon) ||
@@ -67,10 +68,21 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
         token.Equals(_tokens._quot) ||
         token.Equals(_tokens._apos);
 
-    protected override int IndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
+    protected virtual int GetTagNameEnd(ReadOnlySpan<T> data)
+    {
+        for (int i = 0; i < data.Length; i++)
+        {
+            var token = data[i];
+            if (token.Equals(_tokens._gt)) break;
+            if (IsSpace(token)) return i;
+        }
+        return -1;
+    }
+
+    protected override int IndexOfTagName(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.IndexOf(value);
 
-    protected override int LastIndexOf(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
+    protected override int LastIndexOfTagName(ReadOnlySpan<T> data, ReadOnlySpan<T> value)
         => data.LastIndexOf(value);
 
     protected override bool IsStartOpening(ReadOnlySpan<T> data, int start)
@@ -267,8 +279,8 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
 
         //TODO: _gt, _slash и space был проверен ранее
         //стоит пропустить этот символ?
-        Debug.Assert(!data[end].Equals(_tokens._gt));
-        Debug.Assert(!data[end].Equals(_tokens._slash));
+        //Debug.Assert(!data[end].Equals(_tokens._gt));
+        //Debug.Assert(!data[end].Equals(_tokens._slash));
 
         do
         {
@@ -302,5 +314,207 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
         } while (end < data.Length);
 
         return TagEnding.None;
+    }
+
+    protected override Tag FirstTagByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, IAttName name, out TagNS tagName)
+    {
+        var valen = value.Length;
+        Debug.Assert(valen > 0);
+
+        int end = 0;
+        do
+        {
+#if DEBUG && NET
+            var str = Info.ToString(data.Slice(end));
+#endif
+            //case sensitive always
+            var start = data.Slice(end).IndexOf(value);
+            if (start < 0) break;
+
+            start = checked(start + end);
+            end = start + valen;
+
+            var tag = GetTagByAttribute(data, name, start, end, out tagName);
+            if (!tag.IsEmpty) return tag;
+
+        } while (true);
+
+        tagName = default;
+        return default;
+    }
+
+    private Tag GetTagByAttribute(ReadOnlySpan<T> data, IAttName name, int start, int end, out TagNS tagName)
+    {
+        Debug.Assert(end > start && start < data.Length);
+
+        //<a b=
+        const int minStart = 5;
+
+        if (start >= minStart && end + 1 < data.Length)
+        {
+            start--;
+            //'val' or "val"
+            //start: '=', space
+            //end: '>','/>', space
+            if (IsQuoted(data[start], data[end]))
+            {
+                tagName = GetTagName(data.Slice(0, start));
+                if (!tagName.IsEmpty)
+                {
+                    var attNameStart = tagName.End + 1;
+                    var attName = GetAttrName(data.Slice(attNameStart, start - attNameStart));
+                    if (!attName.IsEmpty)
+                    {
+#if DEBUG && NET
+                        var tagNameStr = Info.ToString(data.Slice(tagName.Start, tagName.Length));
+                        var attNameStr = Info.ToString(attName);
+#endif
+                        //TODO: replace data to dtd
+                        if (name.Equals(data.Slice(tagName.Start, tagName.Length), attName, data))
+                        {
+                            end++;
+                            var ending = GetEndingHasAttributes(data, ref end);
+                            if (ending != TagEnding.None)
+                            {
+                                return new(tagName.Start - 1, end, ending);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        tagName = default;
+        return default;
+    }
+
+    private bool IsQuoted(T first, T last) =>
+        first.Equals(_tokens._quot) && last.Equals(_tokens._quot) ||
+        first.Equals(_tokens._apos) && last.Equals(_tokens._apos);
+
+    private TagNS GetTagName(ReadOnlySpan<T> data)
+    {
+#if DEBUG && NET
+        var str = Info.ToString(data);
+#endif
+        //find LT
+        var tagNameStart = data.LastIndexOf(_tokens._lt);
+        if (tagNameStart < 0) return default;
+
+        tagNameStart++;
+#if DEBUG && NET
+        str = Info.ToString(data.Slice(tagNameStart));
+#endif
+        //find any space
+        var tagNameLength = GetTagNameEnd(data.Slice(tagNameStart));
+        if (tagNameLength < 1) return default;//imposible?
+
+#if DEBUG && NET
+        str = Info.ToString(data.Slice(tagNameStart, tagNameLength));
+#endif
+
+        return new(new(tagNameStart, tagNameLength + tagNameStart));
+    }
+
+    private ReadOnlySpan<T> GetAttrName(ReadOnlySpan<T> data)
+    {
+#if DEBUG && NET
+        var str = Info.ToString(data);
+#endif
+        var nameStart = 0;
+        var nameLength = 0;
+        bool isNew = true;
+        for (int i = 0; i < data.Length; i++)
+        {
+            var token = data[i];
+            if (token.Equals(_tokens._gt) || token.Equals(_tokens._slash))
+            {
+                return default;
+            }
+            else if (token.Equals(_tokens._eq))
+            {
+                if (nameLength == 0)
+                    return default;
+
+                var state = ReadAttrValue(data, ref i);
+                if (state == AttrValueState.End)
+                    return data.Slice(nameStart, nameLength);
+
+                if (state == AttrValueState.Invalid)
+                    return default;
+
+                isNew = true;
+            }
+            else if (IsSpace(token))
+            {
+                isNew = true;
+            }
+            else if (isNew)
+            {
+                isNew = false;
+                nameStart = i;
+                nameLength = 1;
+            }
+            else
+            {
+                nameLength++;
+            }
+        }
+
+        return default;
+    }
+
+    private AttrValueState ReadAttrValue(ReadOnlySpan<T> data, ref int i)
+    {
+#if DEBUG && NET
+        var str = Info.ToString(data.Slice(i));
+#endif
+        int length = 0;
+        while (++i < data.Length)
+        {
+            var token = data[i];
+            if (token.Equals(_tokens._gt) || token.Equals(_tokens._slash) || token.Equals(_tokens._eq))
+            {
+                return AttrValueState.Invalid;
+            }
+            else if (token.Equals(_tokens._quot))
+            {
+                i++;
+                if (i >= data.Length) return AttrValueState.Invalid;
+
+                var index = data.Slice(i).IndexOf(_tokens._quot);
+                if (index < 0) return AttrValueState.Invalid;
+                i += index;
+
+                return AttrValueState.Read;
+            }
+            else if (token.Equals(_tokens._apos))
+            {
+                i++;
+                if (i >= data.Length) return AttrValueState.Invalid;
+
+                var index = data.Slice(i).IndexOf(_tokens._apos);
+                if (index < 0) return AttrValueState.Invalid;
+                i += index;
+
+                return AttrValueState.Read;
+            }
+            else if (IsSpace(token))
+            {
+                if (length > 0)
+                    return AttrValueState.Read;
+            }
+            else
+            {
+                length++;
+            }
+        }
+        return AttrValueState.End;
+    }
+
+    enum AttrValueState
+    {
+        Read = 0,
+        Invalid,
+        End,
     }
 }

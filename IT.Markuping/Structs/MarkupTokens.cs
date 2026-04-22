@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace IT.Markuping;
 
-//<>/: "=!-[]?xmlnsid'\r\n\t
+//<>/: "=!-[]?xmlnsidID'\r\n\t
 public readonly struct MarkupTokens<T> where T : unmanaged
 {
     #region Fields
@@ -35,6 +35,8 @@ public readonly struct MarkupTokens<T> where T : unmanaged
     internal readonly T _s;
     internal readonly T _i;
     internal readonly T _d;
+    internal readonly T _I;
+    internal readonly T _D;
 
     //not strict
     internal readonly T _apos;//'
@@ -122,6 +124,10 @@ public readonly struct MarkupTokens<T> where T : unmanaged
 
     public T d => _d;
 
+    public T I => _I;
+
+    public T D => _D;
+
     /// <summary>
     /// '
     /// </summary>
@@ -152,7 +158,7 @@ public readonly struct MarkupTokens<T> where T : unmanaged
 
     public MarkupTokens(T lt, T gt, T slash, T colon, T space, T quot, T eq,
         T excl, T dash, T lsqb, T rsqb, T quest,
-        T x, T m, T l, T n, T s, T i, T d,
+        T x, T m, T l, T n, T s, T i, T d, T I, T D,
         T apos, T cr, T lf, T tab)
     {
         _lt = lt;
@@ -174,6 +180,8 @@ public readonly struct MarkupTokens<T> where T : unmanaged
         _s = s;
         _i = i;
         _d = d;
+        _I = I;
+        _D = D;
         _apos = apos;
         _cr = cr;
         _lf = lf;

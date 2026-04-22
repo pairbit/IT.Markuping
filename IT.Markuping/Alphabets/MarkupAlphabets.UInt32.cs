@@ -2,9 +2,9 @@
 
 public static partial class MarkupAlphabets
 {
-    public static class Char
+    public static class UInt32
     {
-        public static readonly MarkupAlphabet<char> Utf16 =
+        public static readonly MarkupAlphabet<uint> Utf32 =
             new(['<', '>', '/', ':', ' ', '"', '=',
                 '!', '-', '[', ']', '?',
                 'x', 'm', 'l', 'n', 's', 'i', 'd', 'I', 'D',

@@ -10,50 +10,99 @@ internal class TagsTest
         var tags = new Tags();
         Assert.That(tags.IsTree, Is.False);
         Assert.That(tags.HasAttributes, Is.False);
+        Assert.That(tags.IsSelfClosing, Is.False);
         Assert.That(tags.HasSpaceAtEnd, Is.False);
+        Assert.That(tags.IsEmpty, Is.True);
         Assert.That(tags.ToString(), Is.EqualTo("<0..0></0..0>"));
+#if NET
+        Assert.That(tags.Inner, Is.EqualTo(default(Range)));
+#endif
+        Assert.That(tags.InnerStart, Is.Zero);
+        Assert.That(tags.InnerLength, Is.Zero);
 
         tags = default;
         Assert.That(tags.IsTree, Is.False);
         Assert.That(tags.HasAttributes, Is.False);
+        Assert.That(tags.IsSelfClosing, Is.False);
         Assert.That(tags.HasSpaceAtEnd, Is.False);
+        Assert.That(tags.IsEmpty, Is.True);
         Assert.That(tags.ToString(), Is.EqualTo("<0..0></0..0>"));
+#if NET
+        Assert.That(tags.Inner, Is.EqualTo(default(Range)));
+#endif
+        Assert.That(tags.InnerStart, Is.Zero);
+        Assert.That(tags.InnerLength, Is.Zero);
 
         tags = new Tags(new(0, 1), new(1, 2));
         Assert.That(tags.IsTree, Is.False);
         Assert.That(tags.HasAttributes, Is.False);
+        Assert.That(tags.IsSelfClosing, Is.False);
         Assert.That(tags.HasSpaceAtEnd, Is.False);
+        Assert.That(tags.IsEmpty, Is.False);
         Assert.That(tags.ToString(), Is.EqualTo("<0..1></1..2>"));
+#if NET
+        Assert.That(tags.Inner, Is.EqualTo(new Range(1, 1)));
+#endif
+        Assert.That(tags.InnerStart, Is.EqualTo(1));
+        Assert.That(tags.InnerLength, Is.EqualTo(0));
 
         tags = new Tags(new(1, 2, hasAttributes: true), new(10, 20));
         Assert.That(tags.IsTree, Is.False);
         Assert.That(tags.HasAttributes, Is.True);
+        Assert.That(tags.IsSelfClosing, Is.False);
         Assert.That(tags.HasSpaceAtEnd, Is.False);
+        Assert.That(tags.IsEmpty, Is.False);
         Assert.That(tags.ToString(), Is.EqualTo("<1..2></10..20>"));
+#if NET
+        Assert.That(tags.Inner, Is.EqualTo(new Range(2, 10)));
+#endif
+        Assert.That(tags.InnerStart, Is.EqualTo(2));
+        Assert.That(tags.InnerLength, Is.EqualTo(8));
 
         tags = new Tags(
             new(int.MaxValue - 2, int.MaxValue - 1),
             new(int.MaxValue - 1, int.MaxValue, hasSpace: true));
         Assert.That(tags.IsTree, Is.False);
         Assert.That(tags.HasAttributes, Is.False);
+        Assert.That(tags.IsSelfClosing, Is.False);
         Assert.That(tags.HasSpaceAtEnd, Is.True);
+        Assert.That(tags.IsEmpty, Is.False);
         Assert.That(tags.ToString(), Is.EqualTo("<2147483645..2147483646></2147483646..2147483647 >"));
+#if NET
+        Assert.That(tags.Inner, Is.EqualTo(new Range(2147483646, 2147483646)));
+#endif
+        Assert.That(tags.InnerStart, Is.EqualTo(2147483646));
+        Assert.That(tags.InnerLength, Is.EqualTo(0));
 
         var closing = new TagClosing(10, 20, hasSpace: false, isTree: true);
         tags = new Tags(new(1, 2), closing);
         Assert.That(tags.IsTree, Is.True);
         Assert.That(tags.HasAttributes, Is.False);
+        Assert.That(tags.IsSelfClosing, Is.False);
         Assert.That(tags.HasSpaceAtEnd, Is.False);
         Assert.That(tags.Closing, Is.EqualTo(closing));
+        Assert.That(tags.IsEmpty, Is.False);
         Assert.That(tags.ToString(), Is.EqualTo("<1..2></10..20>"));
+#if NET
+        Assert.That(tags.Inner, Is.EqualTo(new Range(2, 10)));
+#endif
+        Assert.That(tags.InnerStart, Is.EqualTo(2));
+        Assert.That(tags.InnerLength, Is.EqualTo(8));
 
         closing = new TagClosing(11, 22);
         tags = new Tags(new(5, 10), closing, isTree: true);
         Assert.That(tags.IsTree, Is.True);
         Assert.That(tags.HasAttributes, Is.False);
+        Assert.That(tags.IsSelfClosing, Is.False);
         Assert.That(tags.HasSpaceAtEnd, Is.False);
         Assert.That(tags.Closing, Is.Not.EqualTo(closing));
+        Assert.That(tags.IsEmpty, Is.False);
         Assert.That(tags.ToString(), Is.EqualTo("<5..10></11..22>"));
+#if NET
+        Assert.That(tags.Inner, Is.EqualTo(new Range(10, 11)));
+#endif
+        Assert.That(tags.InnerStart, Is.EqualTo(10));
+        Assert.That(tags.InnerLength, Is.EqualTo(1));
 
         //Assert.That(tags.Closing.IsTree, Is.True);
         //tags = new Tags(new(6, 10), tags.Closing, isTree: true);
@@ -61,6 +110,27 @@ internal class TagsTest
         //Assert.That(tags.HasAttributes, Is.False);
         //Assert.That(tags.HasSpaceAtEnd, Is.False);
         //Assert.That(tags.ToString(), Is.EqualTo("<6..10></11..22>"));
+    }
+
+    [Test]
+    public void SelfClosingTest()
+    {
+        //<Tag id="_0"/>
+        var tag = new TagOpening(0, 10, true, true);
+        var tags = new Tags(tag);
+
+        Assert.That(tags.IsTree, Is.False);
+        Assert.That(tags.HasAttributes, Is.True);
+        Assert.That(tags.IsSelfClosing, Is.True);
+        Assert.That(tags.HasSpaceAtEnd, Is.False);
+        Assert.That(tags.Opening, Is.EqualTo(tag));
+#if NET
+        Assert.That(tags.Inner, Is.EqualTo(default(Range)));
+#endif
+        Assert.That(tags.InnerStart, Is.Zero);
+        Assert.That(tags.InnerLength, Is.Zero);
+        Assert.That(tags.IsEmpty, Is.False);
+        Assert.That(tags.ToString(), Is.EqualTo("<0..10/>"));
     }
 
 #if NET
@@ -102,6 +172,12 @@ internal class TagsTest
         Assert.That(tags.TryFormat(span, out written), Is.True);
         Assert.That(written == 17, Is.True);
         Assert.That(span.ToString(), Is.EqualTo("<0..10></10..11 >"));
+
+        tags = new Tags(new(0, 10, false, true));
+        span = stackalloc char[8];
+        Assert.That(tags.TryFormat(span, out written), Is.True);
+        Assert.That(written == 8, Is.True);
+        Assert.That(span.ToString(), Is.EqualTo("<0..10/>"));
     }
 #endif
 
@@ -125,7 +201,7 @@ internal class TagsTest
         var ex1 = Assert.Throws<ArgumentException>(() => new Tags(new(0, 1, isSelfClosing: true), default));
         Assert.That(ex1.ParamName, Is.EqualTo("opening"));
 #if NET
-        Assert.That(ex1.Message, Is.EqualTo("SelfClosing (Parameter 'opening')"));
+        Assert.That(ex1.Message, Is.EqualTo("Tag is self-closing. (Parameter 'opening')"));
 #endif
         var ex2 = Assert.Throws<ArgumentOutOfRangeException>(() => new Tags(default, default));
         Assert.That(ex2.ParamName, Is.EqualTo("opening"));
@@ -145,7 +221,12 @@ internal class TagsTest
         ex1 = Assert.Throws<ArgumentException>(() => new Tags(new(0, 1), new(1, 2, false, isTree: true), isTree: false));
         Assert.That(ex1.ParamName, Is.EqualTo("closing"));
 #if NET
-        Assert.That(ex1.Message, Is.EqualTo("Tree (Parameter 'closing')"));
+        Assert.That(ex1.Message, Is.EqualTo("Tag is tree. (Parameter 'closing')"));
+#endif
+        ex1 = Assert.Throws<ArgumentException>(() => new Tags(new(0, 1, isSelfClosing: false)));
+        Assert.That(ex1.ParamName, Is.EqualTo("opening"));
+#if NET
+        Assert.That(ex1.Message, Is.EqualTo("Tag is not self-closing. (Parameter 'opening')"));
 #endif
     }
 }

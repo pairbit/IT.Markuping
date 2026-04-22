@@ -6,6 +6,8 @@ public interface IMarkupFinder<T> where T : unmanaged
 {
     ReadOnlySpan<int> CodePages { get; }
 
+    Tags FirstTagsByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, IAttName name, out int nodes);
+
     Tags FirstTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, out int nodes);
 
     Tags FirstTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, out int nodes);
