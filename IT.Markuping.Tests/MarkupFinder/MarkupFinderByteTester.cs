@@ -22,6 +22,20 @@ internal class MarkupFinderByteTester
 
     public void Test()
     {
+        try
+        {
+            Assert.That(_finder.LastTagClosing(_encoding.GetBytes("</>"), out var name).IsEmpty, Is.True);
+            Assert.That(name.IsEmpty, Is.True);
+
+            Assert.That(_finder.LastTagClosing(_encoding.GetBytes("</ \r\n\t>"), out name).IsEmpty, Is.True);
+            Assert.That(name.IsEmpty, Is.True);
+        }
+        catch (NotImplementedException)
+        {
+            if (_finder is not ComplexMarkupFinder<byte>)
+                throw;
+        }
+
         Test(new(_encoding, "a"));
         Test(new(_encoding, "a", "n"));
 
