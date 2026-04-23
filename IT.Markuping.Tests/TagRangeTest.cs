@@ -2,7 +2,7 @@
 
 namespace IT.Markuping.Tests;
 
-internal class TagNSTest
+internal class TagRangeTest
 {
     [Test]
     public void CtorTest()
