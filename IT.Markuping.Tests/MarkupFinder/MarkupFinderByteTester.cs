@@ -1,4 +1,5 @@
 ﻿using IT.Markuping.Extensions;
+using IT.Markuping.Implementation;
 using IT.Markuping.Interfaces;
 using System;
 using System.Linq;
@@ -303,7 +304,8 @@ internal class MarkupFinderByteTester
         }
         catch (NotImplementedException)
         {
-            Console.WriteLine("LastTagClosing NotImplemented.");
+            if (_finder is not ComplexMarkupFinder<byte>)
+                throw;
         }
 
         return tag;
