@@ -158,18 +158,8 @@ internal class SystemTextEncodingTest
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-        //<>/: \"=!-[]?xmlns'\r\n\t
-        //<>/: \"=!-[]?'\r\n\t
-        //<>/: \"=!-?xmlns'\r\n\t (ok)
-        //<>/: \"=xmlns'\r\n\t (ok)
-
-        //<>/: \"='\r\n\t (2.0.4)
-        //<>/: \"= (2.0.4 strict)
-        //<>/: \"=!-[]?xmlnsid'\r\n\t (full 2.0.5)
-        //<>/: \"=!-[]?xmlnsid (strict 2.0.5)
-
         //<>/: \"=!-[]?xmlnsidID'\r\n\t (full 2.0.7)
-        var abc = ":idID";
+        var abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
         var maps = GetMaps(abc).OrderByDescending(x => x.CodePages.Count);
 
         Console.WriteLine($"Abc#{abc.Length}: '{abc}' ");

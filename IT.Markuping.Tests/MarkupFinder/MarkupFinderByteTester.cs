@@ -1,4 +1,5 @@
 ﻿using IT.Markuping.Extensions;
+using IT.Markuping.Implementation;
 using IT.Markuping.Interfaces;
 using System;
 using System.Linq;
@@ -21,6 +22,20 @@ internal class MarkupFinderByteTester
 
     public void Test()
     {
+        try
+        {
+            Assert.That(_finder.LastTagClosing(_encoding.GetBytes("</>"), out var name).IsEmpty, Is.True);
+            Assert.That(name.IsEmpty, Is.True);
+
+            Assert.That(_finder.LastTagClosing(_encoding.GetBytes("</ \r\n\t>"), out name).IsEmpty, Is.True);
+            Assert.That(name.IsEmpty, Is.True);
+        }
+        catch (NotImplementedException)
+        {
+            if (_finder is not ComplexMarkupFinder<byte>)
+                throw;
+        }
+
         Test(new(_encoding, "a"));
         Test(new(_encoding, "a", "n"));
 
@@ -184,6 +199,19 @@ internal class MarkupFinderByteTester
             Assert.That(nodes, Is.EqualTo(nodesCount));
         }
         Assert.That(tags.IsTree, Is.EqualTo(nodesCount > 0));
+
+        try
+        {
+            Assert.That(_finder.LastTags(data, out var name, out nodes), Is.EqualTo(tags));
+            Assert.That(nodes, Is.EqualTo(nodesCount));
+            Assert.That(data.Slice(name.Start, name.Length).SequenceEqual(tagData.FullName), Is.True);
+        }
+        catch (NotImplementedException)
+        {
+            if (_finder is not ComplexMarkupFinder<byte>)
+                throw;
+        }
+
         return tags;
     }
 
@@ -295,6 +323,17 @@ internal class MarkupFinderByteTester
         }
 
         Assert.That(tag.HasSpace, Is.EqualTo(hasSpace));
+
+        try
+        {
+            Assert.That(_finder.LastTagClosing(data, out var name), Is.EqualTo(tag));
+            Assert.That(data.Slice(name.Start, name.Length).SequenceEqual(tagData.FullName), Is.True);
+        }
+        catch (NotImplementedException)
+        {
+            if (_finder is not ComplexMarkupFinder<byte>)
+                throw;
+        }
 
         return tag;
     }

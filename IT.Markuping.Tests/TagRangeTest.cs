@@ -2,12 +2,12 @@
 
 namespace IT.Markuping.Tests;
 
-internal class TagNSTest
+internal class TagRangeTest
 {
     [Test]
     public void CtorTest()
     {
-        var tag = new TagNS();
+        var tag = new TagRange();
         Assert.That(tag.Start, Is.EqualTo(0));
         Assert.That(tag.End, Is.EqualTo(0));
         Assert.That(tag.Length, Is.EqualTo(0));
@@ -18,25 +18,25 @@ internal class TagNSTest
         Assert.That(tag.End, Is.EqualTo(0));
         Assert.That(tag.Length, Is.EqualTo(0));
 
-        tag = new TagNS(0, 1);
+        tag = new TagRange(0, 1);
         Assert.That(tag.Start, Is.EqualTo(0));
         Assert.That(tag.End, Is.EqualTo(1));
         Assert.That(tag.Length, Is.EqualTo(1));
         Assert.That(tag.ToString(), Is.EqualTo("0..1"));
 
-        tag = new TagNS(10, 100);
+        tag = new TagRange(10, 100);
         Assert.That(tag.Start, Is.EqualTo(10));
         Assert.That(tag.End, Is.EqualTo(100));
         Assert.That(tag.Length, Is.EqualTo(90));
         Assert.That(tag.ToString(), Is.EqualTo("10..100"));
 
-        tag = new TagNS(5, 10);
+        tag = new TagRange(5, 10);
         Assert.That(tag.Start, Is.EqualTo(5));
         Assert.That(tag.End, Is.EqualTo(10));
         Assert.That(tag.Length, Is.EqualTo(5));
         Assert.That(tag.ToString(), Is.EqualTo("5..10"));
 
-        tag = new TagNS(1, 3);
+        tag = new TagRange(1, 3);
         Assert.That(tag.Start, Is.EqualTo(1));
         Assert.That(tag.End, Is.EqualTo(3));
         Assert.That(tag.ToString(), Is.EqualTo("1..3"));
@@ -45,7 +45,7 @@ internal class TagNSTest
     [Test]
     public void AddOffsetTest()
     {
-        var tag = new TagNS(0, 1);
+        var tag = new TagRange(0, 1);
         Assert.That(tag.Start, Is.EqualTo(0));
         Assert.That(tag.End, Is.EqualTo(1));
 
@@ -71,7 +71,7 @@ internal class TagNSTest
         ex2 = Assert.Throws<ArgumentOutOfRangeException>(() => tag.AddOffset(int.MinValue));
         Assert.That(ex2.ParamName, Is.EqualTo("offset"));
 
-        tag = new TagNS(0, 1);
+        tag = new TagRange(0, 1);
         Assert.That(tag.Start, Is.EqualTo(0));
         Assert.That(tag.End, Is.EqualTo(1));
 
@@ -100,7 +100,7 @@ internal class TagNSTest
     [Test]
     public void TryFormatTest()
     {
-        var tag = new TagNS(10, 11);
+        var tag = new TagRange(10, 11);
         Assert.That(tag.TryFormat(stackalloc char[3], out var written), Is.False);
         Assert.That(written == 0, Is.True);
 
@@ -113,7 +113,7 @@ internal class TagNSTest
         Assert.That(written == 6, Is.True);
         Assert.That(span.ToString(), Is.EqualTo("10..11"));
 
-        tag = new TagNS(12345, 123456);
+        tag = new TagRange(12345, 123456);
         span = stackalloc char[12];
         Assert.That(tag.TryFormat(span, out written), Is.False);
         Assert.That(written == 0, Is.True);
@@ -128,8 +128,8 @@ internal class TagNSTest
     [Test]
     public void CompareToTest()
     {
-        var tag1 = new TagNS(100, 101);
-        var tag2 = new TagNS(101, 102);
+        var tag1 = new TagRange(100, 101);
+        var tag2 = new TagRange(101, 102);
 
         Assert.That(tag1 < tag2, Is.True);
         Assert.That(tag2 > tag1, Is.True);
@@ -142,13 +142,13 @@ internal class TagNSTest
     [Test]
     public void InvalidTest()
     {
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new TagNS(-1, 0));
+        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new TagRange(-1, 0));
         Assert.That(ex.ParamName, Is.EqualTo("start"));
 
-        ex = Assert.Throws<ArgumentOutOfRangeException>(() => new TagNS(0, 0));
+        ex = Assert.Throws<ArgumentOutOfRangeException>(() => new TagRange(0, 0));
         Assert.That(ex.ParamName, Is.EqualTo("end"));
 
-        ex = Assert.Throws<ArgumentOutOfRangeException>(() => new TagNS(5, 4));
+        ex = Assert.Throws<ArgumentOutOfRangeException>(() => new TagRange(5, 4));
         Assert.That(ex.ParamName, Is.EqualTo("end"));
     }
 }

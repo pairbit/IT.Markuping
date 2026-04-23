@@ -41,6 +41,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
     }
 
     protected readonly Tokens _tokens;
+    protected readonly T[] _ltSlash;
 
     protected override int LtLength => 1;
 
@@ -53,6 +54,48 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
     public MarkupFinder(int[] codePages, Tokens tokens) : base(codePages)
     {
         _tokens = tokens;
+        _ltSlash = [tokens._lt, tokens._slash];
+    }
+
+    public override TagClosing LastTagClosing(ReadOnlySpan<T> data, out TagRange name)
+    {
+        var start = data.LastIndexOf(_ltSlash);
+        if (start >= 0)
+        {
+#if DEBUG && NET
+            var str = Info.ToString(data.Slice(start + 2));
+#endif
+            var sliced = data.Slice(start + 2);
+            var end = sliced.IndexOf(_tokens._gt);
+            if (end > 0)
+            {
+                var nameEnd = end;
+                bool hasSpace = false;
+                while (--nameEnd >= 0)
+                {
+                    if (IsSpace(sliced[nameEnd]))
+                    {
+                        hasSpace = true;
+                    }
+                    else
+                    {
+                        nameEnd++;
+                        break;
+                    }
+                }
+                if (nameEnd > 0)
+                {
+                    name = new(start + 2, nameEnd + start + 2);
+#if DEBUG && NET
+                    var nameStr = Info.ToString(data.Slice(name.Start, name.Length));
+                    var tagStr = Info.ToString(data.Slice(start, end + 3));
+#endif
+                    return new(start, end + start + 3, hasSpace);
+                }
+            }
+        }
+        name = default;
+        return default;
     }
 
     protected virtual bool IsSpace(T value) => value.Equals(_tokens._space);
@@ -103,7 +146,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
                Equals(data.Slice(start, ns.Length), ns);
     }
 
-    protected override bool IsStartOpening(ReadOnlySpan<T> data, ref int start, out TagNS ns)
+    protected override bool IsStartOpening(ReadOnlySpan<T> data, ref int start, out TagRange ns)
     {
         Debug.Assert(start < data.Length);
         Debug.Assert(start >= 1);
@@ -157,7 +200,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
                Equals(data.Slice(start, ns.Length), ns);
     }
 
-    protected override bool IsStartClosing(ReadOnlySpan<T> data, ref int start, out TagNS ns)
+    protected override bool IsStartClosing(ReadOnlySpan<T> data, ref int start, out TagRange ns)
     {
         Debug.Assert(start < data.Length);
         Debug.Assert(start >= 2);
@@ -316,7 +359,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
         return TagEnding.None;
     }
 
-    protected override Tag FirstTagByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, IAttName name, out TagNS tagName)
+    protected override Tag FirstTagByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, IAttName name, out TagRange tagName)
     {
         var valen = value.Length;
         Debug.Assert(valen > 0);
@@ -343,7 +386,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
         return default;
     }
 
-    private Tag GetTagByAttribute(ReadOnlySpan<T> data, IAttName name, int start, int end, out TagNS tagName)
+    private Tag GetTagByAttribute(ReadOnlySpan<T> data, IAttName name, int start, int end, out TagRange tagName)
     {
         Debug.Assert(end > start && start < data.Length);
 
@@ -391,7 +434,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
         first.Equals(_tokens._quot) && last.Equals(_tokens._quot) ||
         first.Equals(_tokens._apos) && last.Equals(_tokens._apos);
 
-    private TagNS GetTagName(ReadOnlySpan<T> data)
+    private TagRange GetTagName(ReadOnlySpan<T> data)
     {
 #if DEBUG && NET
         var str = Info.ToString(data);

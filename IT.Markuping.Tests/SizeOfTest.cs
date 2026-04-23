@@ -14,7 +14,7 @@ internal class SizeOfTest
 
         Assert.That(Unsafe.SizeOf<StartEnd>(), Is.EqualTo(8));
         Assert.That(Unsafe.SizeOf<Tag>(), Is.EqualTo(8));
-        Assert.That(Unsafe.SizeOf<TagNS>(), Is.EqualTo(8));
+        Assert.That(Unsafe.SizeOf<TagRange>(), Is.EqualTo(8));
         Assert.That(Unsafe.SizeOf<TagOpening>(), Is.EqualTo(8));
         Assert.That(Unsafe.SizeOf<TagClosing>(), Is.EqualTo(8));
         Assert.That(Unsafe.SizeOf<MarkupFinder<byte>.Tokens>(), Is.EqualTo(8));
