@@ -14,7 +14,7 @@ public static class xIMarkupFinder
     //Рашиерение, аналог LastAttrName(data, uri) обрезаем "xmlns:"
     //TagNS LastTagNS(ReadOnlySpan<T> data, ReadOnlySpan<T> uri);
 
-    public static Tags FirstTags<T>(this IMarkupFinder<T> finder, ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns) where T : unmanaged
+    public static Tags FirstTags<T>(this IMarkupFinder<T> finder, ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagRange ns) where T : unmanaged
         => finder.FirstTags(data, name, out ns, out _);
 
     public static Tags FirstTags<T>(this IMarkupFinder<T> finder, ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns) where T : unmanaged
@@ -23,7 +23,7 @@ public static class xIMarkupFinder
     public static Tags FirstTags<T>(this IMarkupFinder<T> finder, ReadOnlySpan<T> data, ReadOnlySpan<T> name) where T : unmanaged
         => finder.FirstTags(data, name, out _);
 
-    public static Tags LastTags<T>(this IMarkupFinder<T> finder, ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns) where T : unmanaged
+    public static Tags LastTags<T>(this IMarkupFinder<T> finder, ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagRange ns) where T : unmanaged
         => finder.LastTags(data, name, out ns, out _);
 
     public static Tags LastTags<T>(this IMarkupFinder<T> finder, ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns) where T : unmanaged

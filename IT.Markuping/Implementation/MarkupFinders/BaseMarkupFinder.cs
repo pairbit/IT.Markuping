@@ -37,13 +37,13 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
 
     protected abstract bool IsStartOpening(ReadOnlySpan<T> data, int start, ReadOnlySpan<T> ns);
 
-    protected abstract bool IsStartOpening(ReadOnlySpan<T> data, ref int start, out TagNS ns);
+    protected abstract bool IsStartOpening(ReadOnlySpan<T> data, ref int start, out TagRange ns);
 
     protected abstract bool IsStartClosing(ReadOnlySpan<T> data, int start);
 
     protected abstract bool IsStartClosing(ReadOnlySpan<T> data, int start, ReadOnlySpan<T> ns);
 
-    protected abstract bool IsStartClosing(ReadOnlySpan<T> data, ref int start, out TagNS ns);
+    protected abstract bool IsStartClosing(ReadOnlySpan<T> data, ref int start, out TagRange ns);
 
     protected abstract bool IsEndClosing(ReadOnlySpan<T> data, ref int end, out bool hasSpace);
 
@@ -53,7 +53,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
 
     protected abstract TagEnding GetEndingHasAttributes(ReadOnlySpan<T> data, ref int end);
 
-    protected abstract Tag FirstTagByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, IAttName name, out TagNS tagName);
+    protected abstract Tag FirstTagByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, IAttName name, out TagRange tagName);
 
     #endregion Protected Methods
 
@@ -86,7 +86,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         return default;
     }
 
-    public Tags FirstTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, out int nodes)
+    public Tags FirstTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagRange ns, out int nodes)
     {
         var opening = FirstTag(data, name, out ns, TagEndings.Closing);
         if (!opening.IsEmpty)
@@ -131,7 +131,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         return default;
     }
 
-    public Tags LastTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, out int nodes)
+    public Tags LastTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagRange ns, out int nodes)
     {
         var closing = LastTagClosing(data, name, out ns);
         if (!closing.IsEmpty)
@@ -177,7 +177,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         return default;
     }
 
-    public Tag FirstTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, TagEndings endings = default)
+    public Tag FirstTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagRange ns, TagEndings endings = default)
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
 
@@ -249,7 +249,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         return default;
     }
 
-    public Tag LastTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, TagEndings endings = default)
+    public Tag LastTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagRange ns, TagEndings endings = default)
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));
 
@@ -331,7 +331,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         return default;
     }
 
-    public TagClosing LastTagClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns)
+    public TagClosing LastTagClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagRange ns)
     {
         var namelen = name.Length;
         Debug.Assert(namelen > 0);
@@ -631,7 +631,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         return default;
     }
 
-    private Tag GetTag(ReadOnlySpan<T> data, int start, int end, TagEndings endings, out TagNS ns)
+    private Tag GetTag(ReadOnlySpan<T> data, int start, int end, TagEndings endings, out TagRange ns)
     {
         Debug.Assert(end > 0 && start < end);
 
@@ -649,7 +649,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         return default;
     }
 
-    private TagClosing GetClosing(ReadOnlySpan<T> data, int start, int end, out TagNS ns)
+    private TagClosing GetClosing(ReadOnlySpan<T> data, int start, int end, out TagRange ns)
     {
         Debug.Assert(start > 0 && end > 0);
         Debug.Assert(start < end);

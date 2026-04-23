@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 namespace IT.Markuping;
 
 [DebuggerDisplay("{ToString(),nq}")]
-public readonly struct TagNS : IComparable<TagNS>, IEquatable<TagNS>, IFormattable
+public readonly struct TagRange : IComparable<TagRange>, IEquatable<TagRange>, IFormattable
 #if NET6_0_OR_GREATER
 , ISpanFormattable
 #endif
@@ -32,16 +32,16 @@ public readonly struct TagNS : IComparable<TagNS>, IEquatable<TagNS>, IFormattab
 
     #region Ctors
 
-    internal TagNS(StartEnd startEnd)
+    internal TagRange(StartEnd startEnd)
     {
         Debug.Assert(startEnd._start >= 0);
         Debug.Assert(startEnd._end > startEnd._start || (startEnd._end == 0 && startEnd._start == 0));
-        Debug.Assert(Unsafe.SizeOf<StartEnd>() == Unsafe.SizeOf<TagNS>());
+        Debug.Assert(Unsafe.SizeOf<StartEnd>() == Unsafe.SizeOf<TagRange>());
 
-        this = Unsafe.As<StartEnd, TagNS>(ref startEnd);
+        this = Unsafe.As<StartEnd, TagRange>(ref startEnd);
     }
 
-    private TagNS(int start, int end, int offset)
+    private TagRange(int start, int end, int offset)
     {
         Debug.Assert(start >= 0);
         Debug.Assert(end > start);
@@ -53,7 +53,7 @@ public readonly struct TagNS : IComparable<TagNS>, IEquatable<TagNS>, IFormattab
         if (_start < 0) throw new ArgumentOutOfRangeException(nameof(offset));
     }
 
-    public TagNS(int start, int end)
+    public TagRange(int start, int end)
     {
         if (start < 0) throw new ArgumentOutOfRangeException(nameof(start));
         if (end <= start) throw new ArgumentOutOfRangeException(nameof(end));
@@ -64,14 +64,14 @@ public readonly struct TagNS : IComparable<TagNS>, IEquatable<TagNS>, IFormattab
 
     #endregion Ctors
 
-    public TagNS AddOffset(int offset) => new(_start, _end, offset);
+    public TagRange AddOffset(int offset) => new(_start, _end, offset);
 
-    public TagNS MultipleOffset(int offset)
+    public TagRange MultipleOffset(int offset)
         => new(new StartEnd(checked(_start * offset), checked(_end * offset)));
 
     #region Comparison
 
-    public int CompareTo(TagNS other)
+    public int CompareTo(TagRange other)
     {
         var compared = _start.CompareTo(other._start);
 
@@ -80,9 +80,9 @@ public readonly struct TagNS : IComparable<TagNS>, IEquatable<TagNS>, IFormattab
         return compared;
     }
 
-    public bool Equals(TagNS other) => _start == other._start && _end == other._end;
+    public bool Equals(TagRange other) => _start == other._start && _end == other._end;
 
-    public override bool Equals(object? obj) => obj is TagNS tag && Equals(tag);
+    public override bool Equals(object? obj) => obj is TagRange tag && Equals(tag);
 
     public override int GetHashCode() => HashCode.Combine(_start, _end);
 
@@ -151,17 +151,17 @@ public readonly struct TagNS : IComparable<TagNS>, IEquatable<TagNS>, IFormattab
 
     #region Operators
 
-    public static bool operator ==(TagNS left, TagNS right) => left.Equals(right);
+    public static bool operator ==(TagRange left, TagRange right) => left.Equals(right);
 
-    public static bool operator !=(TagNS left, TagNS right) => !left.Equals(right);
+    public static bool operator !=(TagRange left, TagRange right) => !left.Equals(right);
 
-    public static bool operator <(TagNS left, TagNS right) => left.CompareTo(right) < 0;
+    public static bool operator <(TagRange left, TagRange right) => left.CompareTo(right) < 0;
 
-    public static bool operator <=(TagNS left, TagNS right) => left.CompareTo(right) <= 0;
+    public static bool operator <=(TagRange left, TagRange right) => left.CompareTo(right) <= 0;
 
-    public static bool operator >(TagNS left, TagNS right) => left.CompareTo(right) > 0;
+    public static bool operator >(TagRange left, TagRange right) => left.CompareTo(right) > 0;
 
-    public static bool operator >=(TagNS left, TagNS right) => left.CompareTo(right) >= 0;
+    public static bool operator >=(TagRange left, TagRange right) => left.CompareTo(right) >= 0;
 
     #endregion Operators
 }

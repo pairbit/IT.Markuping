@@ -70,7 +70,7 @@ internal class StrictMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, 
                data.Slice(start, ns.Length).SequenceEqual(ns);
     }
 
-    protected override bool IsStartOpening(ReadOnlySpan<T> data, ref int start, out TagNS ns)
+    protected override bool IsStartOpening(ReadOnlySpan<T> data, ref int start, out TagRange ns)
     {
         Debug.Assert(start < data.Length);
         Debug.Assert(start >= 1);
@@ -121,7 +121,7 @@ internal class StrictMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, 
                data.Slice(start, ns.Length).SequenceEqual(ns);
     }
 
-    protected override bool IsStartClosing(ReadOnlySpan<T> data, ref int start, out TagNS ns)
+    protected override bool IsStartClosing(ReadOnlySpan<T> data, ref int start, out TagRange ns)
     {
         Debug.Assert(start < data.Length);
         Debug.Assert(start >= 2);
@@ -269,7 +269,7 @@ internal class StrictMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, 
         return TagEnding.None;
     }
 
-    protected override Tag FirstTagByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, IAttName name, out TagNS tagName)
+    protected override Tag FirstTagByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, IAttName name, out TagRange tagName)
     {
         throw new NotImplementedException("FirstTagByAttribute Strict");
     }

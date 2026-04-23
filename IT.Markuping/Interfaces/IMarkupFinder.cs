@@ -8,25 +8,25 @@ public interface IMarkupFinder<T> where T : unmanaged
 
     Tags FirstTagsByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, IAttName name, out int nodes);
 
-    Tags FirstTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, out int nodes);
+    Tags FirstTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagRange ns, out int nodes);
 
     Tags FirstTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, out int nodes);
 
     Tags FirstTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes);
 
-    Tags LastTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, out int nodes);
+    Tags LastTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagRange ns, out int nodes);
 
     Tags LastTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, out int nodes);
 
     Tags LastTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes);
 
-    Tag FirstTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, TagEndings endings = default);
+    Tag FirstTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagRange ns, TagEndings endings = default);
 
     Tag FirstTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, TagEndings endings = default);
 
     Tag FirstTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, TagEndings endings = default);
 
-    Tag LastTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns, TagEndings endings = default);
+    Tag LastTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagRange ns, TagEndings endings = default);
 
     Tag LastTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, TagEndings endings = default);
 
@@ -36,7 +36,7 @@ public interface IMarkupFinder<T> where T : unmanaged
 
     TagClosing FirstTagClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name);
 
-    TagClosing LastTagClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagNS ns);
+    TagClosing LastTagClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagRange ns);
 
     TagClosing LastTagClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns);
 

@@ -93,7 +93,7 @@ public class ComplexMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, I
         return data.Slice(start, _colon.Length).SequenceEqual(_colon);
     }
 
-    protected override bool IsStartOpening(ReadOnlySpan<T> data, ref int start, out TagNS ns)
+    protected override bool IsStartOpening(ReadOnlySpan<T> data, ref int start, out TagRange ns)
     {
         Debug.Assert(start < data.Length);
         Debug.Assert(start >= _size);
@@ -160,7 +160,7 @@ public class ComplexMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, I
         return data.Slice(start, _colon.Length).SequenceEqual(_colon);
     }
 
-    protected override bool IsStartClosing(ReadOnlySpan<T> data, ref int start, out TagNS ns)
+    protected override bool IsStartClosing(ReadOnlySpan<T> data, ref int start, out TagRange ns)
     {
         var sizeDouble = _size * 2;
 
@@ -313,7 +313,7 @@ public class ComplexMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, I
         return TagEnding.None;
     }
 
-    protected override Tag FirstTagByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, IAttName name, out TagNS tagName)
+    protected override Tag FirstTagByAttribute(ReadOnlySpan<T> data, ReadOnlySpan<T> value, IAttName name, out TagRange tagName)
     {
         throw new NotImplementedException("FirstTagByAttribute Complex");
     }
