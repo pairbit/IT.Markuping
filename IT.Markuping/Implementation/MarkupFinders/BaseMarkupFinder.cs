@@ -177,6 +177,21 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         return default;
     }
 
+    public Tags LastTags(ReadOnlySpan<T> data, out TagRange name, out int nodes)
+    {
+        var closing = LastTagClosing(data, out name);
+        if (!closing.IsEmpty)
+        {
+            var opening = LastOpening(data.Slice(0, closing.Start), data.Slice(name.Start, name.Length), default, out nodes);
+            if (!opening.IsEmpty)
+            {
+                return new(opening, closing, nodes > 0);
+            }
+        }
+        nodes = default;
+        return default;
+    }
+
     public Tag FirstTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagRange ns, TagEndings endings = default)
     {
         if (!endings.IsValid()) throw new ArgumentOutOfRangeException(nameof(endings));

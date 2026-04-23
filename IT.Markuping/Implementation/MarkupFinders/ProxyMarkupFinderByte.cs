@@ -69,6 +69,9 @@ public class ProxyMarkupFinderByte<T> : IMarkupFinder<byte> where T : unmanaged
     public Tags LastTags(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out int nodes)
         => _proxy.LastTags(Cast(data), Cast(name), out nodes).MultipleOffset(Size);
 
+    public Tags LastTags(ReadOnlySpan<byte> data, out TagRange name, out int nodes)
+        => _proxy.LastTags(Cast(data), out name, out nodes).MultipleOffset(Size);
+
     public Tag FirstTag(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out TagRange ns, TagEndings endings = default)
     {
         var tag = _proxy.FirstTag(Cast(data), Cast(name), out ns, endings);

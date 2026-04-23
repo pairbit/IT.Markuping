@@ -20,6 +20,8 @@ public interface IMarkupFinder<T> where T : unmanaged
 
     Tags LastTags(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out int nodes);
 
+    Tags LastTags(ReadOnlySpan<T> data, out TagRange name, out int nodes);
+
     Tag FirstTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, out TagRange ns, TagEndings endings = default);
 
     Tag FirstTag(ReadOnlySpan<T> data, ReadOnlySpan<T> name, ReadOnlySpan<T> ns, TagEndings endings = default);
