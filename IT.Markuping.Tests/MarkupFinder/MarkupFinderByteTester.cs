@@ -199,6 +199,19 @@ internal class MarkupFinderByteTester
             Assert.That(nodes, Is.EqualTo(nodesCount));
         }
         Assert.That(tags.IsTree, Is.EqualTo(nodesCount > 0));
+
+        try
+        {
+            Assert.That(_finder.LastTags(data, out var name, out nodes), Is.EqualTo(tags));
+            Assert.That(nodes, Is.EqualTo(nodesCount));
+            Assert.That(data.Slice(name.Start, name.Length).SequenceEqual(tagData.FullName), Is.True);
+        }
+        catch (NotImplementedException)
+        {
+            if (_finder is not ComplexMarkupFinder<byte>)
+                throw;
+        }
+
         return tags;
     }
 
