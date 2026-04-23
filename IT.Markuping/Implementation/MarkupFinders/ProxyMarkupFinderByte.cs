@@ -70,7 +70,15 @@ public class ProxyMarkupFinderByte<T> : IMarkupFinder<byte> where T : unmanaged
         => _proxy.LastTags(Cast(data), Cast(name), out nodes).MultipleOffset(Size);
 
     public Tags LastTags(ReadOnlySpan<byte> data, out TagRange name, out int nodes)
-        => _proxy.LastTags(Cast(data), out name, out nodes).MultipleOffset(Size);
+    {
+        var tags = _proxy.LastTags(Cast(data), out name, out nodes);
+
+        var size = Size;
+
+        name = name.MultipleOffset(size);
+
+        return tags.MultipleOffset(size);
+    }
 
     public Tag FirstTag(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name, out TagRange ns, TagEndings endings = default)
     {
@@ -130,7 +138,15 @@ public class ProxyMarkupFinderByte<T> : IMarkupFinder<byte> where T : unmanaged
         => _proxy.LastTagClosing(Cast(data), Cast(name)).MultipleOffset(Size);
 
     public TagClosing LastTagClosing(ReadOnlySpan<byte> data, out TagRange name)
-        => _proxy.LastTagClosing(Cast(data), out name).MultipleOffset(Size);
+    {
+        var tag = _proxy.LastTagClosing(Cast(data), out name);
+
+        var size = Size;
+
+        name = name.MultipleOffset(size);
+
+        return tag.MultipleOffset(size);
+    }
 
     #endregion IMarkupFinder
 

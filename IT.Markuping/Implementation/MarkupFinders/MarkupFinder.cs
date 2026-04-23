@@ -41,6 +41,7 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
     }
 
     protected readonly Tokens _tokens;
+    protected readonly T[] _ltSlash;
 
     protected override int LtLength => 1;
 
@@ -53,6 +54,48 @@ public class MarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, IEquatab
     public MarkupFinder(int[] codePages, Tokens tokens) : base(codePages)
     {
         _tokens = tokens;
+        _ltSlash = [tokens._lt, tokens._slash];
+    }
+
+    public override TagClosing LastTagClosing(ReadOnlySpan<T> data, out TagRange name)
+    {
+        var start = data.LastIndexOf(_ltSlash);
+        if (start >= 0)
+        {
+#if DEBUG && NET
+            var str = Info.ToString(data.Slice(start + 2));
+#endif
+            var sliced = data.Slice(start + 2);
+            var end = sliced.IndexOf(_tokens._gt);
+            if (end > 0)
+            {
+                var nameEnd = end;
+                bool hasSpace = false;
+                while (--nameEnd >= 0)
+                {
+                    if (IsSpace(sliced[nameEnd]))
+                    {
+                        hasSpace = true;
+                    }
+                    else
+                    {
+                        nameEnd++;
+                        break;
+                    }
+                }
+                if (nameEnd > 0)
+                {
+                    name = new(start + 2, nameEnd + start + 2);
+#if DEBUG && NET
+                    var nameStr = Info.ToString(data.Slice(name.Start, name.Length));
+                    var tagStr = Info.ToString(data.Slice(start, end + 3));
+#endif
+                    return new(start, end + start + 3, hasSpace);
+                }
+            }
+        }
+        name = default;
+        return default;
     }
 
     protected virtual bool IsSpace(T value) => value.Equals(_tokens._space);

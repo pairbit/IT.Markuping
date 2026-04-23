@@ -296,6 +296,16 @@ internal class MarkupFinderByteTester
 
         Assert.That(tag.HasSpace, Is.EqualTo(hasSpace));
 
+        try
+        {
+            Assert.That(_finder.LastTagClosing(data, out var name), Is.EqualTo(tag));
+            Assert.That(data.Slice(name.Start, name.Length).SequenceEqual(tagData.FullName), Is.True);
+        }
+        catch (NotImplementedException)
+        {
+            Console.WriteLine("LastTagClosing NotImplemented.");
+        }
+
         return tag;
     }
 

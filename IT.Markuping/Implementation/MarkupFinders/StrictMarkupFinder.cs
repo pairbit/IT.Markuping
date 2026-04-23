@@ -44,6 +44,9 @@ internal class StrictMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, 
         _tokens = tokens;
     }
 
+    public override TagClosing LastTagClosing(ReadOnlySpan<T> data, out TagRange name) =>
+        throw new NotImplementedException();
+
     protected virtual bool IsSpace(T value) => value.Equals(_tokens._space);
 
     protected override int IndexOfTagName(ReadOnlySpan<T> data, ReadOnlySpan<T> value)

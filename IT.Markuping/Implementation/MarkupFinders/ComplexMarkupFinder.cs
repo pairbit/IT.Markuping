@@ -55,6 +55,9 @@ public class ComplexMarkupFinder<T> : BaseMarkupFinder<T> where T : unmanaged, I
         _spaces = isStrict ? [abc.Space.ToArray()] : [abc.Space.ToArray(), abc.CR.ToArray(), abc.LF.ToArray(), abc.Tab.ToArray()];
     }
 
+    public override TagClosing LastTagClosing(ReadOnlySpan<T> data, out TagRange name) =>
+        throw new NotImplementedException();
+
     protected virtual bool IsInvalidNS(ReadOnlySpan<T> data, int start) =>
         IsSpace(data, ref start) ||
         IsSeq(data, _gt, start) ||

@@ -396,10 +396,7 @@ public abstract class BaseMarkupFinder<T> : IMarkupFinder<T> where T : unmanaged
         return default;
     }
 
-    public TagClosing LastTagClosing(ReadOnlySpan<T> data, out TagRange name)
-    {
-        throw new NotImplementedException();
-    }
+    public abstract TagClosing LastTagClosing(ReadOnlySpan<T> data, out TagRange name);
 
     #endregion IMarkupFinder
 
