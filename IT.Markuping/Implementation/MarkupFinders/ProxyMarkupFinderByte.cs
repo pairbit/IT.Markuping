@@ -126,6 +126,9 @@ public class ProxyMarkupFinderByte<T> : IMarkupFinder<byte> where T : unmanaged
     public TagClosing LastTagClosing(ReadOnlySpan<byte> data, ReadOnlySpan<byte> name)
         => _proxy.LastTagClosing(Cast(data), Cast(name)).MultipleOffset(Size);
 
+    public TagClosing LastTagClosing(ReadOnlySpan<byte> data, out TagRange name)
+        => _proxy.LastTagClosing(Cast(data), out name).MultipleOffset(Size);
+
     #endregion IMarkupFinder
 
     private static ReadOnlySpan<T> Cast(ReadOnlySpan<byte> span)

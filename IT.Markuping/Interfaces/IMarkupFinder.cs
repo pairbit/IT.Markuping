@@ -42,6 +42,8 @@ public interface IMarkupFinder<T> where T : unmanaged
 
     TagClosing LastTagClosing(ReadOnlySpan<T> data, ReadOnlySpan<T> name);
 
+    TagClosing LastTagClosing(ReadOnlySpan<T> data, out TagRange name);
+
     //? LastAttrName(ReadOnlySpan<T> data, ReadOnlySpan<T> attrValue);
     //? LastAttrValue(ReadOnlySpan<T> data, ReadOnlySpan<T> attrName);
 }
