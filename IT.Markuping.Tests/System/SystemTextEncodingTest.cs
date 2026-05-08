@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace IT.Markuping.Tests;
@@ -11,11 +12,13 @@ internal class SystemTextEncodingTest
     {
         public List<int> CodePages { get; set; } = new();
 
-        public byte[] Bytes { get; set; } = [];
+        public Array Array { get; set; } = null!;
 
         public bool IsSingle { get; set; }
 
         public bool HasDuplicates { get; set; }
+
+        public bool IsValid { get; set; }
     }
 
     //[Test]
@@ -94,7 +97,7 @@ internal class SystemTextEncodingTest
             Console.WriteLine($"{codePage,5} | {encoding.EncodingName,40} | {encoding.WebName,25} | {encoding.HeaderName,25} | {encoding.BodyName,25}");
         }
     }
-    
+
     [Test]
     public void UnknownTest()
     {
@@ -159,14 +162,14 @@ internal class SystemTextEncodingTest
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
         //<>/: \"=!-[]?xmlnsidID'\r\n\t (full 2.0.7)
-        var abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+        var abc = "ds:Signature";
         var maps = GetMaps(abc).OrderByDescending(x => x.CodePages.Count);
 
         Console.WriteLine($"Abc#{abc.Length}: '{abc}' ");
         foreach (var map in maps)
         {
-            Console.WriteLine($"\nSingle: {map.IsSingle}, HasDuplicates: {map.HasDuplicates}");
-            Console.WriteLine($"Bytes (#{map.Bytes.Length}): {string.Join(", ", map.Bytes)}");
+            Console.WriteLine($"\nValid: {map.IsValid}, Single: {map.IsSingle}, HasDuplicates: {map.HasDuplicates}");
+            Console.WriteLine($"Bytes (#{map.Array.Length}): {string.Join(", ", map.Array.Cast<object>())}");
             Console.WriteLine($"CodePages: {string.Join(", ", map.CodePages)}");
             foreach (var codePage in map.CodePages)
             {
@@ -184,27 +187,41 @@ internal class SystemTextEncodingTest
         foreach (var encodingInfo in encodingInfos)
         {
             var codePage = encodingInfo.CodePage;
-            if (
-                codePage == 1200 || codePage == 1201 ||
-                codePage == 65000 || 
-                codePage == 12000 || codePage == 12001
-                ) continue;
+            if (codePage == 65000) continue;//utf7
 
             var encoding = encodingInfo.GetEncoding();
             var bytes = encoding.GetBytes(abc);
+
             if (TryFindMap(maps, bytes, out var map))
             {
                 map.CodePages.Add(codePage);
             }
             else
             {
-                maps.Add(new()
+                var isSingle = bytes.Length == abc.Length;
+                if (isSingle)
                 {
-                    Bytes = bytes,
-                    CodePages = new() { codePage },
-                    IsSingle = bytes.Length == abc.Length,
-                    HasDuplicates = bytes.Distinct().Count() != abc.Length
-                });
+                    maps.Add(new()
+                    {
+                        Array = bytes,
+                        CodePages = new() { codePage },
+                        IsSingle = true,
+                        HasDuplicates = bytes.Distinct().Count() != abc.Length,
+                        IsValid = encoding.GetString(bytes).Equals(abc)
+                    });
+                }
+                else
+                {
+                    var array = GetArray(bytes, codePage);
+                    maps.Add(new()
+                    {
+                        Array = array,
+                        CodePages = new() { codePage },
+                        IsSingle = false,
+                        HasDuplicates = array.Cast<object>().Distinct().Count() != abc.Length,
+                        IsValid = true
+                    });
+                }
             }
         }
 
@@ -216,6 +233,15 @@ internal class SystemTextEncodingTest
         return maps;
     }
 
+    private static Array GetArray(byte[] bytes, int codePage)
+    {
+        if (codePage == 1200) return MemoryMarshal.Cast<byte, char>(bytes).ToArray();
+        if (codePage == 1201) return MemoryMarshal.Cast<byte, short>(bytes).ToArray();
+        if (codePage == 12000) return MemoryMarshal.Cast<byte, uint>(bytes).ToArray();
+        if (codePage == 12001) return MemoryMarshal.Cast<byte, int>(bytes).ToArray();
+        return bytes;
+    }
+
     private static bool TryFindMap(IList<EncodingMap> maps, byte[] bytes,
 #if NET
         [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)]
@@ -225,7 +251,7 @@ internal class SystemTextEncodingTest
         for (int i = 0; i < maps.Count; i++)
         {
             map = maps[i];
-            if (map.Bytes.SequenceEqual(bytes))
+            if (map.Array is byte[] arrayBytes && arrayBytes.SequenceEqual(bytes))
             {
                 return true;
             }
